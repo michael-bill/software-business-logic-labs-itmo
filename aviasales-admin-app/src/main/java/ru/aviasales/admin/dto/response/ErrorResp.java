@@ -1,4 +1,4 @@
-package ru.aviasales.admin.dto;
+package ru.aviasales.admin.dto.response;
 
 
 import java.time.LocalDateTime;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Ответ с ошибкой")
-public class ErrorResponse {
+public class ErrorResp {
     @Schema(description = "Сообщение об ошибке")
     private String message;
     @Schema(description = "Время возникновения ошибки")

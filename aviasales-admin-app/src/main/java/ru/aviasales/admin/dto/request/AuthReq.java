@@ -1,4 +1,4 @@
-package ru.aviasales.admin.dto;
+package ru.aviasales.admin.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Запрос на вход/регистрацию")
-public class AuthRequest {
+public class AuthReq {
 
     @Schema(description = "Имя пользователя", example = "admin")
     @Size(min = 4, max = 50, message = "Имя пользователя должно содержать от 4 до 50 символов")

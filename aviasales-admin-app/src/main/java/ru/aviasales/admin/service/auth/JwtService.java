@@ -1,4 +1,4 @@
-package ru.aviasales.admin.service;
+package ru.aviasales.admin.service.auth;
 
 import java.security.Key;
 import java.util.Date;

@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.aviasales.admin.dto.AuthRequest;
-import ru.aviasales.admin.dto.AuthUserInfo;
-import ru.aviasales.admin.service.AuthService;
+import ru.aviasales.admin.dto.request.AuthReq;
+import ru.aviasales.admin.dto.response.UserResp;
+import ru.aviasales.admin.service.auth.AuthService;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,13 +21,13 @@ public class AuthController {
 
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
-    public AuthUserInfo signUp(@RequestBody AuthRequest request) {
+    public UserResp signUp(@RequestBody AuthReq request) {
         return authService.signUp(request);
     }
 
     @Operation(summary = "Авторизация пользователя")
     @PostMapping("/sign-in")
-    public AuthUserInfo signIn(@RequestBody AuthRequest request) {
+    public UserResp signIn(@RequestBody AuthReq request) {
         return authService.signIn(request);
     }
 

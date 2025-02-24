@@ -1,4 +1,4 @@
-package ru.aviasales.admin.service;
+package ru.aviasales.admin.service.auth;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +9,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.aviasales.admin.dao.entity.User;
-import ru.aviasales.admin.dto.AuthRequest;
-import ru.aviasales.admin.dto.AuthUserInfo;
+import ru.aviasales.admin.dto.request.AuthReq;
+import ru.aviasales.admin.dto.response.UserResp;
+import ru.aviasales.admin.service.core.UserService;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthUserInfo signUp(AuthRequest request) {
+    public UserResp signUp(AuthReq request) {
 
         var user = User.builder()
                 .username(request.getUsername())
@@ -41,14 +42,12 @@ public class AuthService {
                 .role(User.Role.USER)
                 .build();
 
-        AuthUserInfo authUser = modelMapper.map(userService.create(user), AuthUserInfo.class);
-        authUser.setToken(jwtService.generateToken(user));
-
-        return authUser;
+        return modelMapper.map(userService.create(user), UserResp.class)
+                .withToken(jwtService.generateToken(user));
     }
 
     @Transactional(readOnly = true)
-    public AuthUserInfo signIn(AuthRequest request) {
+    public UserResp signIn(AuthReq request) {
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -61,9 +60,7 @@ public class AuthService {
                 .userDetailsService()
                 .loadUserByUsername(request.getUsername());
 
-        AuthUserInfo authUser = modelMapper.map(user, AuthUserInfo.class);
-        authUser.setToken(jwtService.generateToken(user));
-
-        return authUser;
+        return modelMapper.map(user, UserResp.class)
+                .withToken(jwtService.generateToken(user));
     }
 }
