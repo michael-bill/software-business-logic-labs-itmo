@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.aviasales.admin.configuration.PageableAsQueryParam;
 import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dto.request.SalesCategoryReq;
-import ru.aviasales.admin.dto.response.SalesCategoryRes;
+import ru.aviasales.admin.dto.response.SalesCategoryResp;
 import ru.aviasales.admin.service.core.commissions.SalesCategoryService;
 
 @RestController
@@ -33,7 +33,7 @@ public class SalesCategoryController {
     @Operation(summary = "Получить список всех категорий")
     @PageableAsQueryParam
     @GetMapping
-    public Page<SalesCategoryRes> getAllCategories(
+    public Page<SalesCategoryResp> getAllCategories(
             @Parameter(hidden = true) Pageable pageable
     ) {
         return salesCategoryService.getAllCategories(pageable);
@@ -41,7 +41,7 @@ public class SalesCategoryController {
 
     @Operation(summary = "Получить категорию по id")
     @GetMapping("/{id}")
-    public SalesCategoryRes getCategory(
+    public SalesCategoryResp getCategory(
             @PathVariable("id") Long id
     ) {
         return salesCategoryService.getCategory(id);
@@ -49,7 +49,7 @@ public class SalesCategoryController {
 
     @Operation(summary = "Создать категорию")
     @PostMapping
-    public SalesCategoryRes createCategory(
+    public SalesCategoryResp createCategory(
             @AuthenticationPrincipal User user,
             @RequestBody SalesCategoryReq salesCategoryReq
     ) {
@@ -58,7 +58,7 @@ public class SalesCategoryController {
 
     @Operation(summary = "Обновить категорию")
     @PutMapping
-    public SalesCategoryRes updateCategory(
+    public SalesCategoryResp updateCategory(
             @AuthenticationPrincipal User user,
             @RequestParam("id") Long id,
             @RequestBody SalesCategoryReq salesCategoryReq

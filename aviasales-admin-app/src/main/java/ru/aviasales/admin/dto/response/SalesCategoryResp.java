@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Категория продаж")
-public class SalesCategoryRes {
+public class SalesCategoryResp {
     @Schema(description = "Идентификатор категории")
     private Long id;
     @Schema(description = "Название категории")

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Единица продаж")
-public class SalesUnitRes {
+public class SalesUnitResp {
     @Schema(description = "Идентификатор единицы")
     private Long id;
     @Schema(description = "Название единицы")
@@ -21,7 +21,7 @@ public class SalesUnitRes {
     @Schema(description = "Описание единицы")
     private String description;
     @Schema(description = "Категория единицы")
-    private SalesCategoryRes category;
+    private SalesCategoryResp category;
     @Schema(description = "Процент комиссии")
     private Double actualCommission;
     @Schema(description = "Время создания единицы")

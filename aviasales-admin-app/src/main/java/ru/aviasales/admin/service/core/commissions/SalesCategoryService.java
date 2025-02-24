@@ -12,7 +12,7 @@ import ru.aviasales.admin.dao.entity.SalesCategory;
 import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dao.repository.SalesCategoryRepository;
 import ru.aviasales.admin.dto.request.SalesCategoryReq;
-import ru.aviasales.admin.dto.response.SalesCategoryRes;
+import ru.aviasales.admin.dto.response.SalesCategoryResp;
 import ru.aviasales.admin.exception.EntityNotFoundException;
 
 @Service
@@ -23,7 +23,7 @@ public class SalesCategoryService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public SalesCategoryRes createCategory(User user, SalesCategoryReq req) {
+    public SalesCategoryResp createCategory(User user, SalesCategoryReq req) {
         validateCommission(req.getDefaultCommissionPercent());
 
         var now = LocalDateTime.now();
@@ -38,11 +38,11 @@ public class SalesCategoryService {
                 .updatedBy(user)
                 .build();
 
-        return modelMapper.map(salesCategoryRepository.save(category), SalesCategoryRes.class);
+        return modelMapper.map(salesCategoryRepository.save(category), SalesCategoryResp.class);
     }
 
     @Transactional
-    public SalesCategoryRes updateCategory(User user, Long categoryId, SalesCategoryReq req) {
+    public SalesCategoryResp updateCategory(User user, Long categoryId, SalesCategoryReq req) {
         validateCommission(req.getDefaultCommissionPercent());
 
         SalesCategory category = salesCategoryRepository.findById(categoryId)
@@ -54,7 +54,7 @@ public class SalesCategoryService {
         category.setUpdatedBy(user);
         category.setUpdatedAt(LocalDateTime.now());
 
-        return modelMapper.map(category, SalesCategoryRes.class);
+        return modelMapper.map(category, SalesCategoryResp.class);
     }
 
     @Transactional
@@ -63,15 +63,15 @@ public class SalesCategoryService {
     }
 
     @Transactional(readOnly = true)
-    public SalesCategoryRes getCategory(Long categoryId) {
+    public SalesCategoryResp getCategory(Long categoryId) {
         return salesCategoryRepository.findById(categoryId)
-                .map(x -> modelMapper.map(x, SalesCategoryRes.class))
+                .map(x -> modelMapper.map(x, SalesCategoryResp.class))
                 .orElseThrow(() -> new EntityNotFoundException("Категория не была найдена"));
     }
 
     @Transactional(readOnly = true)
-    public Page<SalesCategoryRes> getAllCategories(Pageable pageable) {
-        return salesCategoryRepository.findAll(pageable).map(x -> modelMapper.map(x, SalesCategoryRes.class));
+    public Page<SalesCategoryResp> getAllCategories(Pageable pageable) {
+        return salesCategoryRepository.findAll(pageable).map(x -> modelMapper.map(x, SalesCategoryResp.class));
     }
 
     private void validateCommission(Double commission) {

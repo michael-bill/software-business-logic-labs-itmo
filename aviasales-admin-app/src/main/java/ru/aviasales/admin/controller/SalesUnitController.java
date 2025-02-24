@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.aviasales.admin.configuration.PageableAsQueryParam;
 import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dto.request.SalesUnitReq;
-import ru.aviasales.admin.dto.response.SalesUnitRes;
+import ru.aviasales.admin.dto.response.SalesUnitResp;
 import ru.aviasales.admin.service.core.commissions.SalesUnitService;
 
 @RestController
@@ -33,7 +33,7 @@ public class SalesUnitController {
     @Operation(summary = "Получить список всех единиц продаж")
     @PageableAsQueryParam
     @GetMapping
-    public Page<SalesUnitRes> getAllCategories(
+    public Page<SalesUnitResp> getAllCategories(
             @Parameter(hidden = true) Pageable pageable
     ) {
         return salesUnitService.getAllUnits(pageable);
@@ -41,7 +41,7 @@ public class SalesUnitController {
 
     @Operation(summary = "Получить единицу продажи по id")
     @GetMapping("/{id}")
-    public SalesUnitRes getCategoryById(
+    public SalesUnitResp getCategoryById(
             @PathVariable("id") Long id
     ) {
         return salesUnitService.getUnitById(id);
@@ -49,7 +49,7 @@ public class SalesUnitController {
 
     @Operation(summary = "Создать единицу продажи")
     @PostMapping
-    public SalesUnitRes createCategory(
+    public SalesUnitResp createCategory(
             @AuthenticationPrincipal User user,
             @RequestBody SalesUnitReq req
     ) {
@@ -58,7 +58,7 @@ public class SalesUnitController {
 
     @Operation(summary = "Обновить единицу продажи")
     @PutMapping
-    public SalesUnitRes updateCategory(
+    public SalesUnitResp updateCategory(
             @AuthenticationPrincipal User user,
             @RequestParam("id") Long id,
             @RequestBody SalesUnitReq req
@@ -76,7 +76,7 @@ public class SalesUnitController {
 
     @Operation(summary = "Сбросить комиссию у единицы продажи")
     @PutMapping("/reset-commission")
-    public SalesUnitRes resetCommission(
+    public SalesUnitResp resetCommission(
             @AuthenticationPrincipal User user,
             @RequestParam("id") Long id
     ) {

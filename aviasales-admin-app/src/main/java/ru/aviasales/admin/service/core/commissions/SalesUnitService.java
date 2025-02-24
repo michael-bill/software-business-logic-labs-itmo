@@ -14,7 +14,7 @@ import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dao.repository.SalesCategoryRepository;
 import ru.aviasales.admin.dao.repository.SalesUnitRepository;
 import ru.aviasales.admin.dto.request.SalesUnitReq;
-import ru.aviasales.admin.dto.response.SalesUnitRes;
+import ru.aviasales.admin.dto.response.SalesUnitResp;
 import ru.aviasales.admin.exception.EntityNotFoundException;
 
 @Service
@@ -26,7 +26,7 @@ public class SalesUnitService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public SalesUnitRes createSalesUnit(User user, SalesUnitReq req) {
+    public SalesUnitResp createSalesUnit(User user, SalesUnitReq req) {
         if (req.getCommissionPercent() != null) {
             validateCommission(req.getCommissionPercent());
         }
@@ -50,11 +50,11 @@ public class SalesUnitService {
                 .updatedBy(user)
                 .build();
 
-        return modelMapper.map(salesUnitRepository.save(unit), SalesUnitRes.class);
+        return modelMapper.map(salesUnitRepository.save(unit), SalesUnitResp.class);
     }
 
     @Transactional
-    public SalesUnitRes updateSalesUnit(User user, Long unitId, SalesUnitReq req) {
+    public SalesUnitResp updateSalesUnit(User user, Long unitId, SalesUnitReq req) {
         if (req.getCommissionPercent() != null) {
             validateCommission(req.getCommissionPercent());
         }
@@ -77,11 +77,11 @@ public class SalesUnitService {
         unit.setUpdatedBy(user);
         unit.setUpdatedAt(LocalDateTime.now());
 
-        return modelMapper.map(unit, SalesUnitRes.class);
+        return modelMapper.map(unit, SalesUnitResp.class);
     }
 
     @Transactional
-    public SalesUnitRes resetToDefaultCommission(User user, Long unitId) {
+    public SalesUnitResp resetToDefaultCommission(User user, Long unitId) {
 
         SalesUnit unit = salesUnitRepository.findById(unitId)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -92,7 +92,7 @@ public class SalesUnitService {
         unit.setIsCustomCommission(false);
         unit.setUpdatedBy(user);
 
-        return modelMapper.map(unit, SalesUnitRes.class);
+        return modelMapper.map(unit, SalesUnitResp.class);
     }
 
     @Transactional
@@ -101,17 +101,17 @@ public class SalesUnitService {
     }
 
     @Transactional(readOnly = true)
-    public SalesUnitRes getUnitById(Long unitId) {
+    public SalesUnitResp getUnitById(Long unitId) {
         return salesUnitRepository.findById(unitId)
-                .map(x -> modelMapper.map(x, SalesUnitRes.class))
+                .map(x -> modelMapper.map(x, SalesUnitResp.class))
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Единица продажи с id %d не была найдена".formatted(unitId)
                 ));
     }
 
     @Transactional(readOnly = true)
-    public Page<SalesUnitRes> getAllUnits(Pageable pageable) {
-        return salesUnitRepository.findAll(pageable).map(x -> modelMapper.map(x, SalesUnitRes.class));
+    public Page<SalesUnitResp> getAllUnits(Pageable pageable) {
+        return salesUnitRepository.findAll(pageable).map(x -> modelMapper.map(x, SalesUnitResp.class));
     }
 
     private void validateCommission(Double commission) {
