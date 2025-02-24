@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: aviasales-admin-app
+    version: 1.0
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aviasales-admin
+    username: aviasales
+    password: aviasales
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    generate-ddl: true
+
+token:
+  signing:
+    key: ${TOKEN_SIGNING_KEY:53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855}
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type: TRACE
