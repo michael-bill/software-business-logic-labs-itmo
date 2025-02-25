@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Parameter(in = ParameterIn.QUERY,
-        description = "Номер страницч",
+        description = "Номер страницы",
         name = "page",
         schema = @Schema(type = "integer", defaultValue = "0"))
 @Parameter(in = ParameterIn.QUERY,
