@@ -16,6 +16,7 @@ import ru.aviasales.admin.dto.request.AdvertisementReq;
 import ru.aviasales.admin.dto.response.AdvertisementResp;
 import org.springframework.transaction.annotation.Transactional;
 import ru.aviasales.admin.exception.EntityNotFoundException;
+import ru.aviasales.admin.exception.IllegalOperationException;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -45,11 +46,16 @@ public class AdvertisementService {
                 }
             }
         } else if(req.getTargetSegmentIds() != null) {
-            throw new IllegalArgumentException("Тип рекламы не поддерживает сегментацию");
+            throw new IllegalOperationException("Тип рекламы не поддерживает сегментацию");
         }
 
 
         LocalDateTime now = LocalDateTime.now();
+
+        if (req.getDeadline().isBefore(now)) {
+            throw new IllegalOperationException("Дата окончания рекламы не может быть раньше текущего времени");
+        }
+
         Advertisement advertisement = Advertisement.builder()
                 .title(req.getTitle())
                 .companyName(req.getCompanyName())
