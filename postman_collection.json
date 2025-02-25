@@ -1,0 +1,264 @@
+{
+	"info": {
+		"_postman_id": "81941e47-cf85-4b47-b3ab-a31b5f3dcc3b",
+		"name": "BLPS Aviasails admin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25334867"
+	},
+	"item": [
+		{
+			"name": "User segment",
+			"item": [
+				{
+					"name": "Get all user segments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/user-segment?page=0&size=10&sort",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user-segment"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Номер страницы"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Размер страницы"
+								},
+								{
+									"key": "sort",
+									"value": null,
+									"description": "Критерий сортировки в формате: property(,asc|desc)."
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ad type",
+			"item": [
+				{
+					"name": "Get all ad types",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/ad-type?page=0&size=10&sort",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"ad-type"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Номер страницы"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Размер страницы"
+								},
+								{
+									"key": "sort",
+									"value": null,
+									"description": "Критерий сортировки в формате: property(,asc|desc)."
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Advertisements",
+			"item": [
+				{
+					"name": "Get all advertisements",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/advertisements?page=0&size=10&sort",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"advertisements"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Номер страницы"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Размер страницы"
+								},
+								{
+									"key": "sort",
+									"value": null,
+									"description": "Критерий сортировки в формате: property(,asc|desc)."
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create advertisement",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"string\",\r\n  \"companyName\": \"string\",\r\n  \"description\": \"string\",\r\n  \"adTypeId\": 0,\r\n  \"targetSegmentIds\": [\r\n    0\r\n  ],\r\n  \"deadline\": \"2025-02-25T17:40:13.456Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/advertisements",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"advertisements"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get advertisement",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/advertisements/:id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"advertisements",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sign in",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"var token = jsonData.token;\r",
+							"if(token) {\r",
+							"    pm.collectionVariables.set(\"token\", token);\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"admin\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/auth/sign-in",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"auth",
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
