@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dto.request.AuthReq;
+import ru.aviasales.admin.dto.request.UserCreateReq;
 import ru.aviasales.admin.dto.response.UserResp;
 import ru.aviasales.admin.service.core.UserService;
 
@@ -61,6 +62,18 @@ public class AuthService {
                 .loadUserByUsername(request.getUsername());
 
         return modelMapper.map(user, UserResp.class)
+                .withToken(jwtService.generateToken(user));
+    }
+
+    @Transactional
+    public UserResp createUser(UserCreateReq req) {
+        var user = User.builder()
+                .username(req.getUsername())
+                .password(passwordEncoder.encode(req.getPassword()))
+                .role(User.Role.valueOf(req.getRole().name()))
+                .build();
+
+        return modelMapper.map(userService.create(user), UserResp.class)
                 .withToken(jwtService.generateToken(user));
     }
 }

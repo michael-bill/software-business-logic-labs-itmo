@@ -7,22 +7,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.aviasales.admin.dto.request.AuthReq;
+import ru.aviasales.admin.dto.request.UserCreateReq;
 import ru.aviasales.admin.dto.response.UserResp;
 import ru.aviasales.admin.service.auth.AuthService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
-@Tag(name = "Auth")
-public class AuthController {
+@RequestMapping("/user")
+@Tag(name = "User")
+public class UserController {
 
     private final AuthService authService;
 
-    @Operation(summary = "Авторизация пользователя")
-    @PostMapping("/sign-in")
-    public UserResp signIn(@RequestBody AuthReq request) {
-        return authService.signIn(request);
+    @Operation(summary = "Создание пользователя (только админам)")
+    @PostMapping("/create")
+    public UserResp signUp(@RequestBody UserCreateReq request) {
+        return authService.createUser(request);
     }
 
 }
