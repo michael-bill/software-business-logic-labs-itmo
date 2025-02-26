@@ -35,6 +35,9 @@ public class AdvertisementService {
     public AdvertisementResp createAdvertisement(User user, AdvertisementReq req) {
         AdType adType = adTypeRepository.findById(req.getAdTypeId())
                 .orElseThrow(() -> new EntityNotFoundException("Тип рекламы не найден"));
+        if(!adType.getActive()) {
+            throw new IllegalOperationException("Тип рекламы на данный момент отключен");
+        }
 
         Set<UserSegment> targetSegments = new HashSet<>();
         if(adType.getSupportsSegmentation()) {
