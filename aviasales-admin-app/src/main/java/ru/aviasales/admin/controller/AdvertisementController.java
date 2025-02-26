@@ -12,7 +12,7 @@ import ru.aviasales.admin.configuration.PageableAsQueryParam;
 import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dto.request.AdvertisementReq;
 import ru.aviasales.admin.dto.response.AdvertisementResp;
-import ru.aviasales.admin.service.core.commissions.AdvertisementService;
+import ru.aviasales.admin.service.core.ad.AdvertisementService;
 
 @RestController
 @RequiredArgsConstructor

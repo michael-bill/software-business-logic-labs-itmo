@@ -1,4 +1,4 @@
-package ru.aviasales.admin.service.core.commissions;
+package ru.aviasales.admin.service.core.ad;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.aviasales.admin.configuration.PageableAsQueryParam;
 import ru.aviasales.admin.dto.response.AdTypeResp;
-import ru.aviasales.admin.service.core.commissions.AdTypeService;
+import ru.aviasales.admin.service.core.ad.AdTypeService;
 
 @RestController
 @RequiredArgsConstructor
