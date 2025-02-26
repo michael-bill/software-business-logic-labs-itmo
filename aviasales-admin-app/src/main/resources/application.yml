@@ -1,3 +1,6 @@
+server:
+  port: 22727
+
 spring:
   application:
     name: aviasales-admin-app
