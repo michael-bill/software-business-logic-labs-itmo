@@ -12,6 +12,7 @@ import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dto.request.AuthReq;
 import ru.aviasales.admin.dto.request.UserCreateReq;
 import ru.aviasales.admin.dto.response.UserResp;
+import ru.aviasales.admin.exception.NoPermissionException;
 import ru.aviasales.admin.service.core.UserService;
 
 @Service
@@ -66,14 +67,18 @@ public class AuthService {
     }
 
     @Transactional
-    public UserResp createUser(UserCreateReq req) {
-        var user = User.builder()
+    public UserResp createUser(User user, UserCreateReq req) {
+        if (user.getRole() != User.Role.ADMIN) {
+            throw new NoPermissionException("Нет прав для создания пользователя");
+        }
+
+        var res = User.builder()
                 .username(req.getUsername())
                 .password(passwordEncoder.encode(req.getPassword()))
                 .role(User.Role.valueOf(req.getRole().name()))
                 .build();
 
-        return modelMapper.map(userService.create(user), UserResp.class)
-                .withToken(jwtService.generateToken(user));
+        return modelMapper.map(userService.create(res), UserResp.class)
+                .withToken(jwtService.generateToken(res));
     }
 }

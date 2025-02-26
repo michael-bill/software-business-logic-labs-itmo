@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dto.request.UserCreateReq;
 import ru.aviasales.admin.dto.response.UserResp;
-import ru.aviasales.admin.exception.NoPermissionException;
 import ru.aviasales.admin.service.auth.AuthService;
 
 @RestController
@@ -28,10 +27,7 @@ public class UserController {
             @AuthenticationPrincipal User user,
             @RequestBody UserCreateReq request
     ) {
-        if (user.getRole() != User.Role.ADMIN) {
-            throw new NoPermissionException("Нет прав для создания пользователя");
-        }
-        return authService.createUser(request);
+        return authService.createUser(user, request);
     }
 
 }
