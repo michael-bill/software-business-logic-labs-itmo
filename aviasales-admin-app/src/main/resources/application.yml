@@ -6,9 +6,9 @@ spring:
     name: aviasales-admin-app
     version: 1.0
   datasource:
-    url: jdbc:postgresql://158.160.85.230:5432/aviasales-admin
-    username: aviasales
-    password: aviasales
+    url: ${AVIASALES_ADMIN_APP_JDBC:jdbc:postgresql://158.160.85.230:5432/aviasales-admin}
+    username:  ${AVIASALES_ADMIN_APP_DB_USER:aviasales}
+    password: ${AVIASALES_ADMIN_APP_DB_PASS:aviasales}
     driver-class-name: org.postgresql.Driver
   jpa:
     generate-ddl: true
