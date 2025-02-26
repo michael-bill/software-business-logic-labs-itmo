@@ -36,16 +36,12 @@ public class SalesUnitService {
                         "Категория c id %d не была найдена".formatted(req.getCategoryId())
                 ));
 
-        var now = LocalDateTime.now();
-
         SalesUnit unit = SalesUnit.builder()
                 .name(req.getName())
                 .description(req.getDescription())
                 .category(category)
                 .customCommissionPercent(req.getCommissionPercent())
                 .isCustomCommission(req.getCommissionPercent() != null)
-                .createdAt(now)
-                .updatedAt(now)
                 .createdBy(user)
                 .updatedBy(user)
                 .build();
@@ -75,7 +71,6 @@ public class SalesUnitService {
         unit.setCustomCommissionPercent(req.getCommissionPercent());
         unit.setIsCustomCommission(req.getCommissionPercent() != null);
         unit.setUpdatedBy(user);
-        unit.setUpdatedAt(LocalDateTime.now());
 
         return modelMapper.map(unit, SalesUnitResp.class);
     }

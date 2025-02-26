@@ -1,7 +1,5 @@
 package ru.aviasales.admin.service.core.commissions;
 
-import java.time.LocalDateTime;
-
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -26,14 +24,10 @@ public class SalesCategoryService {
     public SalesCategoryResp createCategory(User user, SalesCategoryReq req) {
         validateCommission(req.getDefaultCommissionPercent());
 
-        var now = LocalDateTime.now();
-
         SalesCategory category = SalesCategory.builder()
                 .name(req.getName())
                 .description(req.getDescription())
                 .defaultCommissionPercent(req.getDefaultCommissionPercent())
-                .createdAt(now)
-                .updatedAt(now)
                 .createdBy(user)
                 .updatedBy(user)
                 .build();
@@ -52,7 +46,6 @@ public class SalesCategoryService {
         category.setDescription(req.getDescription());
         category.setDefaultCommissionPercent(req.getDefaultCommissionPercent());
         category.setUpdatedBy(user);
-        category.setUpdatedAt(LocalDateTime.now());
 
         return modelMapper.map(category, SalesCategoryResp.class);
     }

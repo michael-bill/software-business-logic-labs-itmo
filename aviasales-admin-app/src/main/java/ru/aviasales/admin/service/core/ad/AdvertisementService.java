@@ -52,10 +52,7 @@ public class AdvertisementService {
             throw new IllegalOperationException("Тип рекламы не поддерживает сегментацию");
         }
 
-
-        LocalDateTime now = LocalDateTime.now();
-
-        if (req.getDeadline().isBefore(now)) {
+        if (req.getDeadline().isBefore(LocalDateTime.now())) {
             throw new IllegalOperationException("Дата окончания рекламы не может быть раньше текущего времени");
         }
 
@@ -66,7 +63,6 @@ public class AdvertisementService {
                 .adType(adType)
                 .targetSegments(targetSegments)
                 .deadline(req.getDeadline())
-                .createdAt(now)
                 .createdBy(user)
                 .build();
 
