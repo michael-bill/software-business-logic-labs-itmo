@@ -24,7 +24,7 @@ import ru.aviasales.admin.service.core.commissions.SalesUnitService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/sales-units")
+@RequestMapping("/sales/units")
 @Tag(name = "Sales units")
 public class SalesUnitController {
 
@@ -42,7 +42,9 @@ public class SalesUnitController {
     @Operation(summary = "Получить единицу продажи по id")
     @GetMapping("/{id}")
     public SalesUnitResp getCategoryById(
-            @PathVariable("id") Long id
+            @Parameter(description = "Идентификатор единицы продажи")
+            @PathVariable("id")
+            Long id
     ) {
         return salesUnitService.getUnitById(id);
     }
@@ -57,28 +59,35 @@ public class SalesUnitController {
     }
 
     @Operation(summary = "Обновить единицу продажи")
-    @PutMapping
+    @PutMapping("/{id}")
     public SalesUnitResp updateCategory(
             @AuthenticationPrincipal User user,
-            @RequestParam("id") Long id,
+
+            @Parameter(description = "Идентификатор единицы продажи")
+            @PathVariable("id")
+            Long id,
+
             @RequestBody SalesUnitReq req
     ) {
         return salesUnitService.updateSalesUnit(user, id, req);
     }
 
     @Operation(summary = "Удалить единицу продажи")
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public void deleteCategory(
-            @RequestParam("id") Long id
+            @PathVariable("id") Long id
     ) {
         salesUnitService.deleteSalesUnit(id);
     }
 
     @Operation(summary = "Сбросить комиссию у единицы продажи")
-    @PutMapping("/reset-commission")
+    @PutMapping("/{id}/reset-commission")
     public SalesUnitResp resetCommission(
             @AuthenticationPrincipal User user,
-            @RequestParam("id") Long id
+
+            @Parameter(description = "Идентификатор единицы продажи")
+            @PathVariable("id")
+            Long id
     ) {
         return salesUnitService.resetToDefaultCommission(user, id);
     }

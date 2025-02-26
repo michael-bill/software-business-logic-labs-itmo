@@ -21,7 +21,7 @@ public class UserCreateReq {
     private String username;
 
     @Schema(description = "Пароль", example = "admin")
-    @Size(max = 255, message = "Длина пароля должна быть не более 255 символов")
+    @Size(min = 4, max = 255, message = "Длина пароля должна быть не менее 4 и не более 255 символов")
     @NotBlank(message = "Пароль не может быть пустым")
     private String password;
 
@@ -30,7 +30,8 @@ public class UserCreateReq {
     private Role role;
 
     public enum Role {
-        USER,
+        COMMISSIONS,
+        ADVERTISEMENTS,
         ADMIN
     }
 

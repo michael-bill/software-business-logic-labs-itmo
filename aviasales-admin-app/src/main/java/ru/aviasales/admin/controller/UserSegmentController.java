@@ -15,15 +15,15 @@ import ru.aviasales.admin.service.core.ad.UserSegmentService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user-segment")
-@Tag(name = "User segments")
+@RequestMapping("/advertisements")
+@Tag(name = "Advertisements")
 public class UserSegmentController {
 
     private final UserSegmentService userSegmentService;
 
     @Operation(summary = "Получить список всех сегментов пользователей")
     @PageableAsQueryParam
-    @GetMapping
+    @GetMapping("/segments")
     public Page<UserSegmentResp> getAllUserSegments(
             @Parameter(hidden = true) Pageable pageable
     ) {

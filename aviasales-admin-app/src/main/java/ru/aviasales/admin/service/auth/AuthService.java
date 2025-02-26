@@ -40,7 +40,7 @@ public class AuthService {
         var user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(User.Role.USER)
+                .role(User.Role.ADMIN)
                 .build();
 
         return modelMapper.map(userService.create(user), UserResp.class)

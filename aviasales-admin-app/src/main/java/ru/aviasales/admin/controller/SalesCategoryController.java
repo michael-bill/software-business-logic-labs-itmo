@@ -24,7 +24,7 @@ import ru.aviasales.admin.service.core.commissions.SalesCategoryService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/sales-categories")
+@RequestMapping("/sales/categories")
 @Tag(name = "Sales categories")
 public class SalesCategoryController {
 
@@ -42,7 +42,9 @@ public class SalesCategoryController {
     @Operation(summary = "Получить категорию по id")
     @GetMapping("/{id}")
     public SalesCategoryResp getCategory(
-            @PathVariable("id") Long id
+            @Parameter(description = "Идентификатор категории")
+            @PathVariable("id")
+            Long id
     ) {
         return salesCategoryService.getCategory(id);
     }
@@ -57,19 +59,25 @@ public class SalesCategoryController {
     }
 
     @Operation(summary = "Обновить категорию")
-    @PutMapping
+    @PutMapping("/{id}")
     public SalesCategoryResp updateCategory(
             @AuthenticationPrincipal User user,
-            @RequestParam("id") Long id,
+
+            @Parameter(description = "Идентификатор категории")
+            @PathVariable("id")
+            Long id,
+
             @RequestBody SalesCategoryReq salesCategoryReq
     ) {
         return salesCategoryService.updateCategory(user, id, salesCategoryReq);
     }
 
     @Operation(summary = "Удалить категорию")
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public void deleteCategory(
-            @RequestParam("id") Long id
+            @Parameter(description = "Идентификатор категории")
+            @PathVariable("id")
+            Long id
     ) {
         salesCategoryService.deleteCategory(id);
     }

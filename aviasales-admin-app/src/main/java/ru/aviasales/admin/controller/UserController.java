@@ -16,14 +16,14 @@ import ru.aviasales.admin.service.auth.AuthService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/users")
 @Tag(name = "User")
 public class UserController {
 
     private final AuthService authService;
 
     @Operation(summary = "Создание пользователя (только админам)")
-    @PostMapping("/create")
+    @PostMapping
     public UserResp signUp(
             @AuthenticationPrincipal User user,
             @RequestBody UserCreateReq request

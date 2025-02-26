@@ -15,15 +15,15 @@ import ru.aviasales.admin.service.core.ad.AdTypeService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ad-type")
-@Tag(name = "Ad types")
+@RequestMapping("/advertisements")
+@Tag(name = "Advertisements")
 public class AdTypeController {
 
     private final AdTypeService adTypeService;
 
     @Operation(summary = "Получить список всех типов объявлений")
     @PageableAsQueryParam
-    @GetMapping
+    @GetMapping("/types")
     public Page<AdTypeResp> getAllAdTypes(
             @Parameter(hidden = true) Pageable pageable
     ) {
