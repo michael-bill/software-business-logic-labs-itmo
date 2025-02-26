@@ -3,7 +3,7 @@ spring:
     name: aviasales-admin-app
     version: 1.0
   datasource:
-    url: jdbc:postgresql://localhost:5432/aviasales-admin
+    url: jdbc:postgresql://158.160.85.230:5432/aviasales-admin
     username: aviasales
     password: aviasales
     driver-class-name: org.postgresql.Driver
