@@ -62,4 +62,15 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    protected ResponseEntity<ErrorResp> handleEntityNotFoundException(EntityNotFoundException ex) {
+        return new ResponseEntity<>(
+                ErrorResp.builder()
+                        .message(ex.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .build(),
+                HttpStatus.NOT_FOUND
+        );
+    }
 }

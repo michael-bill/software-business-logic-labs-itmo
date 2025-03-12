@@ -92,7 +92,8 @@ public class SalesUnitService {
 
     @Transactional
     public void deleteSalesUnit(Long unitId) {
-        salesUnitRepository.deleteById(unitId);
+        SalesUnit salesUnit = salesUnitRepository.findById(unitId).orElseThrow(() -> new EntityNotFoundException("Единица продажи с id %d не была найдена".formatted(unitId)));
+        salesUnitRepository.delete(salesUnit);
     }
 
     @Transactional(readOnly = true)

@@ -52,7 +52,8 @@ public class SalesCategoryService {
 
     @Transactional
     public void deleteCategory(Long categoryId) {
-        salesCategoryRepository.deleteById(categoryId);
+        SalesCategory category = salesCategoryRepository.findById(categoryId).orElseThrow(() -> new EntityNotFoundException("Категория не была найдена"));
+        salesCategoryRepository.delete(category);
     }
 
     @Transactional(readOnly = true)
