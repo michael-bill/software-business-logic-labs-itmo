@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
@@ -91,6 +92,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ResponseEntity<ErrorResp> handleValidationException(MethodArgumentTypeMismatchException ex) {
+        return new ResponseEntity<>(
+                ErrorResp.builder()
+                        .message("Указаны некорректные параметры запроса")
+                        .timestamp(LocalDateTime.now())
+                        .build(),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+    protected ResponseEntity<ErrorResp> handleValidationException(InvalidDataAccessApiUsageException ex) {
         return new ResponseEntity<>(
                 ErrorResp.builder()
                         .message("Указаны некорректные параметры запроса")
