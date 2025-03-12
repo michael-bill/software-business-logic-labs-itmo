@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.aviasales.admin.dto.response.ErrorResp;
 
 @Slf4j
@@ -79,6 +80,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageConversionException.class)
     protected ResponseEntity<ErrorResp> handleValidationException(HttpMessageConversionException ex) {
+        return new ResponseEntity<>(
+                ErrorResp.builder()
+                        .message("Указаны некорректные параметры запроса")
+                        .timestamp(LocalDateTime.now())
+                        .build(),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<ErrorResp> handleValidationException(MethodArgumentTypeMismatchException ex) {
         return new ResponseEntity<>(
                 ErrorResp.builder()
                         .message("Указаны некорректные параметры запроса")

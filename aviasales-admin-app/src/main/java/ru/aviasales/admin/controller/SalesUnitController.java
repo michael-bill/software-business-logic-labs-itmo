@@ -5,6 +5,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,10 @@ public class SalesUnitController {
     @PageableAsQueryParam
     @GetMapping
     public Page<SalesUnitResp> getAllCategories(
+            @RequestParam(defaultValue = "0")
+            @Min(value = 0, message = "Номер страницы не может быть меньше 0")
+            int page,
+
             @RequestParam(defaultValue = "10")
             @Min(value = 1, message = "Размер страницы не может быть меньше 1")
             @Max(value = 100, message = "Размер страницы не может превышать 100")
