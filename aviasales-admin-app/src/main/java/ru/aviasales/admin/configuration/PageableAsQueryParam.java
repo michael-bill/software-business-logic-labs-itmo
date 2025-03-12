@@ -16,11 +16,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Parameter(in = ParameterIn.QUERY,
         description = "Номер страницы",
         name = "page",
-        schema = @Schema(type = "integer", defaultValue = "0"))
+        schema = @Schema(
+                type = "integer",
+                defaultValue = "0",
+                minimum = "0"
+        ))
 @Parameter(in = ParameterIn.QUERY,
         description = "Размер страницы",
         name = "size",
-        schema = @Schema(type = "integer", defaultValue = "10"))
+        schema = @Schema(
+                type = "integer",
+                defaultValue = "10",
+                minimum = "1",
+                maximum = "100"
+        ))
 @Parameter(in = ParameterIn.QUERY,
         description = "Критерий сортировки в формате: property(,asc|desc).",
         name = "sort",

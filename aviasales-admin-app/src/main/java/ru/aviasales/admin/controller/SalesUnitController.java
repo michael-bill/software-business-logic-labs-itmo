@@ -1,8 +1,12 @@
 package ru.aviasales.admin.controller;
 
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +38,14 @@ public class SalesUnitController {
     @PageableAsQueryParam
     @GetMapping
     public Page<SalesUnitResp> getAllCategories(
+            @RequestParam(defaultValue = "10")
+            @Min(value = 1, message = "Размер страницы не может быть меньше 1")
+            @Max(value = 100, message = "Размер страницы не может превышать 100")
+            int size,
+
+            @RequestParam(required = false)
+            List<String> sort,
+
             @Parameter(hidden = true) Pageable pageable
     ) {
         return salesUnitService.getAllUnits(pageable);

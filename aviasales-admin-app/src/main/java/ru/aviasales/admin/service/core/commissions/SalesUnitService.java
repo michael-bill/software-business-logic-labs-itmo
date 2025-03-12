@@ -1,6 +1,7 @@
 package ru.aviasales.admin.service.core.commissions;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -16,6 +17,7 @@ import ru.aviasales.admin.dao.repository.SalesUnitRepository;
 import ru.aviasales.admin.dto.request.SalesUnitReq;
 import ru.aviasales.admin.dto.response.SalesUnitResp;
 import ru.aviasales.admin.exception.EntityNotFoundException;
+import ru.aviasales.admin.exception.UniqueValueExistsException;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,10 @@ public class SalesUnitService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Категория c id %d не была найдена".formatted(req.getCategoryId())
                 ));
+
+        if (salesUnitRepository.existsByName(req.getName())) {
+            throw new UniqueValueExistsException("Единица продажи с таким именем уже существует");
+        }
 
         SalesUnit unit = SalesUnit.builder()
                 .name(req.getName())
@@ -64,6 +70,10 @@ public class SalesUnitService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Категория c id %d не была найдена".formatted(req.getCategoryId())
                 ));
+
+        if (!Objects.equals(req.getName(), unit.getName()) && salesUnitRepository.existsByName(req.getName())) {
+            throw new UniqueValueExistsException("Единица продажи с таким именем уже существует");
+        }
 
         unit.setName(req.getName());
         unit.setDescription(req.getDescription());

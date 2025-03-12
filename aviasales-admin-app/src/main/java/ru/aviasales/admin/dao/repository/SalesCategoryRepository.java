@@ -6,4 +6,5 @@ import ru.aviasales.admin.dao.entity.SalesCategory;
 
 @Repository
 public interface SalesCategoryRepository extends JpaRepository<SalesCategory, Long> {
+    boolean existsByName(String name);
 }

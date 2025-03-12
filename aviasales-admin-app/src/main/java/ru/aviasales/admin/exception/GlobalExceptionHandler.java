@@ -9,9 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import ru.aviasales.admin.dto.response.ErrorResp;
 
 @Slf4j
@@ -64,14 +66,25 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    protected ResponseEntity<ErrorResp> handleEntityNotFoundException(EntityNotFoundException ex) {
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    protected ResponseEntity<ErrorResp> handleValidationException(HandlerMethodValidationException ex) {
         return new ResponseEntity<>(
                 ErrorResp.builder()
-                        .message(ex.getMessage())
+                        .message("Указаны некорректные параметры запроса")
                         .timestamp(LocalDateTime.now())
                         .build(),
-                HttpStatus.NOT_FOUND
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(HttpMessageConversionException.class)
+    protected ResponseEntity<ErrorResp> handleValidationException(HttpMessageConversionException ex) {
+        return new ResponseEntity<>(
+                ErrorResp.builder()
+                        .message("Указаны некорректные параметры запроса")
+                        .timestamp(LocalDateTime.now())
+                        .build(),
+                HttpStatus.BAD_REQUEST
         );
     }
 }

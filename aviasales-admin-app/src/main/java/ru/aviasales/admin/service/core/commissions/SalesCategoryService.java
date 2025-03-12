@@ -1,5 +1,7 @@
 package ru.aviasales.admin.service.core.commissions;
 
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,7 @@ import ru.aviasales.admin.dao.repository.SalesCategoryRepository;
 import ru.aviasales.admin.dto.request.SalesCategoryReq;
 import ru.aviasales.admin.dto.response.SalesCategoryResp;
 import ru.aviasales.admin.exception.EntityNotFoundException;
+import ru.aviasales.admin.exception.UniqueValueExistsException;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,10 @@ public class SalesCategoryService {
     @Transactional
     public SalesCategoryResp createCategory(User user, SalesCategoryReq req) {
         validateCommission(req.getDefaultCommissionPercent());
+
+        if (salesCategoryRepository.existsByName(req.getName())) {
+            throw new UniqueValueExistsException("Категория с таким именем уже существует");
+        }
 
         SalesCategory category = SalesCategory.builder()
                 .name(req.getName())
@@ -41,6 +48,10 @@ public class SalesCategoryService {
 
         SalesCategory category = salesCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("Категория не была найдена"));
+
+        if (!Objects.equals(req.getName(), category.getName()) && salesCategoryRepository.existsByName(req.getName())) {
+            throw new UniqueValueExistsException("Категория с таким именем уже существует");
+        }
 
         category.setName(req.getName());
         category.setDescription(req.getDescription());
