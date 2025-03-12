@@ -23,7 +23,8 @@ public class GlobalExceptionHandler {
         log.error("Пятисотка: ", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResp.builder()
-                        .message("При выполнении запроса произошла непредвиденная ошибка: " + ex.getMessage())
+                        .message("При выполнении запроса произошла непредвиденная ошибка, " +
+                                "обратитесь в техническую поддержку")
                         .timestamp(LocalDateTime.now())
                         .build());
     }
