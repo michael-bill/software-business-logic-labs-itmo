@@ -68,8 +68,13 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    protected ResponseEntity<ErrorResp> handleValidationException(HandlerMethodValidationException ex) {
+    @ExceptionHandler({
+            HandlerMethodValidationException.class,
+            HttpMessageConversionException.class,
+            MethodArgumentTypeMismatchException.class,
+            InvalidDataAccessApiUsageException.class
+    })
+    protected ResponseEntity<ErrorResp> handleValidationException(Throwable ex) {
         return new ResponseEntity<>(
                 ErrorResp.builder()
                         .message("Указаны некорректные параметры запроса")
@@ -79,36 +84,4 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(HttpMessageConversionException.class)
-    protected ResponseEntity<ErrorResp> handleValidationException(HttpMessageConversionException ex) {
-        return new ResponseEntity<>(
-                ErrorResp.builder()
-                        .message("Указаны некорректные параметры запроса")
-                        .timestamp(LocalDateTime.now())
-                        .build(),
-                HttpStatus.BAD_REQUEST
-        );
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    protected ResponseEntity<ErrorResp> handleValidationException(MethodArgumentTypeMismatchException ex) {
-        return new ResponseEntity<>(
-                ErrorResp.builder()
-                        .message("Указаны некорректные параметры запроса")
-                        .timestamp(LocalDateTime.now())
-                        .build(),
-                HttpStatus.BAD_REQUEST
-        );
-    }
-
-    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
-    protected ResponseEntity<ErrorResp> handleValidationException(InvalidDataAccessApiUsageException ex) {
-        return new ResponseEntity<>(
-                ErrorResp.builder()
-                        .message("Указаны некорректные параметры запроса")
-                        .timestamp(LocalDateTime.now())
-                        .build(),
-                HttpStatus.BAD_REQUEST
-        );
-    }
 }
