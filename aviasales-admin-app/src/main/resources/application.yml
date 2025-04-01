@@ -11,7 +11,7 @@ spring:
     password: ${AVIASALES_ADMIN_APP_DB_PASS:aviasales}
     driver-class-name: org.postgresql.Driver
   jpa:
-    generate-ddl: true
+    generate-ddl: false
   liquibase:
     change-log: classpath:liquibase/changelog.xml
     drop-first: true # удаляет все данные после перезапуска
