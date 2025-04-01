@@ -1,25 +1,25 @@
 --liquibase formatted sql
 
 --changeset michael-bill:advertisements_table
-create table if not exists advertisements
+CREATE TABLE IF NOT EXISTS advertisements
 (
-    id bigserial primary key,
-    ad_type_id bigint not null references ad_types(id),
-    title varchar(255) not null,
+    id bigserial PRIMARY KEY,
+    ad_type_id bigint NOT NULL REFERENCES ad_types(id),
+    title varchar(255) NOT NULL,
     company_name varchar(255),
-    description text not null,
+    description text NOT NULL,
     deadline timestamp,
-    created_at timestamp not null,
-    created_by bigint references users(id)
+    created_at timestamp NOT NULL,
+    created_by bigint REFERENCES users(id)
 );
 
-create table if not exists advertisement_user_segments
+CREATE TABLE IF NOT EXISTS advertisement_user_segments
 (
-    advertisement_id bigint not null references advertisements(id) on delete cascade,
-    user_segment_id bigint not null references user_segments(id) on delete cascade,
-    primary key (advertisement_id, user_segment_id)
+    advertisement_id bigint NOT NULL REFERENCES advertisements(id) ON DELETE CASCADE,
+    user_segment_id bigint NOT NULL REFERENCES user_segments(id) ON DELETE CASCADE,
+    PRIMARY KEY (advertisement_id, user_segment_id)
 );
 
-create index idx_advertisements_ad_type_id on advertisements(ad_type_id);
-create index idx_advertisements_created_by on advertisements(created_by);
+CREATE INDEX idx_advertisements_ad_type_id ON advertisements(ad_type_id);
+CREATE INDEX idx_advertisements_created_by ON advertisements(created_by);
 

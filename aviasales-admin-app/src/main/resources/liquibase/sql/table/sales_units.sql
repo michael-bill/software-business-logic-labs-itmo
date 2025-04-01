@@ -1,21 +1,21 @@
 --liquibase formatted sql
 
 --changeset michael-bill:sales_units_table
-create table if not exists sales_units
+CREATE TABLE IF NOT EXISTS sales_units
 (
-    id bigserial primary key,
-    name varchar(255) not null unique,
-    description text not null,
-    sales_category_id bigint not null references sales_categories(id),
+    id bigserial PRIMARY KEY,
+    name varchar(255) NOT NULL UNIQUE,
+    description text NOT NULL,
+    sales_category_id bigint NOT NULL REFERENCES sales_categories(id),
     custom_commission_percent numeric(5,2),
-    is_custom_commission boolean not null default false,
-    created_at timestamp not null,
+    is_custom_commission boolean NOT NULL DEFAULT false,
+    created_at timestamp NOT NULL,
     updated_at timestamp,
-    created_by bigint references users(id),
-    updated_by bigint references users(id)
+    created_by bigint REFERENCES users(id),
+    updated_by bigint REFERENCES users(id)
 );
 
-create index idx_sales_units_name on sales_units(name);
-create index idx_sales_units_sales_category_id on sales_units(sales_category_id);
-create index idx_sales_units_created_by on sales_units(created_by);
-create index idx_sales_units_updated_by on sales_units(updated_by);
+CREATE INDEX idx_sales_units_name ON sales_units(name);
+CREATE INDEX idx_sales_units_sales_category_id ON sales_units(sales_category_id);
+CREATE INDEX idx_sales_units_created_by ON sales_units(created_by);
+CREATE INDEX idx_sales_units_updated_by ON sales_units(updated_by);

@@ -1,12 +1,12 @@
 --liquibase formatted sql
 
 --changeset michael-bill:advertisements_user_segments_table
-create table if not exists advertisement_user_segments
+CREATE TABLE IF NOT EXISTS advertisement_user_segments
 (
-    advertisement_id bigint not null references advertisements(id) on delete cascade,
-    user_segment_id bigint not null references user_segments(id) on delete cascade,
-    primary key (advertisement_id, user_segment_id)
+    advertisement_id bigint NOT NULL REFERENCES advertisements(id) ON DELETE CASCADE,
+    user_segment_id bigint NOT NULL REFERENCES user_segments(id) ON DELETE CASCADE,
+    PRIMARY KEY (advertisement_id, user_segment_id)
 );
 
-create index idx_advertisement_user_segments_advertisement_id on advertisement_user_segments(advertisement_id);
-create index idx_advertisement_user_segments_user_segment_id on advertisement_user_segments(user_segment_id);
+CREATE INDEX idx_advertisement_user_segments_advertisement_id ON advertisement_user_segments(advertisement_id);
+CREATE INDEX idx_advertisement_user_segments_user_segment_id ON advertisement_user_segments(user_segment_id);
