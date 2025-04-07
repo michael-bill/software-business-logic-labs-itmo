@@ -1,6 +1,5 @@
 package ru.aviasales.admin.service.core.commissions;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.aviasales.admin.dao.entity.SalesCategory;
 import ru.aviasales.admin.dao.entity.SalesUnit;
-import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dao.repository.SalesCategoryRepository;
 import ru.aviasales.admin.dao.repository.SalesUnitRepository;
 import ru.aviasales.admin.dto.request.SalesUnitReq;
@@ -28,7 +26,7 @@ public class SalesUnitService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public SalesUnitResp createSalesUnit(User user, SalesUnitReq req) {
+    public SalesUnitResp createSalesUnit(SalesUnitReq req) {
         if (req.getCommissionPercent() != null) {
             validateCommission(req.getCommissionPercent());
         }
@@ -48,15 +46,13 @@ public class SalesUnitService {
                 .category(category)
                 .customCommissionPercent(req.getCommissionPercent())
                 .isCustomCommission(req.getCommissionPercent() != null)
-                .createdBy(user)
-                .updatedBy(user)
                 .build();
 
         return modelMapper.map(salesUnitRepository.save(unit), SalesUnitResp.class);
     }
 
     @Transactional
-    public SalesUnitResp updateSalesUnit(User user, Long unitId, SalesUnitReq req) {
+    public SalesUnitResp updateSalesUnit(Long unitId, SalesUnitReq req) {
         if (req.getCommissionPercent() != null) {
             validateCommission(req.getCommissionPercent());
         }
@@ -80,13 +76,12 @@ public class SalesUnitService {
         unit.setCategory(category);
         unit.setCustomCommissionPercent(req.getCommissionPercent());
         unit.setIsCustomCommission(req.getCommissionPercent() != null);
-        unit.setUpdatedBy(user);
 
         return modelMapper.map(unit, SalesUnitResp.class);
     }
 
     @Transactional
-    public SalesUnitResp resetToDefaultCommission(User user, Long unitId) {
+    public SalesUnitResp resetToDefaultCommission(Long unitId) {
 
         SalesUnit unit = salesUnitRepository.findById(unitId)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -95,7 +90,6 @@ public class SalesUnitService {
 
         unit.setCustomCommissionPercent(null);
         unit.setIsCustomCommission(false);
-        unit.setUpdatedBy(user);
 
         return modelMapper.map(unit, SalesUnitResp.class);
     }

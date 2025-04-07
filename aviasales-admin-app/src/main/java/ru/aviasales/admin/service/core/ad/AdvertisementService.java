@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.aviasales.admin.dao.entity.AdType;
 import ru.aviasales.admin.dao.entity.Advertisement;
-import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dao.entity.UserSegment;
 import ru.aviasales.admin.dao.repository.AdTypeRepository;
 import ru.aviasales.admin.dao.repository.AdvertisementRepository;
@@ -32,7 +31,7 @@ public class AdvertisementService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public AdvertisementResp createAdvertisement(User user, AdvertisementReq req) {
+    public AdvertisementResp createAdvertisement(AdvertisementReq req) {
         AdType adType = adTypeRepository.findById(req.getAdTypeId())
                 .orElseThrow(() -> new EntityNotFoundException("Тип рекламы не найден"));
         if(!adType.getActive()) {
@@ -63,7 +62,6 @@ public class AdvertisementService {
                 .adType(adType)
                 .targetSegments(targetSegments)
                 .deadline(req.getDeadline())
-                .createdBy(user)
                 .build();
 
         return modelMapper.map(advertisementRepository.save(advertisement), AdvertisementResp.class);

@@ -28,8 +28,4 @@ public class SalesUnitResp {
     private LocalDateTime createdAt;
     @Schema(description = "Время последнего изменения единицы")
     private LocalDateTime updatedAt;
-    @Schema(description = "Пользователь, создавший единицу")
-    private UserResp createdBy;
-    @Schema(description = "Пользователь, изменивший единицу")
-    private UserResp updatedBy;
 }

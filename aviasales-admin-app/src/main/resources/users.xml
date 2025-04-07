@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<users>
+    <user username="commissar"
+          password="$2a$12$g.WeXhLlboV6ZsVnr4BauOpfBGSnXAYXOixTyTAazuDbFvo0vDpN6"
+          roles="ROLE_COMMISSIONS"
+          enabled="true"/>
+    <!--compass-->
+
+    <user username="advertiser"
+          password="$2a$12$QJH8mnGFjUR48U9JVIPCW.DSdXtPSNIEjCnkDtpZdWd44ZUtsP2Vq"
+          roles="ROLE_ADVERTISEMENTS"
+          enabled="true"/>
+    <!--advpass-->
+</users>

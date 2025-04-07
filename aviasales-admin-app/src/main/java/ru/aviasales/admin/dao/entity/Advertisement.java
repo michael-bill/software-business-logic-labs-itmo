@@ -49,8 +49,4 @@ public class Advertisement {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    @ManyToOne
-    @JoinColumn(name = "created_by")
-    private User createdBy;
 }

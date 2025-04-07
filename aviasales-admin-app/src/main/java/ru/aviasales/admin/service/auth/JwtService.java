@@ -14,7 +14,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.aviasales.admin.dao.entity.User;
+import ru.aviasales.admin.security.xml.XmlUser;
 
 @Service
 public class JwtService {
@@ -30,9 +30,9 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        if (userDetails instanceof User customUserDetails) {
-            claims.put("id", customUserDetails.getId());
-            claims.put("role", customUserDetails.getRole());
+        if (userDetails instanceof XmlUser customUserDetails) {
+            claims.put("id", customUserDetails.getUsername());
+            claims.put("role", customUserDetails.getRoles());
         }
         return generateToken(claims, userDetails);
     }

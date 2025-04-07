@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.aviasales.admin.configuration.PageableAsQueryParam;
-import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dto.request.SalesCategoryReq;
 import ru.aviasales.admin.dto.response.SalesCategoryResp;
 import ru.aviasales.admin.service.core.commissions.SalesCategoryService;
@@ -30,6 +29,7 @@ import ru.aviasales.admin.service.core.commissions.SalesCategoryService;
 @RequiredArgsConstructor
 @RequestMapping("/sales/categories")
 @Tag(name = "Sales categories")
+@PreAuthorize("hasRole('COMMISSIONS')")
 public class SalesCategoryController {
 
     private final SalesCategoryService salesCategoryService;
@@ -68,24 +68,21 @@ public class SalesCategoryController {
     @Operation(summary = "Создать категорию")
     @PostMapping
     public SalesCategoryResp createCategory(
-            @AuthenticationPrincipal User user,
             @RequestBody SalesCategoryReq salesCategoryReq
     ) {
-        return salesCategoryService.createCategory(user, salesCategoryReq);
+        return salesCategoryService.createCategory(salesCategoryReq);
     }
 
     @Operation(summary = "Обновить категорию")
     @PutMapping("/{id}")
     public SalesCategoryResp updateCategory(
-            @AuthenticationPrincipal User user,
-
             @Parameter(description = "Идентификатор категории")
             @PathVariable("id")
             Long id,
 
             @RequestBody SalesCategoryReq salesCategoryReq
     ) {
-        return salesCategoryService.updateCategory(user, id, salesCategoryReq);
+        return salesCategoryService.updateCategory(id, salesCategoryReq);
     }
 
     @Operation(summary = "Удалить категорию")

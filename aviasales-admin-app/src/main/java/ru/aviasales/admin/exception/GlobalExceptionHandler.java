@@ -11,6 +11,8 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,6 +31,24 @@ public class GlobalExceptionHandler {
                 .body(ErrorResp.builder()
                         .message("При выполнении запроса произошла непредвиденная ошибка, " +
                                 "обратитесь в техническую поддержку")
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    protected ResponseEntity<ErrorResp> handleBadCredentialsException(BadCredentialsException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResp.builder()
+                        .message("Неверный логин или пароль.")
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    protected ResponseEntity<ErrorResp> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ErrorResp.builder()
+                        .message("У вас нет прав для использования данного функционала.")
                         .timestamp(LocalDateTime.now())
                         .build());
     }

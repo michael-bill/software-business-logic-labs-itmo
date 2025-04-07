@@ -17,8 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.aviasales.admin.security.XmlUserDetailsService;
 import ru.aviasales.admin.service.auth.JwtService;
-import ru.aviasales.admin.service.core.UserService;
 
 @Component
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String HEADER_NAME = "Authorization";
     private final JwtService jwtService;
-    private final UserService userService;
+    private final XmlUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -43,11 +43,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         // Обрезаем префикс и получаем имя пользователя из токена
         String jwt = authHeader.substring(BEARER_PREFIX.length());
-        String username = jwtService.extractUserName(jwt);
+        String username = null;
+        try {
+            username = jwtService.extractUserName(jwt);
+        } catch (Exception e) {
+            logger.warn("JWT token processing error: " + e.getMessage());
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService
-                    .userDetailsService()
-                    .loadUserByUsername(username);
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
             // Если токен валиден, то аутентифицируем пользователя
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();

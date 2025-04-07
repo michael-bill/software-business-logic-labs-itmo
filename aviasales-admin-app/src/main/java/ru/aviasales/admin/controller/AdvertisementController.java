@@ -10,10 +10,9 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.aviasales.admin.configuration.PageableAsQueryParam;
-import ru.aviasales.admin.dao.entity.User;
 import ru.aviasales.admin.dto.request.AdvertisementReq;
 import ru.aviasales.admin.dto.response.AdvertisementResp;
 import ru.aviasales.admin.service.core.ad.AdvertisementService;
@@ -22,6 +21,7 @@ import ru.aviasales.admin.service.core.ad.AdvertisementService;
 @RequiredArgsConstructor
 @RequestMapping("/advertisements")
 @Tag(name = "Advertisements")
+@PreAuthorize("hasRole('ADVERTISEMENTS')")
 public class AdvertisementController {
 
     private final AdvertisementService advertisementService;
@@ -58,9 +58,8 @@ public class AdvertisementController {
     @Operation(summary = "Создать рекламное объявление")
     @PostMapping
     public AdvertisementResp createAdvertisement(
-            @AuthenticationPrincipal User user,
             @RequestBody AdvertisementReq req
     ) {
-        return advertisementService.createAdvertisement(user, req);
+        return advertisementService.createAdvertisement(req);
     }
 }

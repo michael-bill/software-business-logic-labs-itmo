@@ -26,8 +26,4 @@ public class SalesCategoryResp {
     private LocalDateTime createdAt;
     @Schema(description = "Время последнего изменения категории")
     private LocalDateTime updatedAt;
-    @Schema(description = "Пользователь, создавший категорию")
-    private UserResp createdBy;
-    @Schema(description = "Пользователь, изменивший категорию")
-    private UserResp updatedBy;
 }

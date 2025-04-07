@@ -31,6 +31,4 @@ public class AdvertisementResp {
     private LocalDateTime deadline;
     @Schema(description = "Время создания рекламной задачи")
     private LocalDateTime createdAt;
-    @Schema(description = "Пользователь, создавший рекламную задачу")
-    private UserResp createdBy;
 }
