@@ -15,6 +15,7 @@ import ru.aviasales.admin.dao.repository.SalesUnitRepository;
 import ru.aviasales.admin.dto.request.SalesUnitReq;
 import ru.aviasales.admin.dto.response.SalesUnitResp;
 import ru.aviasales.admin.exception.EntityNotFoundException;
+import ru.aviasales.admin.exception.IllegalOperationException;
 import ru.aviasales.admin.exception.OptimisticLockException;
 import ru.aviasales.admin.exception.UniqueValueExistsException;
 
@@ -63,9 +64,7 @@ public class SalesUnitService {
                         "Единица продажи с id %d не была найдена".formatted(unitId)
                 ));
 
-        if (!Objects.equals(version, unit.getVersion())) {
-            throw new OptimisticLockException();
-        }
+        checkLock(version, unit.getVersion());
 
         SalesCategory category = salesCategoryRepository.findById(req.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -122,6 +121,15 @@ public class SalesUnitService {
     private void validateCommission(Double commission) {
         if (commission == null || commission < 0 || commission > 100) {
             throw new IllegalArgumentException("Invalid commission value");
+        }
+    }
+
+    private void checkLock(Long userVersion, Long serverVersion) {
+        if (userVersion > serverVersion || userVersion < 0) {
+            throw new IllegalOperationException("Такой версии у объекта не существует");
+        }
+        if (userVersion < serverVersion) {
+            throw new OptimisticLockException();
         }
     }
 
