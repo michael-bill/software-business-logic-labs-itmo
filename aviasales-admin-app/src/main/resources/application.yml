@@ -5,13 +5,24 @@ spring:
   application:
     name: aviasales-admin-app
     version: 1.0
-  datasource:
-    url: ${AVIASALES_ADMIN_APP_JDBC:jdbc:postgresql://158.160.85.230:5432/aviasales-admin}
-    username:  ${AVIASALES_ADMIN_APP_DB_USER:aviasales}
-    password: ${AVIASALES_ADMIN_APP_DB_PASS:aviasales}
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    generate-ddl: false
+  jta:
+    atomikos:
+      datasource:
+        aviasales-admin-xa-ds:
+          unique-resource-name: aviasalesAdminXADS
+          xa-data-source-class-name: org.postgresql.xa.PGXADataSource
+          xa-properties:
+            url: ${AVIASALES_ADMIN_APP_JDBC:jdbc:postgresql://158.160.85.230:5432/aviasales-admin}
+            user: ${AVIASALES_ADMIN_APP_DB_USER:aviasales}
+            password: ${AVIASALES_ADMIN_APP_DB_PASS:aviasales}
+          min-pool-size: 5
+          max-pool-size: 20
+    jpa:
+      transaction-type: JTA
+      properties:
+        hibernate:
+          transaction.coordinator_class: jta
+          current_session_context_class: jta
   liquibase:
     change-log: classpath:liquibase/changelog.xml
     drop-first: true # удаляет все данные после перезапуска
