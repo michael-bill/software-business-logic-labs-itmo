@@ -14,7 +14,7 @@
     <include file="sql/table/sales_units.sql" relativeToChangelogFile="true"/>
 
     <!--  Данные и датафиксы  -->
-    <include file="sql/data/role_model.sql" relativeToChangelogFile="true"/>
     <include file="sql/data/mock_data.sql" relativeToChangelogFile="true"/>
+    <include file="sql/data/role_model.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

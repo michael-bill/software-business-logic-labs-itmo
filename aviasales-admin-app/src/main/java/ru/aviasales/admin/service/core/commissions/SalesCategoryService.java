@@ -13,6 +13,7 @@ import ru.aviasales.admin.dao.repository.SalesCategoryRepository;
 import ru.aviasales.admin.dto.request.SalesCategoryReq;
 import ru.aviasales.admin.dto.response.SalesCategoryResp;
 import ru.aviasales.admin.exception.EntityNotFoundException;
+import ru.aviasales.admin.exception.OptimisticLockException;
 import ru.aviasales.admin.exception.UniqueValueExistsException;
 
 @Service
@@ -40,11 +41,15 @@ public class SalesCategoryService {
     }
 
     @Transactional
-    public SalesCategoryResp updateCategory(Long categoryId, SalesCategoryReq req) {
+    public SalesCategoryResp updateCategory(Long categoryId, Long version, SalesCategoryReq req) {
         validateCommission(req.getDefaultCommissionPercent());
 
         SalesCategory category = salesCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("Категория не была найдена"));
+                .orElseThrow(() -> new EntityNotFoundException("Категория с таким id не была найдена"));
+
+        if (!Objects.equals(version, category.getVersion())) {
+            throw new OptimisticLockException();
+        }
 
         if (!Objects.equals(req.getName(), category.getName()) && salesCategoryRepository.existsByName(req.getName())) {
             throw new UniqueValueExistsException("Категория с таким именем уже существует");

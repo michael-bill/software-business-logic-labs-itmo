@@ -76,16 +76,20 @@ public class SalesCategoryController {
     }
 
     @Operation(summary = "Обновить категорию")
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/versions/{version}")
     @PreAuthorize("hasAuthority('UPDATE_SALES_CATEGORY')")
     public SalesCategoryResp updateCategory(
             @Parameter(description = "Идентификатор категории")
             @PathVariable("id")
             Long id,
 
+            @Parameter(description = "Версия категории (для оптимистичной блокировки)")
+            @PathVariable("version")
+            Long version,
+
             @RequestBody SalesCategoryReq salesCategoryReq
     ) {
-        return salesCategoryService.updateCategory(id, salesCategoryReq);
+        return salesCategoryService.updateCategory(id, version, salesCategoryReq);
     }
 
     @Operation(summary = "Удалить категорию")

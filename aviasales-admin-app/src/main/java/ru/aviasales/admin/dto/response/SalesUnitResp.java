@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 public class SalesUnitResp {
     @Schema(description = "Идентификатор единицы")
     private Long id;
+    @Schema(description = "Версия единицы (для оптимистичной блокировки)")
+    private Long version;
     @Schema(description = "Название единицы")
     private String name;
     @Schema(description = "Описание единицы")

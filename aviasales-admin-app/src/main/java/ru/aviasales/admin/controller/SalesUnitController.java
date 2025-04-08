@@ -76,16 +76,20 @@ public class SalesUnitController {
     }
 
     @Operation(summary = "Обновить единицу продажи")
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/versions/{version}")
     @PreAuthorize("hasAuthority('UPDATE_SALES_UNIT')")
     public SalesUnitResp updateUnit(
             @Parameter(description = "Идентификатор единицы продажи")
             @PathVariable("id")
             Long id,
 
+            @Parameter(description = "Версия единицы (для оптимистичной блокировки)")
+            @PathVariable("version")
+            Long version,
+
             @RequestBody SalesUnitReq req
     ) {
-        return salesUnitService.updateSalesUnit(id, req);
+        return salesUnitService.updateSalesUnit(id, version, req);
     }
 
     @Operation(summary = "Удалить единицу продажи")

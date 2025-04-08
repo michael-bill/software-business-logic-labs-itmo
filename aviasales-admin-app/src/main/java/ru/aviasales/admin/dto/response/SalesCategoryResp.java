@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 public class SalesCategoryResp {
     @Schema(description = "Идентификатор категории")
     private Long id;
+    @Schema(description = "Версия категории (для оптимистичной блокировки)")
+    private Long version;
     @Schema(description = "Название категории")
     private String name;
     @Schema(description = "Описание категории")

@@ -16,3 +16,6 @@ CREATE TABLE IF NOT EXISTS sales_categories
 CREATE INDEX idx_sales_categories_name ON sales_categories(name);
 CREATE INDEX idx_sales_categories_created_by ON sales_categories(created_by);
 CREATE INDEX idx_sales_categories_updated_by ON sales_categories(updated_by);
+
+--changeset michael-bill:add_version_colum_to_sales_categories_table
+alter table sales_categories add column version bigint not null default 0;

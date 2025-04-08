@@ -15,6 +15,7 @@ import ru.aviasales.admin.dao.repository.SalesUnitRepository;
 import ru.aviasales.admin.dto.request.SalesUnitReq;
 import ru.aviasales.admin.dto.response.SalesUnitResp;
 import ru.aviasales.admin.exception.EntityNotFoundException;
+import ru.aviasales.admin.exception.OptimisticLockException;
 import ru.aviasales.admin.exception.UniqueValueExistsException;
 
 @Service
@@ -52,7 +53,7 @@ public class SalesUnitService {
     }
 
     @Transactional
-    public SalesUnitResp updateSalesUnit(Long unitId, SalesUnitReq req) {
+    public SalesUnitResp updateSalesUnit(Long unitId, Long version, SalesUnitReq req) {
         if (req.getCommissionPercent() != null) {
             validateCommission(req.getCommissionPercent());
         }
@@ -61,6 +62,10 @@ public class SalesUnitService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Единица продажи с id %d не была найдена".formatted(unitId)
                 ));
+
+        if (!Objects.equals(version, unit.getVersion())) {
+            throw new OptimisticLockException();
+        }
 
         SalesCategory category = salesCategoryRepository.findById(req.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException(
