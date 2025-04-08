@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import ru.aviasales.admin.dto.response.ErrorResp;
 
 @Slf4j
@@ -31,6 +32,15 @@ public class GlobalExceptionHandler {
                 .body(ErrorResp.builder()
                         .message("При выполнении запроса произошла непредвиденная ошибка, " +
                                 "обратитесь в техническую поддержку")
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    protected ResponseEntity<ErrorResp> handleNoResourceFoundException(NoResourceFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResp.builder()
+                        .message("Ресурс не найден.")
                         .timestamp(LocalDateTime.now())
                         .build());
     }

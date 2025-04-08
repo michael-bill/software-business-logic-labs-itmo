@@ -2,14 +2,15 @@ package ru.aviasales.admin.security.xml;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
 import lombok.Data;
-
-import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
-public class XmlUsers {
-    @XmlElement(name = "user")
-    private List<XmlUser> userList;
+public class XmlRole {
+    @XmlAttribute
+    private String name;
+
+    @XmlAttribute
+    private String permissions;
 }

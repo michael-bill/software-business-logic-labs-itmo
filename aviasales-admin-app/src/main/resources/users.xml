@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<users>
-    <user username="commissar"
-          password="$2a$12$g.WeXhLlboV6ZsVnr4BauOpfBGSnXAYXOixTyTAazuDbFvo0vDpN6"
-          roles="ROLE_COMMISSIONS"
-          enabled="true"/>
-    <!--compass-->
+<securityConfig>
+    <roleDefinitions>
+        <role name="ROLE_COMMISSIONS"
+              permissions="READ_SALES_CATEGORIES,CREATE_SALES_CATEGORY,UPDATE_SALES_CATEGORY,DELETE_SALES_CATEGORY,READ_SALES_UNITS,CREATE_SALES_UNIT,UPDATE_SALES_UNIT,DELETE_SALES_UNIT"/>
+        <role name="ROLE_ADVERTISEMENTS"
+              permissions="READ_ADVERTISEMENTS,CREATE_ADVERTISEMENT,READ_ADVERTISEMENTS_TYPES,READ_USER_SEGMENTS"/>
+    </roleDefinitions>
 
-    <user username="advertiser"
-          password="$2a$12$QJH8mnGFjUR48U9JVIPCW.DSdXtPSNIEjCnkDtpZdWd44ZUtsP2Vq"
-          roles="ROLE_ADVERTISEMENTS"
-          enabled="true"/>
-    <!--advpass-->
-</users>
+    <users>
+        <user username="commissar"
+              password="$2a$12$g.WeXhLlboV6ZsVnr4BauOpfBGSnXAYXOixTyTAazuDbFvo0vDpN6"
+              roles="ROLE_COMMISSIONS"
+              enabled="true"/>
+        <!--compass-->
+
+        <user username="advertiser"
+              password="$2a$12$QJH8mnGFjUR48U9JVIPCW.DSdXtPSNIEjCnkDtpZdWd44ZUtsP2Vq"
+              roles="ROLE_ADVERTISEMENTS"
+              enabled="true"/>
+        <!--advpass-->
+    </users>
+</securityConfig>

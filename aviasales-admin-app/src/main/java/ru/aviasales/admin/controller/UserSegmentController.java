@@ -23,7 +23,6 @@ import ru.aviasales.admin.service.core.ad.UserSegmentService;
 @RequiredArgsConstructor
 @RequestMapping("/advertisements")
 @Tag(name = "Advertisements")
-@PreAuthorize("hasRole('ADVERTISEMENTS')")
 public class UserSegmentController {
 
     private final UserSegmentService userSegmentService;
@@ -31,6 +30,7 @@ public class UserSegmentController {
     @Operation(summary = "Получить список всех сегментов пользователей")
     @PageableAsQueryParam
     @GetMapping("/segments")
+    @PreAuthorize("hasAuthority('READ_USER_SEGMENTS')")
     public Page<UserSegmentResp> getAllUserSegments(
             @RequestParam(defaultValue = "0")
             @Min(value = 0, message = "Номер страницы не может быть меньше 0")

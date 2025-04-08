@@ -21,7 +21,6 @@ import ru.aviasales.admin.service.core.ad.AdvertisementService;
 @RequiredArgsConstructor
 @RequestMapping("/advertisements")
 @Tag(name = "Advertisements")
-@PreAuthorize("hasRole('ADVERTISEMENTS')")
 public class AdvertisementController {
 
     private final AdvertisementService advertisementService;
@@ -29,6 +28,7 @@ public class AdvertisementController {
     @Operation(summary = "Получить список всех рекламных объявлений")
     @PageableAsQueryParam
     @GetMapping
+    @PreAuthorize("hasAuthority('READ_ADVERTISEMENTS')")
     public Page<AdvertisementResp> getAllAdvertisements(
                         @RequestParam(defaultValue = "0")
             @Min(value = 0, message = "Номер страницы не может быть меньше 0")
@@ -49,6 +49,7 @@ public class AdvertisementController {
 
     @Operation(summary = "Получить рекламное объявление по id")
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('READ_ADVERTISEMENTS')")
     public AdvertisementResp getAdvertisementById(
             @PathVariable("id") Long id
     ) {
@@ -57,6 +58,7 @@ public class AdvertisementController {
 
     @Operation(summary = "Создать рекламное объявление")
     @PostMapping
+    @PreAuthorize("hasAuthority('CREATE_ADVERTISEMENT')")
     public AdvertisementResp createAdvertisement(
             @RequestBody AdvertisementReq req
     ) {

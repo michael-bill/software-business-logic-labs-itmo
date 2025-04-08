@@ -36,6 +36,7 @@ public class AuthService {
                 .username(userDetails.getUsername())
                 .role(userDetails.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
+                        .filter(s -> s.startsWith("ROLE_"))
                         .findFirst()
                         .orElse("UNKNOWN")
                         .replace("ROLE_", ""))

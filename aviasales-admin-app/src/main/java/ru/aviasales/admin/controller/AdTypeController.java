@@ -23,7 +23,6 @@ import ru.aviasales.admin.service.core.ad.AdTypeService;
 @RequiredArgsConstructor
 @RequestMapping("/advertisements")
 @Tag(name = "Advertisements")
-@PreAuthorize("hasRole('ADVERTISEMENTS')")
 public class AdTypeController {
 
     private final AdTypeService adTypeService;
@@ -31,6 +30,7 @@ public class AdTypeController {
     @Operation(summary = "Получить список всех типов объявлений")
     @PageableAsQueryParam
     @GetMapping("/types")
+    @PreAuthorize("hasAuthority('READ_ADVERTISEMENTS_TYPES')")
     public Page<AdTypeResp> getAllAdTypes(
             @RequestParam(defaultValue = "0")
             @Min(value = 0, message = "Номер страницы не может быть меньше 0")

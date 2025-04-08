@@ -29,7 +29,6 @@ import ru.aviasales.admin.service.core.commissions.SalesCategoryService;
 @RequiredArgsConstructor
 @RequestMapping("/sales/categories")
 @Tag(name = "Sales categories")
-@PreAuthorize("hasRole('COMMISSIONS')")
 public class SalesCategoryController {
 
     private final SalesCategoryService salesCategoryService;
@@ -37,6 +36,7 @@ public class SalesCategoryController {
     @Operation(summary = "Получить список всех категорий")
     @PageableAsQueryParam
     @GetMapping
+    @PreAuthorize("hasAuthority('READ_SALES_CATEGORIES')")
     public Page<SalesCategoryResp> getAllCategories(
                         @RequestParam(defaultValue = "0")
             @Min(value = 0, message = "Номер страницы не может быть меньше 0")
@@ -57,6 +57,7 @@ public class SalesCategoryController {
 
     @Operation(summary = "Получить категорию по id")
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('READ_SALES_CATEGORIES')")
     public SalesCategoryResp getCategory(
             @Parameter(description = "Идентификатор категории")
             @PathVariable("id")
@@ -67,6 +68,7 @@ public class SalesCategoryController {
 
     @Operation(summary = "Создать категорию")
     @PostMapping
+    @PreAuthorize("hasAuthority('CREATE_SALES_CATEGORY')")
     public SalesCategoryResp createCategory(
             @RequestBody SalesCategoryReq salesCategoryReq
     ) {
@@ -75,6 +77,7 @@ public class SalesCategoryController {
 
     @Operation(summary = "Обновить категорию")
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('UPDATE_SALES_CATEGORY')")
     public SalesCategoryResp updateCategory(
             @Parameter(description = "Идентификатор категории")
             @PathVariable("id")
@@ -87,6 +90,7 @@ public class SalesCategoryController {
 
     @Operation(summary = "Удалить категорию")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('DELETE_SALES_CATEGORY')")
     public void deleteCategory(
             @Parameter(description = "Идентификатор категории")
             @PathVariable("id")

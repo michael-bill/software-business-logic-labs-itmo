@@ -9,7 +9,7 @@ import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
-public class XmlUsers {
-    @XmlElement(name = "user")
-    private List<XmlUser> userList;
+public class XmlRoleDefinitions {
+    @XmlElement(name = "role")
+    private List<XmlRole> roleList;
 }

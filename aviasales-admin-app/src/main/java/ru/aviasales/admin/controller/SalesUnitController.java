@@ -29,7 +29,6 @@ import ru.aviasales.admin.service.core.commissions.SalesUnitService;
 @RequiredArgsConstructor
 @RequestMapping("/sales/units")
 @Tag(name = "Sales units")
-@PreAuthorize("hasRole('COMMISSIONS')")
 public class SalesUnitController {
 
     private final SalesUnitService salesUnitService;
@@ -37,7 +36,8 @@ public class SalesUnitController {
     @Operation(summary = "Получить список всех единиц продаж")
     @PageableAsQueryParam
     @GetMapping
-    public Page<SalesUnitResp> getAllCategories(
+    @PreAuthorize("hasAuthority('READ_SALES_UNITS')")
+    public Page<SalesUnitResp> getAllUnits(
             @RequestParam(defaultValue = "0")
             @Min(value = 0, message = "Номер страницы не может быть меньше 0")
             int page,
@@ -57,7 +57,8 @@ public class SalesUnitController {
 
     @Operation(summary = "Получить единицу продажи по id")
     @GetMapping("/{id}")
-    public SalesUnitResp getCategoryById(
+    @PreAuthorize("hasAuthority('READ_SALES_UNITS')")
+    public SalesUnitResp getUnitById(
             @Parameter(description = "Идентификатор единицы продажи")
             @PathVariable("id")
             Long id
@@ -67,7 +68,8 @@ public class SalesUnitController {
 
     @Operation(summary = "Создать единицу продажи")
     @PostMapping
-    public SalesUnitResp createCategory(
+    @PreAuthorize("hasAuthority('CREATE_SALES_UNIT')")
+    public SalesUnitResp createUnit(
             @RequestBody SalesUnitReq req
     ) {
         return salesUnitService.createSalesUnit(req);
@@ -75,7 +77,8 @@ public class SalesUnitController {
 
     @Operation(summary = "Обновить единицу продажи")
     @PutMapping("/{id}")
-    public SalesUnitResp updateCategory(
+    @PreAuthorize("hasAuthority('UPDATE_SALES_UNIT')")
+    public SalesUnitResp updateUnit(
             @Parameter(description = "Идентификатор единицы продажи")
             @PathVariable("id")
             Long id,
@@ -87,7 +90,8 @@ public class SalesUnitController {
 
     @Operation(summary = "Удалить единицу продажи")
     @DeleteMapping("/{id}")
-    public void deleteCategory(
+    @PreAuthorize("hasAuthority('DELETE_SALES_UNIT')")
+    public void deleteUnit(
             @PathVariable("id") Long id
     ) {
         salesUnitService.deleteSalesUnit(id);
@@ -95,6 +99,7 @@ public class SalesUnitController {
 
     @Operation(summary = "Сбросить комиссию у единицы продажи")
     @PutMapping("/{id}/reset-commission")
+    @PreAuthorize("hasAuthority('UPDATE_SALES_UNIT')")
     public SalesUnitResp resetCommission(
             @Parameter(description = "Идентификатор единицы продажи")
             @PathVariable("id")

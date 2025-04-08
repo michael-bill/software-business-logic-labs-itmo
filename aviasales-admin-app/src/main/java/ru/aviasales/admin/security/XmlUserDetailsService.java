@@ -10,19 +10,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.aviasales.admin.security.xml.XmlRole;
+import ru.aviasales.admin.security.xml.XmlSecurityConfig;
 import ru.aviasales.admin.security.xml.XmlUser;
 import ru.aviasales.admin.security.xml.XmlUsers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -33,53 +36,91 @@ public class XmlUserDetailsService implements UserDetailsService {
     private Resource usersXmlResource;
 
     private final Map<String, UserDetails> userCache = new ConcurrentHashMap<>();
+    private final Map<String, Set<String>> rolePermissionsMap = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
-        loadUsersFromXml();
+        loadUsersAndRolesFromXml();
     }
 
-    private void loadUsersFromXml() {
+    private void loadUsersAndRolesFromXml() {
         try (InputStream is = usersXmlResource.getInputStream()) {
-            JAXBContext context = JAXBContext.newInstance(XmlUsers.class);
+            JAXBContext context = JAXBContext.newInstance(XmlSecurityConfig.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            XmlUsers xmlUsers = (XmlUsers) unmarshaller.unmarshal(is);
+            XmlSecurityConfig securityConfig = (XmlSecurityConfig) unmarshaller.unmarshal(is);
 
-            if (xmlUsers == null || xmlUsers.getUserList() == null) {
-                log.warn("users.xml is empty or could not be parsed correctly.");
-                return;
+            if (securityConfig == null) {
+                log.error("Could not parse securityConfig from users.xml");
+                throw new IllegalStateException("Failed to parse security configuration file.");
+            }
+
+            rolePermissionsMap.clear();
+            if (securityConfig.getRoleDefinitions() != null && securityConfig.getRoleDefinitions().getRoleList() != null) {
+                for (XmlRole xmlRole : securityConfig.getRoleDefinitions().getRoleList()) {
+                    if (xmlRole.getName() != null && xmlRole.getPermissions() != null) {
+                        Set<String> permissions = Arrays.stream(xmlRole.getPermissions().split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toSet());
+                        rolePermissionsMap.put(xmlRole.getName(), permissions);
+                        log.info("Loaded role '{}' with permissions: {}", xmlRole.getName(), permissions);
+                    } else {
+                        log.warn("Skipping role definition due to missing name or permissions: {}", xmlRole);
+                    }
+                }
+                log.info("Successfully loaded {} role definitions.", rolePermissionsMap.size());
+            } else {
+                log.warn("No role definitions found in users.xml.");
             }
 
             userCache.clear();
-            for (XmlUser xmlUser : xmlUsers.getUserList()) {
-                List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(xmlUser.getRoles());
+            if (securityConfig.getUsers() == null || securityConfig.getUsers().getUserList() == null) {
+                log.warn("No users found in users.xml or user section is missing.");
+                return;
+            }
+
+            for (XmlUser xmlUser : securityConfig.getUsers().getUserList()) {
+                List<GrantedAuthority> userRoles = AuthorityUtils.commaSeparatedStringToAuthorityList(xmlUser.getRoles());
+
+                Set<String> userPermissions = userRoles.stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .flatMap(roleName -> rolePermissionsMap.getOrDefault(roleName, Collections.emptySet()).stream())
+                        .collect(Collectors.toSet());
+
+                Set<GrantedAuthority> combinedAuthorities = new HashSet<>(userRoles);
+                userPermissions.forEach(permission -> combinedAuthorities.add(new SimpleGrantedAuthority(permission)));
+
+                log.debug("User '{}' assigned roles: {}", xmlUser.getUsername(), userRoles.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+                log.debug("User '{}' derived permissions: {}", xmlUser.getUsername(), userPermissions);
+                log.debug("User '{}' combined authorities: {}", xmlUser.getUsername(), combinedAuthorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+
+
                 boolean isDisabled = (xmlUser.getEnabled() == null) || !xmlUser.getEnabled();
                 UserDetails userDetails = User.builder()
                         .username(xmlUser.getUsername())
                         .password(xmlUser.getPassword())
-                        .authorities(authorities)
+                        .authorities(combinedAuthorities)
                         .disabled(isDisabled)
                         .accountExpired(false)
                         .credentialsExpired(false)
                         .accountLocked(false)
                         .build();
                 userCache.put(xmlUser.getUsername().toLowerCase(), userDetails);
-                log.info("Loaded user '{}' with roles {}", xmlUser.getUsername(), xmlUser.getRoles());
+                log.info("Loaded user '{}' with authorities: {}", xmlUser.getUsername(), combinedAuthorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(", ")));
             }
             log.info("Successfully loaded {} users from {}", userCache.size(), usersXmlResource.getFilename());
-
         } catch (IOException e) {
             log.error("IOException while reading users.xml", e);
-            throw new IllegalStateException("Failed to read user definition file.", e);
+            throw new IllegalStateException("Failed to read security configuration file.", e);
         } catch (JAXBException e) {
             log.error("JAXBException while parsing users.xml", e);
             if (e.getLinkedException() != null) {
                 log.error("Linked Exception: ", e.getLinkedException());
             }
-            throw new IllegalStateException("Failed to parse user definition file.", e);
+            throw new IllegalStateException("Failed to parse security configuration file.", e);
         } catch (Exception e) {
-            log.error("Unexpected error loading users from XML", e);
-            throw new IllegalStateException("Unexpected error loading users.", e);
+            log.error("Unexpected error loading security configuration from XML", e);
+            throw new IllegalStateException("Unexpected error loading security configuration.", e);
         }
     }
 
@@ -89,12 +130,23 @@ public class XmlUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Username cannot be null");
         }
 
-        UserDetails user = userCache.get(username.toLowerCase());
-        if (user == null) {
-            log.warn("User not found: {}", username);
+        UserDetails cachedUser = userCache.get(username.toLowerCase());
+        if (cachedUser == null) {
+            log.warn("User not found in cache: {}", username);
             throw new UsernameNotFoundException("User not found: " + username);
         }
-        log.debug("User found: {}", username);
-        return user;
+
+        log.debug("User found in cache: {}. Authorities: {}", username, cachedUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(", ")));
+        log.debug("Password hash present in cached object when retrieved? {}", cachedUser.getPassword() != null && !cachedUser.getPassword().isEmpty());
+
+        return User.builder()
+                .username(cachedUser.getUsername())
+                .password(cachedUser.getPassword())
+                .authorities(cachedUser.getAuthorities())
+                .disabled(!cachedUser.isEnabled())
+                .accountExpired(!cachedUser.isAccountNonExpired())
+                .credentialsExpired(!cachedUser.isCredentialsNonExpired())
+                .accountLocked(!cachedUser.isAccountNonLocked())
+                .build();
     }
 }
