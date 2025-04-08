@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Primary;
 public class ObjectMapperConfig {
     @Bean
     @Primary
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("all")
     public ObjectMapper objectMapper() {
         SimpleModule enumModule = new SimpleModule();
         enumModule.setDeserializerModifier(new BeanDeserializerModifier() {
