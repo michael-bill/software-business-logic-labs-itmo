@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS advertisement_user_segments
     PRIMARY KEY (advertisement_id, user_segment_id)
 );
 
-CREATE INDEX idx_advertisement_user_segments_advertisement_id ON advertisement_user_segments(advertisement_id);
-CREATE INDEX idx_advertisement_user_segments_user_segment_id ON advertisement_user_segments(user_segment_id);
+create index if not exists idx_advertisement_user_segments_advertisement_id ON advertisement_user_segments(advertisement_id);
+create index if not exists idx_advertisement_user_segments_user_segment_id ON advertisement_user_segments(user_segment_id);

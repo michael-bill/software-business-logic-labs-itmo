@@ -9,4 +9,4 @@ CREATE TABLE IF NOT EXISTS users
     role varchar(32) NOT NULL
 );
 
-CREATE INDEX idx_username ON users(username);
+create index if not exists idx_username ON users(username);

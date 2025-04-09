@@ -20,6 +20,6 @@ CREATE TABLE IF NOT EXISTS advertisement_user_segments
     PRIMARY KEY (advertisement_id, user_segment_id)
 );
 
-CREATE INDEX idx_advertisements_ad_type_id ON advertisements(ad_type_id);
-CREATE INDEX idx_advertisements_created_by ON advertisements(created_by);
+create index if not exists idx_advertisements_ad_type_id ON advertisements(ad_type_id);
+create index if not exists idx_advertisements_created_by ON advertisements(created_by);
 

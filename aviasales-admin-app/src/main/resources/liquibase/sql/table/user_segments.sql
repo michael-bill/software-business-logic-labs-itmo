@@ -9,4 +9,4 @@ CREATE TABLE IF NOT EXISTS user_segments
     estimated_amount integer
 );
 
-CREATE INDEX idx_user_segments_name ON user_segments(name);
+create index if not exists idx_user_segments_name ON user_segments(name);
