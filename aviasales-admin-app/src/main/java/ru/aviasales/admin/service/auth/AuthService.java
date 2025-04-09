@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.aviasales.admin.dto.request.AuthReq;
 import ru.aviasales.admin.dto.response.UserResp;
 
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -32,14 +34,15 @@ public class AuthService {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
+        String roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(s -> s.startsWith("ROLE_"))
+                .map(s -> s.replace("ROLE_", ""))
+                .collect(Collectors.joining(", "));
+
         UserResp userResp = UserResp.builder()
                 .username(userDetails.getUsername())
-                .role(userDetails.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .filter(s -> s.startsWith("ROLE_"))
-                        .findFirst()
-                        .orElse("UNKNOWN")
-                        .replace("ROLE_", ""))
+                .role(roles.isEmpty() ? "UNKNOWN" : roles)
                 .build();
         return userResp.withToken(jwtService.generateToken(userDetails));
     }

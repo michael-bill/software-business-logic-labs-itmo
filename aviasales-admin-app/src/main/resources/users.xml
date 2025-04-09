@@ -12,6 +12,7 @@
               password="$2a$10$RPNOc9j0WOphyWlKxqzs1ukBSm2yI0WszzqCMv4oHwvFE0hjrtEQm"
               roles="ROLE_COMMISSIONS,ROLE_ADVERTISEMENTS"
               enabled="true"/>
+        <!--admin-->
 
         <user username="commissar"
               password="$2a$12$g.WeXhLlboV6ZsVnr4BauOpfBGSnXAYXOixTyTAazuDbFvo0vDpN6"
