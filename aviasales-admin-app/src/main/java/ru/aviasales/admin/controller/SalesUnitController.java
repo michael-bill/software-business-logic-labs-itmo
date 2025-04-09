@@ -102,14 +102,18 @@ public class SalesUnitController {
     }
 
     @Operation(summary = "Сбросить комиссию у единицы продажи")
-    @PutMapping("/{id}/reset-commission")
+    @PutMapping("/{id}/versions/{version}/reset-commission")
     @PreAuthorize("hasAuthority('UPDATE_SALES_UNIT')")
     public SalesUnitResp resetCommission(
             @Parameter(description = "Идентификатор единицы продажи")
             @PathVariable("id")
-            Long id
+            Long id,
+
+            @Parameter(description = "Версия единицы (для оптимистичной блокировки)")
+            @PathVariable("version")
+            Long version
     ) {
-        return salesUnitService.resetToDefaultCommission(id);
+        return salesUnitService.resetToDefaultCommission(id, version);
     }
 
 }

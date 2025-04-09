@@ -85,12 +85,14 @@ public class SalesUnitService {
     }
 
     @Transactional
-    public SalesUnitResp resetToDefaultCommission(Long unitId) {
+    public SalesUnitResp resetToDefaultCommission(Long unitId, Long version) {
 
         SalesUnit unit = salesUnitRepository.findById(unitId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Единица продажи с id %d не была найдена".formatted(unitId)
                 ));
+
+        checkLock(version, unit.getVersion());
 
         unit.setCustomCommissionPercent(null);
         unit.setIsCustomCommission(false);
