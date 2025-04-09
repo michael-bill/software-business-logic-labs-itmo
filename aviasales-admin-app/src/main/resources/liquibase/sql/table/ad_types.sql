@@ -9,4 +9,4 @@ CREATE TABLE IF NOT EXISTS ad_types
     active boolean NOT NULL
 );
 
-CREATE INDEX idx_ad_types_name ON ad_types(name);
+create index if not exists idx_ad_types_name ON ad_types(name);
