@@ -39,7 +39,7 @@ public class AdvertisementKafkaListener {
             processingService.processAdvertisementCreation(request);
             log.info("Successfully processed advertisement request from offset {}", offset);
         } catch (Exception e) {
-            log.error("Failed to process advertisement request from offset {}: {}", offset, e.getMessage(), e);
+            log.error("Failed to process advertisement request from offset {}: {}", offset, e.getMessage());
         }
     }
 }

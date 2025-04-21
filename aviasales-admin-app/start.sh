@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+#set -e
 
 ADMIN_APP_DIR_NAME="aviasales-admin-app"
 PROCESSOR_APP_DIR_NAME="advertisement-processor-service"
@@ -14,7 +14,6 @@ git pull origin main
 
 docker compose down
 docker compose up -d
-sleep 10
 
 cd "${PROJECT_ROOT_DIR}/${COMMON_MODULE_DIR_NAME}"
 mvn clean install -DskipTests=true
