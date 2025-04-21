@@ -13,8 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.aviasales.admin.configuration.PageableAsQueryParam;
-import ru.aviasales.admin.dto.request.AdvertisementReq;
-import ru.aviasales.admin.dto.response.AdvertisementResp;
+import ru.aviasales.common.dto.request.AdvertisementReq;
+import ru.aviasales.common.dto.response.AdvertisementResp;
 import ru.aviasales.admin.service.core.ad.AdvertisementService;
 
 @RestController

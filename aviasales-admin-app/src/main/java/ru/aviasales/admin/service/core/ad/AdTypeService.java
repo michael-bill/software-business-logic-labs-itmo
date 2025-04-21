@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.aviasales.admin.dao.repository.AdTypeRepository;
-import ru.aviasales.admin.dto.response.AdTypeResp;
+import ru.aviasales.common.dto.response.AdTypeResp;
 
 @Service
 @RequiredArgsConstructor

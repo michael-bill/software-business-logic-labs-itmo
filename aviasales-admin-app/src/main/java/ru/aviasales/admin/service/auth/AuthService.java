@@ -10,8 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.aviasales.admin.dto.request.AuthReq;
-import ru.aviasales.admin.dto.response.UserResp;
+import ru.aviasales.common.dto.request.AuthReq;
+import ru.aviasales.common.dto.response.UserResp;
 
 import java.util.stream.Collectors;
 

@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.aviasales.admin.configuration.PageableAsQueryParam;
-import ru.aviasales.admin.dto.request.SalesUnitReq;
-import ru.aviasales.admin.dto.response.SalesUnitResp;
+import ru.aviasales.common.dto.request.SalesUnitReq;
+import ru.aviasales.common.dto.response.SalesUnitResp;
 import ru.aviasales.admin.service.core.commissions.SalesUnitService;
 
 @RestController

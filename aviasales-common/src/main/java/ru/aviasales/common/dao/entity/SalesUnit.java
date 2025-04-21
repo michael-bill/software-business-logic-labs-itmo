@@ -1,12 +1,15 @@
-package ru.aviasales.admin.dao.entity;
+package ru.aviasales.common.dao.entity;
 
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -17,12 +20,12 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "sales_categories")
+@Table(name = "sales_units")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SalesCategory {
+public class SalesUnit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,8 +40,15 @@ public class SalesCategory {
     @Column(nullable = false)
     private String description;
 
-    @Column(name = "default_commission_percent", nullable = false)
-    private Double defaultCommissionPercent;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sales_category_id", nullable = false)
+    private SalesCategory category;
+
+    @Column(name = "custom_commission_percent")
+    private Double customCommissionPercent;
+
+    @Column(name = "is_custom_commission", nullable = false)
+    private Boolean isCustomCommission = false;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -47,4 +57,8 @@ public class SalesCategory {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public Double getActualCommission() {
+        return isCustomCommission ? customCommissionPercent : category.getDefaultCommissionPercent();
+    }
 }

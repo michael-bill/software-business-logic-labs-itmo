@@ -58,7 +58,7 @@ public class JpaConfig {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setJtaDataSource(dataSource());
         em.setJpaVendorAdapter(jpaVendorAdapter);
-        em.setPackagesToScan("ru.aviasales.admin.dao.entity");
+        em.setPackagesToScan("ru.aviasales.common.dao.entity");
 
         Properties properties = new Properties();
         properties.put("hibernate.hbm2ddl.auto", "none");

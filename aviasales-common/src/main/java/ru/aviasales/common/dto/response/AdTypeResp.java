@@ -1,4 +1,4 @@
-package ru.aviasales.admin.dto.response;
+package ru.aviasales.common.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

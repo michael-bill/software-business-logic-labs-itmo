@@ -2,6 +2,10 @@
 
 git pull origin main
 
+cd ../aviasales-common
+mvn clean install
+cd ../aviasales-admin-app
+
 mvn clean install -DskipTests=true
 
 APP_JAR=$(ls target/aviasales-admin-app*.jar 2>/dev/null | head -n 1)

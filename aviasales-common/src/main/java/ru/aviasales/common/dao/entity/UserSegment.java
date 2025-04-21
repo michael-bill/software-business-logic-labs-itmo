@@ -1,4 +1,4 @@
-package ru.aviasales.admin.dao.entity;
+package ru.aviasales.common.dao.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

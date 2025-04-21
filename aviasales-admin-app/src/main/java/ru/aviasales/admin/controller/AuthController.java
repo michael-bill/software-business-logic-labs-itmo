@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.aviasales.admin.dto.request.AuthReq;
-import ru.aviasales.admin.dto.response.UserResp;
+import ru.aviasales.common.dto.request.AuthReq;
+import ru.aviasales.common.dto.response.UserResp;
 import ru.aviasales.admin.service.auth.AuthService;
 
 @RestController

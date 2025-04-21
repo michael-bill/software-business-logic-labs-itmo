@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import ru.aviasales.admin.dto.response.ErrorResp;
+import ru.aviasales.common.dto.response.ErrorResp;
 
 @Slf4j
 @ControllerAdvice
