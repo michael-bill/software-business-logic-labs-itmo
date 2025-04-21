@@ -1,0 +1,47 @@
+server:
+  port: 22728
+
+spring:
+  application:
+    name: advertisement-processor-service
+  jta:
+    atomikos:
+      datasource:
+        advertisement-processor-xa-ds:
+          unique-resource-name: advertisementProcessorXADS
+          xa-data-source-class-name: org.postgresql.xa.PGXADataSource
+          xa-properties:
+            url: ${AVIASALES_ADMIN_APP_JDBC:jdbc:postgresql://158.160.85.230:5432/aviasales-admin}
+            user: ${AVIASALES_ADMIN_APP_DB_USER:aviasales}
+            password: ${AVIASALES_ADMIN_APP_DB_PASS:aviasales}
+          min-pool-size: 2
+          max-pool-size: 5
+    jpa:
+      transaction-type: JTA
+      properties:
+        hibernate:
+          transaction.coordinator_class: jta
+          current_session_context_class: jta
+          hbm2ddl.auto: validate # none
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: advertisement-processor-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "ru.aviasales.common.dto.request"
+        spring.json.value.default.type: "ru.aviasales.common.dto.request.AdvertisementReq"
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+        spring.kafka.consumer.properties.spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+
+logging:
+  level:
+    root: INFO
+    ru.aviasales: DEBUG
+    org.springframework.kafka: INFO
+    org.apache.kafka: INFO
+
+kafka-topics:
+  advertisement-creation-requests: advertisement-creation-requests

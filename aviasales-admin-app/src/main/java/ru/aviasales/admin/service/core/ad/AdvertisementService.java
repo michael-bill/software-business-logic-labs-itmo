@@ -26,47 +26,7 @@ import java.util.Set;
 public class AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
-    private final AdTypeRepository adTypeRepository;
-    private final UserSegmentRepository userSegmentRepository;
     private final ModelMapper modelMapper;
-
-    @Transactional
-    public AdvertisementResp createAdvertisement(AdvertisementReq req) {
-        AdType adType = adTypeRepository.findById(req.getAdTypeId())
-                .orElseThrow(() -> new EntityNotFoundException("Тип рекламы не найден"));
-        if(!adType.getActive()) {
-            throw new IllegalOperationException("Тип рекламы на данный момент отключен");
-        }
-
-        Set<UserSegment> targetSegments = new HashSet<>();
-        if(adType.getSupportsSegmentation()) {
-            if (req.getTargetSegmentIds() != null) {
-                for (Long segmentId : req.getTargetSegmentIds()) {
-                    UserSegment segment = userSegmentRepository.findById(segmentId)
-                            .orElseThrow(() -> new EntityNotFoundException("Сегмент пользователей не найден"));
-                    targetSegments.add(segment);
-                }
-            }
-        } else if(req.getTargetSegmentIds() != null) {
-            throw new IllegalOperationException("Тип рекламы не поддерживает сегментацию");
-        }
-
-        if (req.getDeadline().isBefore(LocalDateTime.now())) {
-            throw new IllegalOperationException("Дата окончания рекламы не может быть раньше текущего времени");
-        }
-
-        Advertisement advertisement = Advertisement.builder()
-                .title(req.getTitle())
-                .companyName(req.getCompanyName())
-                .description(req.getDescription())
-                .adType(adType)
-                .targetSegments(targetSegments)
-                .deadline(req.getDeadline())
-                .build();
-
-        return modelMapper.map(advertisementRepository.save(advertisement), AdvertisementResp.class);
-    }
-
 
     @Transactional(readOnly = true)
     public AdvertisementResp getAdvertisementById(Long advertisementId) {

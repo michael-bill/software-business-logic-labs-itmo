@@ -10,12 +10,15 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.aviasales.admin.configuration.PageableAsQueryParam;
+import ru.aviasales.admin.service.messaging.KafkaProducerService;
 import ru.aviasales.common.dto.request.AdvertisementReq;
 import ru.aviasales.common.dto.response.AdvertisementResp;
 import ru.aviasales.admin.service.core.ad.AdvertisementService;
+import ru.aviasales.common.dto.response.MessageResp;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ import ru.aviasales.admin.service.core.ad.AdvertisementService;
 @Tag(name = "Advertisements")
 public class AdvertisementController {
 
+    private final KafkaProducerService kafkaProducerService;
     private final AdvertisementService advertisementService;
 
     @Operation(summary = "Получить список всех рекламных объявлений")
@@ -59,9 +63,12 @@ public class AdvertisementController {
     @Operation(summary = "Создать рекламное объявление")
     @PostMapping
     @PreAuthorize("hasAuthority('CREATE_ADVERTISEMENT')")
-    public AdvertisementResp createAdvertisement(
+    public ResponseEntity<MessageResp> createAdvertisement(
             @RequestBody AdvertisementReq req
     ) {
-        return advertisementService.createAdvertisement(req);
+        kafkaProducerService.sendAdvertisementRequest(req);
+
+        return ResponseEntity.accepted()
+                .body(new MessageResp("Запрос на создание рекламы принят и взят в обработку."));
     }
 }

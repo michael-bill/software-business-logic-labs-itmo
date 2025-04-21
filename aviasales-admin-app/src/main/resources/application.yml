@@ -26,6 +26,13 @@ spring:
   liquibase:
     change-log: classpath:liquibase/changelog.xml
     drop-first: true # удаляет все данные после перезапуска
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
 
 token:
   signing:
@@ -37,3 +44,6 @@ logging:
       hibernate:
         SQL: DEBUG
         type: TRACE
+
+kafka-topics:
+  advertisement-creation-requests: advertisement-creation-requests
