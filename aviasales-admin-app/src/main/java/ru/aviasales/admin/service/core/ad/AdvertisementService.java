@@ -67,7 +67,7 @@ public class AdvertisementService {
 
         String invoiceId = "ADV-" + ad.getId() + "-" + System.currentTimeMillis(); // Simple unique ID
 
-        String description = "Оплата рекламы: " + ad.getTitle() + " (ID: " + ad.getId() + ")";
+        String description = "Ad payment: " + ad.getTitle() + " (ID: " + ad.getId() + ")";
 
         try {
             RobokassaService.PaymentData paymentData = robokassaService.preparePayment(invoiceId, paymentAmount, description);
@@ -116,16 +116,13 @@ public class AdvertisementService {
             }
 
             ad.setPayed(true);
-            // Optionally clear payment URL or set payment date
-            // ad.setPaymentUrl(null);
-            // ad.setPaymentCompletedAt(LocalDateTime.now());
             advertisementRepository.save(ad);
             log.info("Successfully marked advertisement ID {} (Invoice ID: {}) as paid.", ad.getId(), invId);
             return true;
 
         } catch (EntityNotFoundException e) {
             // Logged inside the orElseThrow
-            throw e; // Re-throw to prevent sending "OK..." response
+            throw e;
         } catch (Exception e) {
             log.error("Error processing payment callback for Invoice ID {}: {}", invId, e.getMessage(), e);
             throw new RuntimeException("Internal error processing payment result", e); // Prevent sending "OK..."

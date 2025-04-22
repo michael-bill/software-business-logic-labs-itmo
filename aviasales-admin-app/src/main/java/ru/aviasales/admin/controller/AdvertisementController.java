@@ -84,11 +84,11 @@ public class AdvertisementController {
 
     @Operation(summary = "Инициировать оплату для рекламного объявления",
             description = "Возвращает URL для редиректа пользователя на страницу оплаты Robokassa.")
-    @PostMapping("/{advertisementId}/pay")
+    @PostMapping("/{id}/pay")
     @PreAuthorize("hasAuthority('CREATE_ADVERTISEMENT')") // Or a specific PAY_ADVERTISEMENT permission
     public ResponseEntity<Map<String, String>> initiatePayment(
             @Parameter(description = "ID рекламного объявления для оплаты")
-            @PathVariable("advertisementId") Long advertisementId
+            @PathVariable("id") Long advertisementId
     ) {
         String paymentUrl = advertisementService.initiatePaymentForAdvertisement(advertisementId);
         return ResponseEntity.ok(Map.of("paymentUrl", paymentUrl));
