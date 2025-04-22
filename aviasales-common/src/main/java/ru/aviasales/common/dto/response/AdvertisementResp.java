@@ -31,4 +31,10 @@ public class AdvertisementResp {
     private LocalDateTime deadline;
     @Schema(description = "Время создания рекламной задачи")
     private LocalDateTime createdAt;
+    @Schema(description = "Статус оплаты")
+    private Boolean payed;
+    @Schema(description = "Идентификатор счета Robokassa")
+    private String invoiceId;
+    @Schema(description = "URL для оплаты (если платеж инициирован)")
+    private String paymentUrl;
 }

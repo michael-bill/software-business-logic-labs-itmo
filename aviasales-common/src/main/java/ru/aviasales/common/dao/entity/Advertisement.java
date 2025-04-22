@@ -49,4 +49,16 @@ public class Advertisement {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "payed", nullable = false)
+    private Boolean payed = false;
+
+    @Column(name = "invoice_id", length = 50)
+    private String invoiceId;
+
+    @Column(name = "payment_url", length = 512)
+    private String paymentUrl;
+
+    @Column(name = "payment_initiated_at")
+    private LocalDateTime paymentInitiatedAt;
 }

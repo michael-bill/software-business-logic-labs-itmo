@@ -1,6 +1,8 @@
 package ru.aviasales.admin.controller;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Map; // For returning the payment URL
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,7 +22,6 @@ import ru.aviasales.common.dto.request.AdvertisementReq;
 import ru.aviasales.common.dto.response.AdvertisementResp;
 import ru.aviasales.admin.service.core.ad.AdvertisementService;
 import ru.aviasales.common.dto.response.CreateTaskResp;
-import ru.aviasales.common.dto.response.MessageResp;
 import ru.aviasales.common.dto.response.TaskStatusResp;
 
 @RestController
@@ -29,7 +30,6 @@ import ru.aviasales.common.dto.response.TaskStatusResp;
 @Tag(name = "Advertisements")
 public class AdvertisementController {
 
-    private final KafkaProducerService kafkaProducerService;
     private final AdvertisementService advertisementService;
     private final TaskStatusService taskStatusService;
 
@@ -38,18 +38,6 @@ public class AdvertisementController {
     @GetMapping
     @PreAuthorize("hasAuthority('READ_ADVERTISEMENTS')")
     public Page<AdvertisementResp> getAllAdvertisements(
-                        @RequestParam(defaultValue = "0")
-            @Min(value = 0, message = "Номер страницы не может быть меньше 0")
-            int page,
-
-            @RequestParam(defaultValue = "10")
-            @Min(value = 1, message = "Размер страницы не может быть меньше 1")
-            @Max(value = 100, message = "Размер страницы не может превышать 100")
-            int size,
-
-            @RequestParam(required = false)
-            List<String> sort,
-
             @Parameter(hidden = true) Pageable pageable
     ) {
         return advertisementService.getAllAdvertisements(pageable);
@@ -64,7 +52,7 @@ public class AdvertisementController {
         return advertisementService.getAdvertisementById(id);
     }
 
-    @Operation(summary = "Создать рекламное объявление")
+    @Operation(summary = "Создать запрос на создание рекламного объявления (асинхронно)")
     @PostMapping
     @PreAuthorize("hasAuthority('CREATE_ADVERTISEMENT')")
     public ResponseEntity<CreateTaskResp> createAdvertisement(
@@ -74,13 +62,35 @@ public class AdvertisementController {
         return ResponseEntity.accepted().body(response);
     }
 
-    @Operation(summary = "Получить статус задачи создания рекламного объявления")
+    @Operation(summary = "Получить статус задачи создания/обработки рекламного объявления")
     @GetMapping("/tasks/{taskId}/status")
-    @PreAuthorize("hasAuthority('READ_ADVERTISEMENTS')")
+    @PreAuthorize("hasAuthority('READ_ADVERTISEMENTS')") // Or a more general task read permission
     public TaskStatusResp getAdvertisementTaskStatus(
             @Parameter(description = "Идентификатор задачи (UUID)")
             @PathVariable("taskId") String taskId
     ) {
         return taskStatusService.getTaskStatus(taskId);
+    }
+
+    @Operation(summary = "Получить список неоплаченных рекламных объявлений")
+    @PageableAsQueryParam
+    @GetMapping("/unpaid")
+    @PreAuthorize("hasAuthority('READ_ADVERTISEMENTS')")
+    public Page<AdvertisementResp> getUnpaidAdvertisements(
+            @Parameter(hidden = true) Pageable pageable
+    ) {
+        return advertisementService.findUnpaidAdvertisements(pageable);
+    }
+
+    @Operation(summary = "Инициировать оплату для рекламного объявления",
+            description = "Возвращает URL для редиректа пользователя на страницу оплаты Robokassa.")
+    @PostMapping("/{advertisementId}/pay")
+    @PreAuthorize("hasAuthority('CREATE_ADVERTISEMENT')") // Or a specific PAY_ADVERTISEMENT permission
+    public ResponseEntity<Map<String, String>> initiatePayment(
+            @Parameter(description = "ID рекламного объявления для оплаты")
+            @PathVariable("advertisementId") Long advertisementId
+    ) {
+        String paymentUrl = advertisementService.initiatePaymentForAdvertisement(advertisementId);
+        return ResponseEntity.ok(Map.of("paymentUrl", paymentUrl));
     }
 }

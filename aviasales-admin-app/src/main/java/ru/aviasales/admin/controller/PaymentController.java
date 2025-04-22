@@ -1,92 +1,70 @@
 package ru.aviasales.admin.controller;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.aviasales.admin.service.core.ad.AdvertisementService;
 import ru.aviasales.admin.service.robokassa.RobokassaHtmlService;
-import ru.aviasales.admin.service.robokassa.RobokassaService;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/robokassa")
-@Tag(name = "Payments")
+@Tag(name = "Payments (Robokassa Callbacks & Manual Init)") // Updated tag name
 public class PaymentController {
 
     private final RobokassaHtmlService robokassaHtmlService;
-    private final RobokassaService robokassaService;
+    private final AdvertisementService advertisementService;
 
-    @Operation(summary = "Получить html страницу на оплату")
-    @GetMapping("/init-payment/html")
-    public ResponseEntity<?> getPaymentHtml(
-            @Parameter(description = "Номер счета")
-            @RequestParam(value = "inv_id")
-            String invId,
+    @Operation(summary = "Инициализация платежа (Ручной/Тестовый)",
+            description = "Генерирует HTML-страницу для редиректа на Robokassa. Основной способ инициации - через POST /advertisements/{id}/pay")
+    @GetMapping("/init-payment")
+    public ResponseEntity<String> showPaymentPageManual(
+            @Parameter(description = "Номер счета (должен быть уникальным)", required = true)
+            @RequestParam(value = "inv_id") String invId,
 
-            @Parameter(description = "Сумма (в руб)")
-            @RequestParam(value = "amount")
-            String amount,
+            @Parameter(description = "Сумма (в руб)", required = true)
+            @RequestParam(value = "amount") String amount,
 
-            @Parameter(description = "Описание платежа")
-            @RequestParam(value = "description")
-            String description
+            @Parameter(description = "Описание платежа", required = true)
+            @RequestParam(value = "description") String description
     ) {
-        try {
-            String redirectUrl = "/robokassa/payment-page?inv_id=" + invId +
-                    "&amount=" + amount +
-                    "&description=" + URLEncoder.encode(description, StandardCharsets.UTF_8);
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .header(HttpHeaders.LOCATION, redirectUrl)
-                    .build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body("Error generating payment page");
-        }
-    }
-
-    @GetMapping("/payment-page")
-    public ResponseEntity<String> showPaymentPage(
-            @RequestParam("inv_id") String invId,
-            @RequestParam("amount") String amount,
-            @RequestParam("description") String description
-    ) {
+        log.warn("Manual payment initiation requested for InvId: {}, Amount: {}", invId, amount);
         try {
             String html = robokassaHtmlService.generatePaymentHtml(invId, amount, description);
             return ResponseEntity.ok()
                     .contentType(MediaType.TEXT_HTML)
                     .body(html);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body("Error generating payment page");
+            log.error("Error generating manual payment page: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body("Error generating payment page");
         }
     }
 
+    @Operation(summary = "Обработка результата платежа (Robokassa Result URL)")
     @PostMapping("/result")
     public ResponseEntity<String> handleResult(
-            @RequestParam("OutSum") String outSum,
-            @RequestParam("InvId") String invId,
-            @RequestParam("SignatureValue") String signature
-    ) throws Exception {
-        boolean isValid = robokassaService.validateResultSignature(outSum, invId, signature);
-        log.info("Signature with OutSum {}, InvId {} and SignatureValue {} is valid: {}",
-                outSum, invId, signature, isValid);
-        if (isValid) {
-            return ResponseEntity.ok().body("OK" + invId);
+            @Parameter(description = "Сумма заказа") @RequestParam("OutSum") String outSum,
+            @Parameter(description = "Номер заказа (счета)") @RequestParam("InvId") String invId,
+            @Parameter(description = "Контрольная сумма") @RequestParam("SignatureValue") String signature
+    ) {
+        log.info("Received Robokassa result callback for InvId: {}, OutSum: {}", invId, outSum);
+        try {
+            boolean success = advertisementService.processPaymentCallback(invId, outSum, signature);
+            if (success) {
+                return ResponseEntity.ok().body("OK" + invId);
+            } else {
+                log.warn("Payment callback validation failed for InvId: {}", invId);
+                return ResponseEntity.badRequest().body("Payment validation failed");
+            }
+        } catch (Exception e) {
+            log.error("Error processing Robokassa result for InvId {}: {}", invId, e.getMessage());
+            return ResponseEntity.internalServerError().body("Error processing payment result: " + e.getMessage());
         }
-        return ResponseEntity.badRequest().body("Invalid signature");
     }
 }

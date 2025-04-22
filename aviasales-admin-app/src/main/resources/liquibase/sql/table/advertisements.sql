@@ -23,3 +23,12 @@ CREATE TABLE IF NOT EXISTS advertisement_user_segments
 create index if not exists idx_advertisements_ad_type_id ON advertisements(ad_type_id);
 create index if not exists idx_advertisements_created_by ON advertisements(created_by);
 
+--changeset michael-bill:add_payment_fields_to_advertisements
+ALTER TABLE advertisements ADD COLUMN IF NOT EXISTS payed boolean NOT NULL DEFAULT false;
+ALTER TABLE advertisements ADD COLUMN IF NOT EXISTS invoice_id varchar(50);
+ALTER TABLE advertisements ADD COLUMN IF NOT EXISTS payment_url varchar(512);
+ALTER TABLE advertisements ADD COLUMN IF NOT EXISTS payment_initiated_at timestamp;
+ALTER TABLE advertisements ADD COLUMN IF NOT EXISTS payment_expires_at timestamp;
+
+CREATE INDEX IF NOT EXISTS idx_advertisements_payed ON advertisements(payed);
+CREATE INDEX IF NOT EXISTS idx_advertisements_invoice_id ON advertisements(invoice_id);

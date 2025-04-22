@@ -1,38 +1,43 @@
 package ru.aviasales.admin.service.core.ad;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import ru.aviasales.common.dao.entity.AdType;
 import ru.aviasales.common.dao.entity.Advertisement;
-import ru.aviasales.common.dao.entity.UserSegment;
-import ru.aviasales.admin.dao.repository.AdTypeRepository;
 import ru.aviasales.admin.dao.repository.AdvertisementRepository;
-import ru.aviasales.admin.dao.repository.UserSegmentRepository;
-import ru.aviasales.common.dto.request.AdvertisementReq;
 import ru.aviasales.common.dto.response.AdvertisementResp;
 import org.springframework.transaction.annotation.Transactional;
 import ru.aviasales.admin.exception.EntityNotFoundException;
 import ru.aviasales.admin.exception.IllegalOperationException;
+import ru.aviasales.admin.service.robokassa.RobokassaService;
+
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.UUID; // For generating unique invoice parts if needed
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
+    private final RobokassaService robokassaService; // Inject Robokassa service
     private final ModelMapper modelMapper;
+
+    @Value("${advertisement.payment.default-amount:100.00}")
+    private String defaultPaymentAmount;
+
 
     @Transactional(readOnly = true)
     public AdvertisementResp getAdvertisementById(Long advertisementId) {
         return advertisementRepository.findById(advertisementId)
                 .map(ad -> modelMapper.map(ad, AdvertisementResp.class))
-                .orElseThrow(() -> new EntityNotFoundException("Рекламное объявление не найдено"));
+                .orElseThrow(() -> new EntityNotFoundException("Рекламное объявление с id " + advertisementId + " не найдено"));
     }
 
     @Transactional(readOnly = true)
@@ -41,4 +46,89 @@ public class AdvertisementService {
                 .map(ad -> modelMapper.map(ad, AdvertisementResp.class));
     }
 
+    @Transactional(readOnly = true)
+    public Page<AdvertisementResp> findUnpaidAdvertisements(Pageable pageable) {
+        Specification<Advertisement> spec = (root, query, cb) -> cb.equal(root.get("payed"), false);
+        return advertisementRepository.findAll(spec, pageable)
+                .map(ad -> modelMapper.map(ad, AdvertisementResp.class));
+    }
+
+    @Transactional
+    public String initiatePaymentForAdvertisement(Long advertisementId) {
+        log.info("Initiating payment for advertisement ID: {}", advertisementId);
+        Advertisement ad = advertisementRepository.findById(advertisementId)
+                .orElseThrow(() -> new EntityNotFoundException("Рекламное объявление с id " + advertisementId + " не найдено"));
+
+        if (ad.getPayed()) {
+            throw new IllegalOperationException("Рекламное объявление с id " + advertisementId + " уже оплачено.");
+        }
+
+        String paymentAmount = defaultPaymentAmount;
+
+        String invoiceId = "ADV-" + ad.getId() + "-" + System.currentTimeMillis(); // Simple unique ID
+
+        String description = "Оплата рекламы: " + ad.getTitle() + " (ID: " + ad.getId() + ")";
+
+        try {
+            RobokassaService.PaymentData paymentData = robokassaService.preparePayment(invoiceId, paymentAmount, description);
+
+            String paymentUrl = "https://auth.robokassa.ru/Merchant/Index.aspx?" +
+                    "MerchantLogin=" + paymentData.merchantLogin() +
+                    "&OutSum=" + paymentData.outSum() +
+                    "&InvoiceID=" + paymentData.invId() +
+                    "&Description=" + paymentData.description() +
+                    "&SignatureValue=" + paymentData.signatureValue() +
+                    "&IsTest=" + paymentData.isTest();
+
+            // Update the advertisement record
+            ad.setInvoiceId(invoiceId);
+            ad.setPaymentUrl(paymentUrl);
+            ad.setPaymentInitiatedAt(LocalDateTime.now());
+
+            advertisementRepository.save(ad);
+            log.info("Payment initiated for Ad ID {}. Invoice ID: {}, Payment URL generated.", advertisementId, invoiceId);
+            return paymentUrl;
+
+        } catch (Exception e) {
+            log.error("Failed to prepare payment for advertisement ID {}: {}", advertisementId, e.getMessage(), e);
+            throw new RuntimeException("Ошибка при инициализации платежа через Robokassa", e);
+        }
+    }
+
+    @Transactional
+    public boolean processPaymentCallback(String invId, String outSum, String signature) {
+        log.info("Processing payment callback for Invoice ID: {}", invId);
+        try {
+            if (!robokassaService.validateResultSignature(outSum, invId, signature)) {
+                log.warn("Invalid signature received for Invoice ID: {}", invId);
+                return false;
+            }
+
+            Advertisement ad = advertisementRepository.findByInvoiceId(invId)
+                    .orElseThrow(() -> {
+                        log.error("Advertisement not found for Invoice ID: {}", invId);
+                        return new EntityNotFoundException("Объявление для счета " + invId + " не найдено.");
+                    });
+
+            if (ad.getPayed()) {
+                log.warn("Received duplicate payment confirmation for already paid Invoice ID: {}", invId);
+                return true;
+            }
+
+            ad.setPayed(true);
+            // Optionally clear payment URL or set payment date
+            // ad.setPaymentUrl(null);
+            // ad.setPaymentCompletedAt(LocalDateTime.now());
+            advertisementRepository.save(ad);
+            log.info("Successfully marked advertisement ID {} (Invoice ID: {}) as paid.", ad.getId(), invId);
+            return true;
+
+        } catch (EntityNotFoundException e) {
+            // Logged inside the orElseThrow
+            throw e; // Re-throw to prevent sending "OK..." response
+        } catch (Exception e) {
+            log.error("Error processing payment callback for Invoice ID {}: {}", invId, e.getMessage(), e);
+            throw new RuntimeException("Internal error processing payment result", e); // Prevent sending "OK..."
+        }
+    }
 }
