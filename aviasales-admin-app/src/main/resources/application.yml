@@ -55,3 +55,9 @@ kafka-topics:
 job:
   user-segment-update:
     interval-in-hours: 2
+
+robokassa:
+  merchant-login: software-business-logic-labs-itmo
+  password1: y70nsmV8BBeNSUa8w7Ox
+  password2: FrTX3o9a0TeQyZQSG88R
+  is-test: 1
