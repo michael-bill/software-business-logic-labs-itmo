@@ -85,24 +85,24 @@
   <process id="Process_1o4wst9">
     <laneSet id="LaneSet_1o7mu1g">
       <lane id="Lane_135q4v0" name="Управляющий рекламой">
-        <flowNodeRef>Activity_0aaaykp</flowNodeRef>
-        <flowNodeRef>Activity_0jbor2h</flowNodeRef>
         <flowNodeRef>Activity_0q1tegs</flowNodeRef>
-        <flowNodeRef>Activity_1ydku9x</flowNodeRef>
         <flowNodeRef>Activity_104ncro</flowNodeRef>
         <flowNodeRef>Event_0bzwoir</flowNodeRef>
         <flowNodeRef>Event_0ummyet</flowNodeRef>
+        <flowNodeRef>Activity_1ydku9x</flowNodeRef>
+        <flowNodeRef>Activity_0jbor2h</flowNodeRef>
+        <flowNodeRef>Activity_0aaaykp</flowNodeRef>
       </lane>
       <lane id="Lane_14qwmat" name="Сервер">
-        <flowNodeRef>Gateway_1xq98ko</flowNodeRef>
-        <flowNodeRef>Gateway_0091fwa</flowNodeRef>
-        <flowNodeRef>Activity_0wh6flo</flowNodeRef>
-        <flowNodeRef>Gateway_0xxj8qy</flowNodeRef>
-        <flowNodeRef>Activity_01lflti</flowNodeRef>
-        <flowNodeRef>Gateway_1f1nz13</flowNodeRef>
         <flowNodeRef>Activity_0in0ffm</flowNodeRef>
-        <flowNodeRef>Event_0mdbzzb</flowNodeRef>
+        <flowNodeRef>Gateway_1f1nz13</flowNodeRef>
         <flowNodeRef>Activity_0nmvaew</flowNodeRef>
+        <flowNodeRef>Activity_01lflti</flowNodeRef>
+        <flowNodeRef>Gateway_0xxj8qy</flowNodeRef>
+        <flowNodeRef>Activity_0wh6flo</flowNodeRef>
+        <flowNodeRef>Gateway_0091fwa</flowNodeRef>
+        <flowNodeRef>Gateway_1xq98ko</flowNodeRef>
+        <flowNodeRef>Event_0mdbzzb</flowNodeRef>
       </lane>
     </laneSet>
     <sequenceFlow id="Flow_1f7o0sn" sourceRef="Activity_0in0ffm" targetRef="Activity_0q1tegs" />
@@ -574,12 +574,10 @@
     <task id="Activity_0y68trt" name="Залогировать ошибку">
       <incoming>Flow_0n3bbpb</incoming>
       <outgoing>Flow_07ji5aw</outgoing>
-      <dataOutputAssociation id="DataOutputAssociation_1mgqgsv">
-        <targetRef>DataObjectReference_1nbmigo</targetRef>
+      <dataOutputAssociation id="DataOutputAssociation_1wrdvbu">
+        <targetRef>DataStoreReference_0m96xh1</targetRef>
       </dataOutputAssociation>
     </task>
-    <dataObjectReference id="DataObjectReference_1nbmigo" name="stderr" dataObjectRef="DataObject_127ueen" />
-    <dataObject id="DataObject_127ueen" />
     <endEvent id="Event_1xqeby5" name="Обработка завершена">
       <incoming>Flow_07ji5aw</incoming>
       <errorEventDefinition id="ErrorEventDefinition_0kvzha5" />
@@ -605,6 +603,7 @@
       <incoming>Flow_1e024v7</incoming>
     </endEvent>
     <sequenceFlow id="Flow_1e024v7" sourceRef="Activity_0g7hdbe" targetRef="Event_1i1yloh" />
+    <dataStoreReference id="DataStoreReference_0m96xh1" name="База данных" />
   </process>
   <process id="Process_0vxgv6g">
     <sequenceFlow id="Flow_0qgge5y" sourceRef="Event_1y438jz" targetRef="Activity_1ogq9rg" />
@@ -1444,12 +1443,6 @@
         <omgdc:Bounds x="1890" y="1446" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DataObjectReference_1nbmigo_di" bpmnElement="DataObjectReference_1nbmigo">
-        <omgdc:Bounds x="1752" y="1461" width="36" height="50" />
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds x="1756" y="1518" width="29" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1xqeby5_di" bpmnElement="Event_1xqeby5">
         <omgdc:Bounds x="2082" y="1468" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -1470,6 +1463,12 @@
         <omgdc:Bounds x="2222" y="1612" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="2212" y="1655" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1or7lzl" bpmnElement="DataStoreReference_0m96xh1">
+        <omgdc:Bounds x="1745" y="1461" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1737" y="1518" width="66" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_12k88fj_di" bpmnElement="Event_12k88fj">
@@ -1543,6 +1542,10 @@
         <omgdi:waypoint x="620" y="1635" />
         <omgdi:waypoint x="508" y="1670" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_06x0ov6_di" bpmnElement="Association_06x0ov6">
+        <omgdi:waypoint x="843" y="1770" />
+        <omgdi:waypoint x="864" y="1830" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="TextAnnotation_1ptpac3_di" bpmnElement="TextAnnotation_1ptpac3">
         <omgdc:Bounds x="1120" y="1630" width="100" height="41" />
         <bpmndi:BPMNLabel />
@@ -1557,10 +1560,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_01gpfok_di" bpmnElement="TextAnnotation_01gpfok">
         <omgdc:Bounds x="1730" y="83" width="550" height="97" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0webkyi_di" bpmnElement="TextAnnotation_0webkyi">
-        <omgdc:Bounds x="810" y="1820" width="240" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DataOutputAssociation_1e08uo7_di" bpmnElement="DataOutputAssociation_1e08uo7">
@@ -1627,10 +1626,6 @@
         <omgdi:waypoint x="1096" y="1682" />
         <omgdi:waypoint x="1120" y="1670" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_06x0ov6_di" bpmnElement="Association_06x0ov6">
-        <omgdi:waypoint x="841" y="1770" />
-        <omgdi:waypoint x="856" y="1820" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_07oqmx0_di" bpmnElement="Flow_07oqmx0">
         <omgdi:waypoint x="410" y="1360" />
         <omgdi:waypoint x="410" y="1240" />
@@ -1655,10 +1650,6 @@
         <omgdi:waypoint x="1871" y="1711" />
         <omgdi:waypoint x="1906" y="1670" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DataOutputAssociation_1mgqgsv_di" bpmnElement="DataOutputAssociation_1mgqgsv">
-        <omgdi:waypoint x="1890" y="1486" />
-        <omgdi:waypoint x="1788" y="1486" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DataOutputAssociation_0g5ki6h_di" bpmnElement="DataOutputAssociation_0g5ki6h">
         <omgdi:waypoint x="2110" y="1670" />
         <omgdi:waypoint x="2110" y="1711" />
@@ -1678,6 +1669,14 @@
       <bpmndi:BPMNEdge id="DataOutputAssociation_0fuh84x_di" bpmnElement="DataOutputAssociation_0fuh84x">
         <omgdi:waypoint x="1221" y="1080" />
         <omgdi:waypoint x="1188" y="1125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_0webkyi_di" bpmnElement="TextAnnotation_0webkyi">
+        <omgdc:Bounds x="820" y="1830" width="240" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_1wrdvbu_di" bpmnElement="DataOutputAssociation_1wrdvbu">
+        <omgdi:waypoint x="1890" y="1486" />
+        <omgdi:waypoint x="1795" y="1486" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
