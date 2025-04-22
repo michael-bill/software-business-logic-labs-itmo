@@ -2,14 +2,15 @@ package ru.aviasales.processor.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.aviasales.common.dao.entity.AdType;
 import ru.aviasales.common.dao.entity.Advertisement;
+import ru.aviasales.common.dao.entity.AdvertisementTaskStatus;
 import ru.aviasales.common.dao.entity.UserSegment;
+import ru.aviasales.common.domain.TaskStatus;
 import ru.aviasales.processor.dao.repository.AdTypeRepository;
 import ru.aviasales.processor.dao.repository.AdvertisementRepository;
+import ru.aviasales.processor.dao.repository.AdvertisementTaskStatusRepository;
 import ru.aviasales.processor.dao.repository.UserSegmentRepository;
 import ru.aviasales.common.dto.request.AdvertisementReq;
 import ru.aviasales.processor.exception.EntityNotFoundException;
@@ -27,10 +28,17 @@ public class AdvertisementProcessingService {
     private final AdvertisementRepository advertisementRepository;
     private final AdTypeRepository adTypeRepository;
     private final UserSegmentRepository userSegmentRepository;
+    private final AdvertisementTaskStatusRepository taskStatusRepository;
 
-    @Transactional
     public void processAdvertisementCreation(AdvertisementReq req) {
+        if (req.getTaskId() == null) {
+            log.error("Received AdvertisementReq without taskId: {}", req);
+            throw new IllegalArgumentException("Task ID is missing");
+        }
+        String taskId = req.getTaskId();
         log.info("Processing advertisement creation request: {}", req);
+
+        updateTaskStatus(taskId, TaskStatus.PROCESSING, null);
 
         try {
             AdType adType = adTypeRepository.findById(req.getAdTypeId())
@@ -73,13 +81,34 @@ public class AdvertisementProcessingService {
 
             Advertisement savedAd = advertisementRepository.save(advertisement);
             log.info("Successfully created advertisement with ID: {} and Title: {}", savedAd.getId(), savedAd.getTitle());
-
+            updateTaskStatus(taskId, TaskStatus.SUCCESS, null);
         } catch (EntityNotFoundException | IllegalOperationException e) {
             log.error("Validation failed during advertisement processing for request [Title: {}]: {}", req.getTitle(), e.getMessage());
+            updateTaskStatus(taskId, TaskStatus.FAIL, e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("Unexpected error processing advertisement creation request [Title: {}]: {}", req.getTitle(), e.getMessage(), e);
+            updateTaskStatus(taskId, TaskStatus.FAIL, e.getMessage());
             throw new RuntimeException("Failed to process advertisement creation: " + e.getMessage(), e); // Re-throw
+        }
+    }
+
+    protected void updateTaskStatus(String taskId, TaskStatus status, String errorMessage) {
+        try {
+            AdvertisementTaskStatus taskStatus = taskStatusRepository.findById(taskId)
+                    .orElse(null);
+
+            if (taskStatus == null) {
+                log.error("Cannot update status for Task ID {}: TaskStatus entity not found.", taskId);
+                taskStatus = AdvertisementTaskStatus.builder().id(taskId).build();
+            }
+
+            taskStatus.setStatus(status);
+            taskStatus.setErrorMessage(errorMessage);
+            taskStatusRepository.save(taskStatus);
+            log.info("Updated status for Task ID {} to {}", taskId, status);
+        } catch (Exception ex) {
+            log.error("Failed to update status for Task ID {} to {}: {}", taskId, status, ex.getMessage(), ex);
         }
     }
 }

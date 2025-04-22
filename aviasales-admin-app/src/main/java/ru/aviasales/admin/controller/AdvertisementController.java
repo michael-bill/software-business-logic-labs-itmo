@@ -14,11 +14,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.aviasales.admin.configuration.PageableAsQueryParam;
+import ru.aviasales.admin.service.core.TaskStatusService;
 import ru.aviasales.admin.service.messaging.KafkaProducerService;
 import ru.aviasales.common.dto.request.AdvertisementReq;
 import ru.aviasales.common.dto.response.AdvertisementResp;
 import ru.aviasales.admin.service.core.ad.AdvertisementService;
+import ru.aviasales.common.dto.response.CreateTaskResp;
 import ru.aviasales.common.dto.response.MessageResp;
+import ru.aviasales.common.dto.response.TaskStatusResp;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class AdvertisementController {
 
     private final KafkaProducerService kafkaProducerService;
     private final AdvertisementService advertisementService;
+    private final TaskStatusService taskStatusService;
 
     @Operation(summary = "Получить список всех рекламных объявлений")
     @PageableAsQueryParam
@@ -63,12 +67,20 @@ public class AdvertisementController {
     @Operation(summary = "Создать рекламное объявление")
     @PostMapping
     @PreAuthorize("hasAuthority('CREATE_ADVERTISEMENT')")
-    public ResponseEntity<MessageResp> createAdvertisement(
+    public ResponseEntity<CreateTaskResp> createAdvertisement(
             @RequestBody AdvertisementReq req
     ) {
-        kafkaProducerService.sendAdvertisementRequest(req);
+        CreateTaskResp response = taskStatusService.initiateAdvertisementCreation(req);
+        return ResponseEntity.accepted().body(response);
+    }
 
-        return ResponseEntity.accepted()
-                .body(new MessageResp("Запрос на создание рекламы принят и взят в обработку."));
+    @Operation(summary = "Получить статус задачи создания рекламного объявления")
+    @GetMapping("/tasks/{taskId}/status")
+    @PreAuthorize("hasAuthority('READ_ADVERTISEMENTS')")
+    public TaskStatusResp getAdvertisementTaskStatus(
+            @Parameter(description = "Идентификатор задачи (UUID)")
+            @PathVariable("taskId") String taskId
+    ) {
+        return taskStatusService.getTaskStatus(taskId);
     }
 }

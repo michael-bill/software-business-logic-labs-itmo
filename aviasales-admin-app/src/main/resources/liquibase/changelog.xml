@@ -12,6 +12,7 @@
     <include file="sql/table/advertisement_user_segments.sql" relativeToChangelogFile="true"/>
     <include file="sql/table/sales_categories.sql" relativeToChangelogFile="true"/>
     <include file="sql/table/sales_units.sql" relativeToChangelogFile="true"/>
+    <include file="sql/table/advertisement_task_status.sql" relativeToChangelogFile="true"/>
 
     <!--  Данные и датафиксы  -->
     <include file="sql/data/mock_data.sql" relativeToChangelogFile="true"/>
