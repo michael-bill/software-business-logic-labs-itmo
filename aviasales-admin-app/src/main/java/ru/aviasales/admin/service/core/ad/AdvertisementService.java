@@ -19,6 +19,7 @@ import ru.aviasales.admin.service.robokassa.RobokassaService;
 
 
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.UUID; // For generating unique invoice parts if needed
 
 @Service
@@ -66,7 +67,8 @@ public class AdvertisementService {
         }
 
         String paymentAmount = defaultPaymentAmount;
-        String invoiceId = System.currentTimeMillis() + "";
+        Random random = new Random();
+        String invoiceId = random.nextInt(1000000, 10000000) + "";
         String description = "Оплата рекламы: " + ad.getTitle() + " (ID: " + ad.getId() + ")";
 
         try {
