@@ -65,8 +65,8 @@ public class AdvertisementService {
             throw new IllegalOperationException("Рекламное объявление с id " + advertisementId + " уже оплачено.");
         }
 
-        String paymentAmount = defaultPaymentAmount; // TODO: Implement actual amount logic
-        String invoiceId = "ADV-" + ad.getId() + "-" + System.currentTimeMillis();
+        String paymentAmount = defaultPaymentAmount;
+        String invoiceId = System.currentTimeMillis() + "";
         String description = "Оплата рекламы: " + ad.getTitle() + " (ID: " + ad.getId() + ")";
 
         try {
