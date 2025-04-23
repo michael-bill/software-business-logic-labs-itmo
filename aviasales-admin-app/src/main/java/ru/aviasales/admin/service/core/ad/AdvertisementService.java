@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import ru.aviasales.admin.service.robokassa.RobokassaHtmlService;
 import ru.aviasales.common.dao.entity.Advertisement;
 import ru.aviasales.admin.dao.repository.AdvertisementRepository;
 import ru.aviasales.common.dto.response.AdvertisementResp;
@@ -26,8 +27,9 @@ import java.util.UUID; // For generating unique invoice parts if needed
 public class AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
-    private final RobokassaService robokassaService; // Inject Robokassa service
+    private final RobokassaService robokassaService;
     private final ModelMapper modelMapper;
+    private final RobokassaHtmlService robokassaHtmlService;
 
     @Value("${advertisement.payment.default-amount:100.00}")
     private String defaultPaymentAmount;
@@ -63,35 +65,25 @@ public class AdvertisementService {
             throw new IllegalOperationException("Рекламное объявление с id " + advertisementId + " уже оплачено.");
         }
 
-        String paymentAmount = defaultPaymentAmount;
-
-        String invoiceId = "ADV-" + ad.getId() + "-" + System.currentTimeMillis(); // Simple unique ID
-
-        String description = "Ad payment: " + ad.getTitle() + " (ID: " + ad.getId() + ")";
+        String paymentAmount = defaultPaymentAmount; // TODO: Implement actual amount logic
+        String invoiceId = "ADV-" + ad.getId() + "-" + System.currentTimeMillis();
+        String description = "Оплата рекламы: " + ad.getTitle() + " (ID: " + ad.getId() + ")";
 
         try {
             RobokassaService.PaymentData paymentData = robokassaService.preparePayment(invoiceId, paymentAmount, description);
+            String htmlContent = robokassaHtmlService.generatePaymentHtml(paymentData);
 
-            String paymentUrl = "https://auth.robokassa.ru/Merchant/Index.aspx?" +
-                    "MerchantLogin=" + paymentData.merchantLogin() +
-                    "&OutSum=" + paymentData.outSum() +
-                    "&InvoiceID=" + paymentData.invId() +
-                    "&Description=" + paymentData.description() +
-                    "&SignatureValue=" + paymentData.signatureValue() +
-                    "&IsTest=" + paymentData.isTest();
-
-            // Update the advertisement record
             ad.setInvoiceId(invoiceId);
-            ad.setPaymentUrl(paymentUrl);
             ad.setPaymentInitiatedAt(LocalDateTime.now());
-
+            ad.setPaymentPage(htmlContent);
             advertisementRepository.save(ad);
-            log.info("Payment initiated for Ad ID {}. Invoice ID: {}, Payment URL generated.", advertisementId, invoiceId);
-            return paymentUrl;
+
+            log.info("Payment data prepared for Ad ID {}. Invoice ID: {}", advertisementId, invoiceId);
+            return htmlContent;
 
         } catch (Exception e) {
             log.error("Failed to prepare payment for advertisement ID {}: {}", advertisementId, e.getMessage(), e);
-            throw new RuntimeException("Ошибка при инициализации платежа через Robokassa", e);
+            throw new RuntimeException("Ошибка при подготовке данных для платежа Robokassa", e);
         }
     }
 

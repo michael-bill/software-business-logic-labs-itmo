@@ -26,7 +26,7 @@ create index if not exists idx_advertisements_created_by ON advertisements(creat
 --changeset michael-bill:add_payment_fields_to_advertisements
 ALTER TABLE advertisements ADD COLUMN IF NOT EXISTS payed boolean NOT NULL DEFAULT false;
 ALTER TABLE advertisements ADD COLUMN IF NOT EXISTS invoice_id varchar(50);
-ALTER TABLE advertisements ADD COLUMN IF NOT EXISTS payment_url varchar(512);
+ALTER TABLE advertisements ADD COLUMN IF NOT EXISTS payment_page text;
 ALTER TABLE advertisements ADD COLUMN IF NOT EXISTS payment_initiated_at timestamp;
 ALTER TABLE advertisements ADD COLUMN IF NOT EXISTS payment_expires_at timestamp;
 

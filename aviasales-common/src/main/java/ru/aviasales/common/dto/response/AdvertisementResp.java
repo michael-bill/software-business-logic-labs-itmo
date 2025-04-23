@@ -35,6 +35,6 @@ public class AdvertisementResp {
     private Boolean payed;
     @Schema(description = "Идентификатор счета Robokassa")
     private String invoiceId;
-    @Schema(description = "URL для оплаты (если платеж инициирован)")
-    private String paymentUrl;
+    @Schema(description = "Html page для оплаты (если платеж инициирован)")
+    private String paymentPage;
 }

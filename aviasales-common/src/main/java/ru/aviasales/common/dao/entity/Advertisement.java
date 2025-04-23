@@ -56,8 +56,8 @@ public class Advertisement {
     @Column(name = "invoice_id", length = 50)
     private String invoiceId;
 
-    @Column(name = "payment_url", length = 512)
-    private String paymentUrl;
+    @Column(name = "payment_page")
+    private String paymentPage;
 
     @Column(name = "payment_initiated_at")
     private LocalDateTime paymentInitiatedAt;

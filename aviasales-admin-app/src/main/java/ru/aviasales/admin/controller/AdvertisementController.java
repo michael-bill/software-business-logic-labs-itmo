@@ -10,20 +10,26 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.aviasales.admin.configuration.PageableAsQueryParam;
 import ru.aviasales.admin.service.core.TaskStatusService;
 import ru.aviasales.admin.service.messaging.KafkaProducerService;
+import ru.aviasales.admin.service.robokassa.RobokassaHtmlService;
+import ru.aviasales.admin.service.robokassa.RobokassaService;
 import ru.aviasales.common.dto.request.AdvertisementReq;
 import ru.aviasales.common.dto.response.AdvertisementResp;
 import ru.aviasales.admin.service.core.ad.AdvertisementService;
 import ru.aviasales.common.dto.response.CreateTaskResp;
 import ru.aviasales.common.dto.response.TaskStatusResp;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/advertisements")
@@ -32,6 +38,7 @@ public class AdvertisementController {
 
     private final AdvertisementService advertisementService;
     private final TaskStatusService taskStatusService;
+    private final RobokassaHtmlService robokassaHtmlService;
 
     @Operation(summary = "Получить список всех рекламных объявлений")
     @PageableAsQueryParam
@@ -83,14 +90,24 @@ public class AdvertisementController {
     }
 
     @Operation(summary = "Инициировать оплату для рекламного объявления",
-            description = "Возвращает URL для редиректа пользователя на страницу оплаты Robokassa.")
-    @PostMapping("/{id}/pay")
-    @PreAuthorize("hasAuthority('CREATE_ADVERTISEMENT')") // Or a specific PAY_ADVERTISEMENT permission
-    public ResponseEntity<Map<String, String>> initiatePayment(
+            description = "Возвращает HTML страницу, которая автоматически редиректит пользователя на страницу оплаты Robokassa.")
+    @PostMapping(value = "/{id}/pay", produces = MediaType.TEXT_HTML_VALUE) // Указываем produces
+    @PreAuthorize("hasAuthority('CREATE_ADVERTISEMENT')")
+    public ResponseEntity<String> initiatePayment(
             @Parameter(description = "ID рекламного объявления для оплаты")
             @PathVariable("id") Long advertisementId
     ) {
-        String paymentUrl = advertisementService.initiatePaymentForAdvertisement(advertisementId);
-        return ResponseEntity.ok(Map.of("paymentUrl", paymentUrl));
+        try {
+            String htmlContent = advertisementService.initiatePaymentForAdvertisement(advertisementId);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.TEXT_HTML)
+                    .body(htmlContent);
+        } catch (Exception e) {
+            log.error("Failed to initiate payment HTML for ad {}: {}", advertisementId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.TEXT_HTML)
+                    .body("<html><body><h1>Ошибка инициации платежа</h1><p>" + e.getMessage() + "</p></body></html>");
+        }
     }
 }

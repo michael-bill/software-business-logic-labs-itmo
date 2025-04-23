@@ -22,6 +22,12 @@ public class RobokassaHtmlService {
         return templateEngine.process("robokassa/payment-init", context);
     }
 
+    public String generatePaymentHtml(RobokassaService.PaymentData paymentData) {
+        Context context = new Context();
+        context.setVariable("payment", paymentData);
+        return templateEngine.process("robokassa/payment-init", context);
+    }
+
     private RobokassaService.PaymentData preparePayment(String invId, String outSum, String description) throws Exception {
         String signature = robokassaService.generatePaymentSignature(invId, outSum);
         String encodedDesc = robokassaService.encodeDescription(description);
