@@ -17,9 +17,9 @@ import javax.naming.Reference;
 
 public class RandomNumberConnectionFactoryImpl implements RandomNumberConnectionFactory {
 
-    private final ManagedConnectionFactory mcf; // Ссылка на MCF
-    private final ConnectionManager cm;      // ConnectionManager (может быть null)
-    private Reference reference;             // Для JNDI
+    private final ManagedConnectionFactory mcf;
+    private final ConnectionManager cm;
+    private Reference reference;
 
     public RandomNumberConnectionFactoryImpl(ManagedConnectionFactory mcf, ConnectionManager cm) {
         this.mcf = mcf;
@@ -29,16 +29,10 @@ public class RandomNumberConnectionFactoryImpl implements RandomNumberConnection
     @Override
     public RandomNumberConnection getConnection() throws ResourceException {
         if (cm == null) {
-            // Возвращаем "неуправляемое" соединение или бросаем исключение
             throw new ResourceException("ConnectionManager is not available. Cannot provide a managed connection.");
-            // Или: return new RandomNumberConnectionImpl(null); // Но это лишено смысла в контексте JCA
         }
-        // Запрашиваем соединение у ConnectionManager, передавая нашу MCF и null ConnectionRequestInfo
         return (RandomNumberConnection) cm.allocateConnection(mcf, null);
     }
-
-    // --- Методы с ConnectionSpec, getMetaData, getRecordFactory опущены ---
-    // Они нужны для более сложных сценариев CCI.
 
     @Override
     public Reference getReference() throws NamingException {
@@ -49,8 +43,6 @@ public class RandomNumberConnectionFactoryImpl implements RandomNumberConnection
     public void setReference(Reference reference) {
         this.reference = reference;
     }
-
-    // --- Необязательные методы CCI ---
 
     public ResourceAdapterMetaData getMetaData() throws ResourceException {
         throw new ResourceException("getMetaData not supported");

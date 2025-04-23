@@ -22,26 +22,20 @@
     </properties>
 
     <dependencies>
-        <!-- !!! ИЗМЕНЕНИЕ ЗАВИСИМОСТИ !!! -->
         <dependency>
             <groupId>ru.aviasales.jca</groupId>
-            <artifactId>random-number-ra</artifactId> <!-- Имя артефакта то же -->
+            <artifactId>random-number-ra</artifactId>
             <version>${random-number-ra.version}</version>
-            <type>jar</type> <!-- Тип теперь просто JAR -->
-            <!-- <classifier>classes</classifier> --> <!-- Классификатор больше не нужен -->
-            <!-- <scope>provided</scope> --> <!-- Scope меняем на compile, чтобы JAR попал в WAR -->
+            <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        <!-- ============================= -->
 
-        <!-- Jakarta EE API для WAR -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>${jakarta.jakartaee-api.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Убедитесь, что зависимость web-api тоже есть, если она нужна -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-web-api</artifactId>

@@ -20,8 +20,6 @@ import ru.aviasales.admin.service.robokassa.RobokassaService;
 
 
 import java.time.LocalDateTime;
-import java.util.Random;
-import java.util.UUID; // For generating unique invoice parts if needed
 
 @Service
 @RequiredArgsConstructor
@@ -124,7 +122,7 @@ public class AdvertisementService {
             throw e;
         } catch (Exception e) {
             log.error("Error processing payment callback for Invoice ID {}: {}", invId, e.getMessage(), e);
-            throw new RuntimeException("Internal error processing payment result", e); // Prevent sending "OK..."
+            throw new RuntimeException("Internal error processing payment result", e);
         }
     }
 }

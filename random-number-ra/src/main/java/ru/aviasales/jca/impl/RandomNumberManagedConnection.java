@@ -17,7 +17,7 @@ public class RandomNumberManagedConnection implements ManagedConnection {
     private final RandomNumberManagedConnectionFactory mcf;
     private PrintWriter logWriter;
     private final List<ConnectionEventListener> listeners = new ArrayList<>();
-    private RandomNumberConnectionImpl connectionHandle; // Храним ссылку на выданный хэндл
+    private RandomNumberConnectionImpl connectionHandle;
 
     public RandomNumberManagedConnection(RandomNumberManagedConnectionFactory mcf) {
         this.mcf = mcf;
@@ -25,36 +25,26 @@ public class RandomNumberManagedConnection implements ManagedConnection {
 
     @Override
     public Object getConnection(javax.security.auth.Subject subject, ConnectionRequestInfo cxRequestInfo) throws ResourceException {
-        // В простом случае просто создаем новый хэндл
-        // В реальном RA здесь могла бы быть логика переиспользования
-        if (connectionHandle != null) {
-            // Уже выдали, можно бросить исключение или вернуть существующий (зависит от семантики)
-            //throw new IllegalStateException("Connection handle already allocated");
-        }
         connectionHandle = new RandomNumberConnectionImpl(this);
         return connectionHandle;
     }
 
     @Override
     public void destroy() throws ResourceException {
-        // Очистка ресурсов, если были
         cleanup();
     }
 
     @Override
     public void cleanup() throws ResourceException {
-        // Закрываем все выданные хэндлы (если их может быть несколько)
         if (connectionHandle != null) {
             try {
-                connectionHandle.close(); // Уведомляем хэндл, что он закрывается
+                connectionHandle.close();
             } catch (ResourceException ignored) {
             }
-            connectionHandle = null; // Сбрасываем ссылку
+            connectionHandle = null;
         }
-        // Сбрасываем другие состояния, если есть
     }
 
-    // Уведомляет слушателей (пул соединений), что этот хэндл закрыт
     void closeHandle(RandomNumberConnectionImpl handle) {
         if (handle == this.connectionHandle) {
             ConnectionEvent event = new ConnectionEvent(this, ConnectionEvent.CONNECTION_CLOSED);
@@ -62,7 +52,7 @@ public class RandomNumberManagedConnection implements ManagedConnection {
             for (ConnectionEventListener listener : listeners) {
                 listener.connectionClosed(event);
             }
-            this.connectionHandle = null; // Сбросить ссылку после уведомления
+            this.connectionHandle = null;
         }
     }
 
@@ -73,8 +63,6 @@ public class RandomNumberManagedConnection implements ManagedConnection {
             throw new ResourceException("Invalid connection type associated");
         }
         this.connectionHandle = (RandomNumberConnectionImpl) connection;
-        // Обычно используется для восстановления связи после диссоциации,
-        // например, при возврате соединения в пул.
     }
 
     @Override
@@ -89,19 +77,16 @@ public class RandomNumberManagedConnection implements ManagedConnection {
 
     @Override
     public XAResource getXAResource() throws ResourceException {
-        // Наш адаптер не поддерживает XA-транзакции
         throw new NotSupportedException("XA transactions not supported");
     }
 
     @Override
     public LocalTransaction getLocalTransaction() throws ResourceException {
-        // Наш адаптер не поддерживает локальные транзакции JCA
         throw new NotSupportedException("Local transactions not supported");
     }
 
     @Override
     public ManagedConnectionMetaData getMetaData() throws ResourceException {
-        // Можно вернуть базовые метаданные
         return new ManagedConnectionMetaData() {
             @Override
             public String getEISProductName() throws ResourceException {
@@ -113,11 +98,11 @@ public class RandomNumberManagedConnection implements ManagedConnection {
             }
             @Override
             public int getMaxConnections() throws ResourceException {
-                return 0; // Неограничено со стороны RA
+                return 0;
             }
             @Override
             public String getUserName() throws ResourceException {
-                return null; // Аутентификация не используется
+                return null;
             }
         };
     }

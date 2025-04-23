@@ -7,9 +7,8 @@
     <groupId>ru.aviasales.jca</groupId>
     <artifactId>random-number-ra</artifactId>
     <version>1.0.0</version>
-    <!-- !!! ИЗМЕНЕНИЕ: Упаковка теперь JAR !!! -->
     <packaging>jar</packaging>
-    <name>Random Number Library (was RA)</name> <!-- Имя изменено для ясности -->
+    <name>Random Number Library (was RA)</name>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -20,20 +19,16 @@
     </properties>
 
     <dependencies>
-        <!-- Оставляем зависимости Jakarta EE, так как классы все еще используют эти API -->
-        <!-- Можно поменять scope на compile, если WAR будет их использовать напрямую, -->
-        <!-- но оставим provided, предполагая, что WildFly их предоставит -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>${jakarta.jakartaee-api.version}</version>
-            <scope>provided</scope> <!-- Оставляем provided, т.к. код JCA все еще там -->
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Оставляем только компилятор -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

@@ -18,7 +18,7 @@ import ru.aviasales.admin.service.robokassa.RobokassaHtmlService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/robokassa")
-@Tag(name = "Payments (Robokassa Callbacks & Manual Init)") // Updated tag name
+@Tag(name = "Payments (Robokassa Callbacks & Manual Init)")
 public class PaymentController {
 
     private final RobokassaHtmlService robokassaHtmlService;

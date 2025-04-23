@@ -17,10 +17,6 @@ public class RandomNumberManagedConnectionFactory implements ManagedConnectionFa
     private ResourceAdapter resourceAdapter;
     private PrintWriter logWriter;
 
-    // Конфигурационные свойства (если нужны)
-    // @ConfigProperty(defaultValue = "someValue")
-    // private String someConfigProperty;
-
     public RandomNumberManagedConnectionFactory() {
     }
 
@@ -30,34 +26,27 @@ public class RandomNumberManagedConnectionFactory implements ManagedConnectionFa
 
     @Override
     public Object createConnectionFactory(ConnectionManager cxManager) throws ResourceException {
-        // cxManager = null, если используется вне сервера приложений (не наш случай)
-        // или если фабрика не управляется контейнером.
-        // В WildFly cxManager будет предоставлен.
         return new RandomNumberConnectionFactoryImpl(this, cxManager);
     }
 
     @Override
     public Object createConnectionFactory() throws ResourceException {
-        // Создаем фабрику без ConnectionManager - она не сможет участвовать в пулинге и транзакциях контейнера.
         return new RandomNumberConnectionFactoryImpl(this, null); // Или бросить исключение, если не поддерживается
     }
 
     @Override
     public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo cxRequestInfo) throws ResourceException {
-        // Subject и ConnectionRequestInfo игнорируются, т.к. у нас нет аутентификации или спец. запросов
         return new RandomNumberManagedConnection(this);
     }
 
     @Override
     public ManagedConnection matchManagedConnections(Set connectionSet, Subject subject, ConnectionRequestInfo cxRequestInfo) throws ResourceException {
-        // Простая логика: возвращаем любое свободное соединение из пула,
-        // так как у нас нет специфичных критериев (subject, cxRequestInfo).
         for (Object obj : connectionSet) {
             if (obj instanceof RandomNumberManagedConnection) {
                 return (RandomNumberManagedConnection) obj;
             }
         }
-        return null; // Не нашли подходящего
+        return null;
     }
 
     @Override

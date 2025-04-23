@@ -43,7 +43,7 @@ public class RandomNumberResourceAdapter implements ResourceAdapter, Serializabl
 
     private static final long serialVersionUID = 1L;
 
-    private transient BootstrapContext bootstrapContext; // transient, т.к. не должен сериализоваться
+    private transient BootstrapContext bootstrapContext;
 
     public RandomNumberResourceAdapter() {
     }
@@ -51,29 +51,24 @@ public class RandomNumberResourceAdapter implements ResourceAdapter, Serializabl
     @Override
     public void start(BootstrapContext ctx) throws ResourceAdapterInternalException {
         this.bootstrapContext = ctx;
-        // Здесь можно использовать BootstrapContext для получения Timer, WorkManager и т.д.
     }
 
     @Override
     public void stop() {
-        // Освобождение ресурсов, остановка фоновых задач (если были)
         this.bootstrapContext = null;
     }
 
     @Override
     public void endpointActivation(MessageEndpointFactory endpointFactory, ActivationSpec spec) throws ResourceException {
-        // Не используется для исходящих соединений (outbound)
         throw new UnsupportedOperationException("Endpoint activation is not supported by this resource adapter.");
     }
 
     @Override
     public void endpointDeactivation(MessageEndpointFactory endpointFactory, ActivationSpec spec) {
-        // Не используется для исходящих соединений (outbound)
     }
 
     @Override
     public XAResource[] getXAResources(ActivationSpec[] specs) throws ResourceException {
-        // Не используется для исходящих соединений (outbound), и XA не поддерживается
         return null;
     }
 }

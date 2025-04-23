@@ -1,9 +1,5 @@
 package ru.aviasales.admin.controller;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Map; // For returning the payment URL
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -71,7 +67,7 @@ public class AdvertisementController {
 
     @Operation(summary = "Получить статус задачи создания/обработки рекламного объявления")
     @GetMapping("/tasks/{taskId}/status")
-    @PreAuthorize("hasAuthority('READ_ADVERTISEMENTS')") // Or a more general task read permission
+    @PreAuthorize("hasAuthority('READ_ADVERTISEMENTS')")
     public TaskStatusResp getAdvertisementTaskStatus(
             @Parameter(description = "Идентификатор задачи (UUID)")
             @PathVariable("taskId") String taskId
@@ -91,7 +87,7 @@ public class AdvertisementController {
 
     @Operation(summary = "Инициировать оплату для рекламного объявления",
             description = "Возвращает HTML страницу, которая автоматически редиректит пользователя на страницу оплаты Robokassa.")
-    @PostMapping(value = "/{id}/pay", produces = MediaType.TEXT_HTML_VALUE) // Указываем produces
+    @PostMapping(value = "/{id}/pay", produces = MediaType.TEXT_HTML_VALUE)
     @PreAuthorize("hasAuthority('CREATE_ADVERTISEMENT')")
     public ResponseEntity<String> initiatePayment(
             @Parameter(description = "ID рекламного объявления для оплаты")

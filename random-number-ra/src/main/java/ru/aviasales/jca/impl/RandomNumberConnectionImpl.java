@@ -10,7 +10,7 @@ import java.util.Random;
 public class RandomNumberConnectionImpl implements RandomNumberConnection {
 
     private final RandomNumberManagedConnection managedConnection;
-    private final Random random = new Random(); // Можно сделать инжектируемым, если нужно
+    private final Random random = new Random();
 
     public RandomNumberConnectionImpl(RandomNumberManagedConnection managedConnection) {
         this.managedConnection = managedConnection;
@@ -24,11 +24,7 @@ public class RandomNumberConnectionImpl implements RandomNumberConnection {
 
     @Override
     public void close() throws ResourceException {
-//        managedConnection.closeHandle(this); // Сообщаем управляемому соединению, что этот хэндл закрыт
     }
-
-    // --- Методы Interaction, LocalTransaction, ResultSetInfo опущены для простоты ---
-    // Если бы RA взаимодействовал с EIS, они бы понадобились.
 
     @Override
     public jakarta.resource.cci.Interaction createInteraction() throws ResourceException {
@@ -47,7 +43,6 @@ public class RandomNumberConnectionImpl implements RandomNumberConnection {
 
     @Override
     public ConnectionMetaData getMetaData() throws ResourceException {
-        // Можно вернуть базовые метаданные, если нужно
         throw new ResourceException("MetaData not supported");
     }
 
