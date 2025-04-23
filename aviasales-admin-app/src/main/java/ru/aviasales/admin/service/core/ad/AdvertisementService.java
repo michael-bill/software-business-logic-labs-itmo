@@ -115,7 +115,6 @@ public class AdvertisementService {
             return true;
 
         } catch (EntityNotFoundException e) {
-            // Logged inside the orElseThrow
             throw e;
         } catch (Exception e) {
             log.error("Error processing payment callback for Invoice ID {}: {}", invId, e.getMessage(), e);
