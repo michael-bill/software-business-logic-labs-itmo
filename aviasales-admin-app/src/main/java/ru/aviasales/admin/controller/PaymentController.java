@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.aviasales.admin.jca.JcaRandomServiceClient;
 import ru.aviasales.admin.service.core.ad.AdvertisementService;
 import ru.aviasales.admin.service.robokassa.RobokassaHtmlService;
 
@@ -22,6 +23,7 @@ public class PaymentController {
 
     private final RobokassaHtmlService robokassaHtmlService;
     private final AdvertisementService advertisementService;
+    private final JcaRandomServiceClient jcaRandomServiceClient;
 
     @Operation(summary = "Инициализация платежа (Ручной/Тестовый)",
             description = "Генерирует HTML-страницу для редиректа на Robokassa. Основной способ инициации - через POST /advertisements/{id}/pay")
@@ -33,8 +35,7 @@ public class PaymentController {
             @RequestParam(value = "description") String description
     ) {
         try {
-            Random random = new Random();
-            String invoiceId = random.nextInt(1000000, 10000000) + "";
+            String invoiceId = jcaRandomServiceClient.getNewInvoiceId();
             log.warn("Manual payment initiation requested for InvId: {}, Amount: {}", invoiceId, amount);
             String html = robokassaHtmlService.generatePaymentHtml(invoiceId, amount, description);
             return ResponseEntity.ok()

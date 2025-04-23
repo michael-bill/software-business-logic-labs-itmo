@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connector xmlns="https://jakarta.ee/xml/ns/jakartaee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/connector_2_1.xsd"
+           version="2.1">
+
+    <display-name>RandomNumber Resource Adapter</display-name>
+    <vendor-name>Aviasales Example</vendor-name>
+    <eis-type>Random Number Generator</eis-type>
+    <resourceadapter-version>1.0</resourceadapter-version>
+    <license>
+        <description>Sample License</description>
+        <license-required>false</license-required>
+    </license>
+
+    <resourceadapter>
+        <resourceadapter-class>ru.aviasales.jca.impl.RandomNumberResourceAdapter</resourceadapter-class>
+
+        <outbound-resourceadapter>
+
+            <!-- 1. Секция определения Connection Factory и Connection -->
+            <connection-definition>
+                <connectionfactory-interface>ru.aviasales.jca.RandomNumberConnectionFactory</connectionfactory-interface>
+                <connectionfactory-impl-class>ru.aviasales.jca.impl.RandomNumberConnectionFactoryImpl</connectionfactory-impl-class>
+                <connection-interface>ru.aviasales.jca.RandomNumberConnection</connection-interface>
+                <connection-impl-class>ru.aviasales.jca.impl.RandomNumberConnectionImpl</connection-impl-class>
+                <!-- Здесь НЕ должно быть managedconnectionfactory-class и transaction-support -->
+            </connection-definition>
+
+            <!-- 2. Класс Managed Connection Factory - НА ЭТОМ УРОВНЕ -->
+            <managedconnectionfactory-class>ru.aviasales.jca.impl.RandomNumberManagedConnectionFactory</managedconnectionfactory-class>
+
+            <!-- 3. Поддержка транзакций - НА ЭТОМ УРОВНЕ -->
+            <transaction-support>NoTransaction</transaction-support>
+
+        </outbound-resourceadapter>
+    </resourceadapter>
+</connector>

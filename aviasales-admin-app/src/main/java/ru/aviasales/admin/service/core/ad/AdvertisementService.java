@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import ru.aviasales.admin.jca.JcaRandomServiceClient;
 import ru.aviasales.admin.service.robokassa.RobokassaHtmlService;
 import ru.aviasales.common.dao.entity.Advertisement;
 import ru.aviasales.admin.dao.repository.AdvertisementRepository;
@@ -31,6 +32,7 @@ public class AdvertisementService {
     private final RobokassaService robokassaService;
     private final ModelMapper modelMapper;
     private final RobokassaHtmlService robokassaHtmlService;
+    private final JcaRandomServiceClient jcaRandomServiceClient;
 
     @Value("${advertisement.payment.default-amount:100.00}")
     private String defaultPaymentAmount;
@@ -71,8 +73,8 @@ public class AdvertisementService {
         }
 
         String paymentAmount = defaultPaymentAmount;
-        Random random = new Random();
-        String invoiceId = random.nextInt(1000000, 10000000) + "";
+        // крутотень
+        String invoiceId = jcaRandomServiceClient.getNewInvoiceId();
         String description = "Оплата рекламы: " + ad.getTitle() + " (ID: " + ad.getId() + ")";
 
         try {

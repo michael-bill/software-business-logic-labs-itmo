@@ -61,3 +61,8 @@ robokassa:
   password1: y70nsmV8BBeNSUa8w7Ox
   password2: FrTX3o9a0TeQyZQSG88R
   is-test: 1
+
+jca:
+  random:
+    service:
+      url: ${JCA_RANDOM_SERVICE_URL:http://localhost:8080/jca-random-service/api}

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ru.aviasales.jca</groupId>
+    <artifactId>random-number-ra</artifactId>
+    <version>1.0.0</version>
+    <packaging>rar</packaging>
+    <name>Random Number Resource Adapter</name> <!-- Добавил имя -->
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jakarta.jakartaee-api.version>10.0.0</jakarta.jakartaee-api.version>
+        <maven-rar-plugin.version>2.4</maven-rar-plugin.version>
+        <lombok.version>1.18.34</lombok.version> <!-- Убедись, что версия совпадает с другими модулями -->
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>${jakarta.jakartaee-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-web-api</artifactId>
+            <version>${jakarta.jakartaee-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Плагин для сборки RAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-rar-plugin</artifactId>
+                <version>${maven-rar-plugin.version}</version>
+                <extensions>true</extensions> <!-- Важно для правильной работы с lifecycle -->
+                <configuration>
+                    <rarSourceDirectory>${project.basedir}/src/main/resources</rarSourceDirectory>
+                    <!-- Можно добавить <finalName> если нужно другое имя RAR -->
+                </configuration>
+            </plugin>
+
+            <!-- 1. Явно создаем JAR с классами и КЛАССИФИКАТОРОМ -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version> <!-- Используй актуальную версию -->
+                <executions>
+                    <execution>
+                        <id>package-classes</id> <!-- Уникальный ID -->
+                        <phase>package</phase> <!-- Выполняем на фазе package -->
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <!-- === ДОБАВЛЯЕМ КЛАССИФИКАТОР === -->
+                            <classifier>classes</classifier>
+                            <!-- ================================ -->
+                            <!-- Указываем, что включать только классы -->
+                            <includes>
+                                <include>ru/aviasales/jca/**/*.class</include>
+                                <!-- Добавь другие пакеты с классами, если есть -->
+                            </includes>
+                            <!-- Можно добавить <finalName>, если нужно другое имя JAR -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 2. Прикрепляем созданный JAR с КЛАССИФИКАТОРОМ к проекту -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.5.0</version> <!-- Используй актуальную версию -->
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase> <!-- Выполняем на фазе package -->
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <!-- Указываем путь к JAR (имя файла теперь будет включать классификатор) -->
+                                    <file>${project.build.directory}/${project.build.finalName}-classes.jar</file>
+                                    <type>jar</type>
+                                    <!-- === УКАЗЫВАЕМ ТОТ ЖЕ КЛАССИФИКАТОР === -->
+                                    <classifier>classes</classifier>
+                                    <!-- ==================================== -->
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Компилятор -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <!-- Lombok Annotation Processor -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

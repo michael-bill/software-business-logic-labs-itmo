@@ -16,16 +16,33 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
-      - "29092:29092"
+      - "9092:9092" # Для доступа с хоста
+      - "29092:29092" # Для внутренней коммуникации контейнеров
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092 # Для доступа с хоста и изнутри
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+
+  # Новый сервис для JCA
+  jca-service:
+    build:
+      context: ./wildfly-docker # Путь к директории с Dockerfile для WildFly
+    container_name: jca-random-provider-service
+    ports:
+      - "8080:8080" # Маппинг порта WildFly на хост
+      - "9990:9990" # Порт управления WildFly (опционально)
+    # Можно добавить healthcheck для ожидания старта WildFly
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/jca-random-service/api/random/invoice-id"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s # Даем WildFly время на запуск и деплой
+

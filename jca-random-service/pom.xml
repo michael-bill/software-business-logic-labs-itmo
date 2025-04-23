@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ru.aviasales.jcaclient</groupId>
+    <artifactId>jca-random-service</artifactId>
+    <version>1.0.0</version>
+    <packaging>war</packaging>
+    <name>jca-random-service</name>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jakarta.jakartaee-api.version>10.0.0</jakarta.jakartaee-api.version>
+        <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+        <random-number-ra.version>1.0.0</random-number-ra.version>
+        <lombok.version>1.18.34</lombok.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- Зависимость на API нашего Resource Adapter (JAR с классификатором) -->
+        <dependency>
+            <groupId>ru.aviasales.jca</groupId>
+            <artifactId>random-number-ra</artifactId>
+            <version>${random-number-ra.version}</version>
+            <type>jar</type> <!-- Тип JAR, а не RAR -->
+            <classifier>classes</classifier> <!-- Указываем классификатор -->
+            <scope>provided</scope> <!-- Классы будут доступны из развернутого RA -->
+        </dependency>
+
+        <!-- Убедись, что используется полная Jakarta EE API, а не только Web -->
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId> <!-- Был jakarta.jakartaee-web-api -->
+            <version>${jakarta.jakartaee-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-web-api</artifactId>
+            <version>${jakarta.jakartaee-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>jca-random-service</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven-war-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
