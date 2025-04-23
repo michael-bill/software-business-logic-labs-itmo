@@ -1,5 +1,7 @@
 package ru.aviasales.admin.controller;
 
+import java.util.Random;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,18 +27,16 @@ public class PaymentController {
             description = "Генерирует HTML-страницу для редиректа на Robokassa. Основной способ инициации - через POST /advertisements/{id}/pay")
     @GetMapping("/init-payment")
     public ResponseEntity<String> showPaymentPageManual(
-            @Parameter(description = "Номер счета (должен быть уникальным)", required = true)
-            @RequestParam(value = "inv_id") String invId,
-
             @Parameter(description = "Сумма (в руб)", required = true)
             @RequestParam(value = "amount") String amount,
-
             @Parameter(description = "Описание платежа", required = true)
             @RequestParam(value = "description") String description
     ) {
-        log.warn("Manual payment initiation requested for InvId: {}, Amount: {}", invId, amount);
         try {
-            String html = robokassaHtmlService.generatePaymentHtml(invId, amount, description);
+            Random random = new Random();
+            String invoiceId = random.nextInt(1000000, 10000000) + "";
+            log.warn("Manual payment initiation requested for InvId: {}, Amount: {}", invoiceId, amount);
+            String html = robokassaHtmlService.generatePaymentHtml(invoiceId, amount, description);
             return ResponseEntity.ok()
                     .contentType(MediaType.TEXT_HTML)
                     .body(html);
