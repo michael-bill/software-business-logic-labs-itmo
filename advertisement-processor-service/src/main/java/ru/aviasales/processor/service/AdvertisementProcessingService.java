@@ -77,6 +77,7 @@ public class AdvertisementProcessingService {
                     .adType(adType)
                     .targetSegments(requiresSegmentation ? targetSegments : null)
                     .deadline(req.getDeadline())
+                    .payed(false)
                     .build();
 
             Advertisement savedAd = advertisementRepository.save(advertisement);

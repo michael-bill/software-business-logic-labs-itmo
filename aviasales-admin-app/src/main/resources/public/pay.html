@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Перенаправление на оплату</title>
+    <script>
+        window.onload = function() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+
+                const form = document.getElementById('robokassaForm');
+                if (!form) {
+                    console.error("Error: Form with ID 'robokassaForm' not found!");
+                    document.body.innerHTML = '<p style="color: red;">Ошибка: Не удалось найти форму для отправки.</p>';
+                    return;
+                }
+
+                form.elements['MerchantLogin'].value = urlParams.get('MerchantLogin') ?? '';
+                form.elements['OutSum'].value = urlParams.get('OutSum') ?? '';
+                form.elements['InvoiceID'].value = urlParams.get('InvoiceID') ?? '';
+                form.elements['Description'].value = urlParams.get('Description') ?? '';
+                form.elements['SignatureValue'].value = urlParams.get('SignatureValue') ?? '';
+                form.elements['IsTest'].value = urlParams.get('IsTest') ?? '';
+
+                const requiredFields = ['MerchantLogin', 'OutSum', 'InvoiceID', 'SignatureValue'];
+                const missingFields = requiredFields.filter(field => !form.elements[field].value);
+
+                if (missingFields.length > 0) {
+                    console.error("Error: Missing required parameters in URL:", missingFields.join(', '));
+                    document.getElementById('message').innerHTML = `<p style="color: red;">Ошибка: Отсутствуют обязательные параметры в URL: ${missingFields.join(', ')}. Невозможно перейти к оплате.</p>`;
+                    return;
+                }
+
+                console.log("Parameters loaded, submitting form...");
+                document.getElementById('message').style.display = 'none';
+                form.submit();
+
+            } catch (error) {
+                console.error("JavaScript error during redirect setup:", error);
+                document.getElementById('message').innerHTML = '<p style="color: red;">Произошла ошибка при подготовке к перенаправлению. Пожалуйста, проверьте консоль браузера или обратитесь в поддержку.</p>';
+            }
+        };
+    </script>
+    <style>
+        #robokassaForm {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<form id="robokassaForm"
+      action="https://auth.robokassa.ru/Merchant/Index.aspx"
+      method="POST">
+    <input type="hidden" name="MerchantLogin" value="">
+    <input type="hidden" name="OutSum" value="">
+    <input type="hidden" name="InvoiceID" value="">
+    <input type="hidden" name="Description" value="">
+    <input type="hidden" name="SignatureValue" value="">
+    <input type="hidden" name="IsTest" value="">
+</form>
+
+<div id="message">
+    <p>Пожалуйста, подождите, идет перенаправление на страницу оплаты...</p>
+</div>
+
+<noscript>
+    <p style="color: red; font-weight: bold;">Для автоматического перехода к оплате требуется JavaScript.</p>
+    <p>Пожалуйста, включите JavaScript в настройках вашего браузера и обновите страницу.</p>
+    <p>(Если JavaScript включен, возможно, произошла ошибка. Убедитесь, что URL содержит все необходимые параметры: MerchantLogin, OutSum, InvoiceID, SignatureValue и т.д.)</p>
+</noscript>
+</body>
+</html>

@@ -66,6 +66,10 @@ public class AdvertisementService {
             throw new IllegalOperationException("Рекламное объявление с id " + advertisementId + " уже оплачено.");
         }
 
+        if(ad.getPaymentPage() != null) {
+            return ad.getPaymentPage();
+        }
+
         String paymentAmount = defaultPaymentAmount;
         Random random = new Random();
         String invoiceId = random.nextInt(1000000, 10000000) + "";

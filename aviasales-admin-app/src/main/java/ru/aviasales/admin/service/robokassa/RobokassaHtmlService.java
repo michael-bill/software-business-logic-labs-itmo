@@ -2,30 +2,48 @@ package ru.aviasales.admin.service.robokassa;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 import ru.aviasales.admin.configuration.props.RobokassaProperties;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Service
 @RequiredArgsConstructor
 public class RobokassaHtmlService {
     private final RobokassaProperties properties;
-    private final SpringTemplateEngine templateEngine;
     private final RobokassaService robokassaService;
 
     public String generatePaymentHtml(String invId, String outSum, String description) throws Exception {
         RobokassaService.PaymentData paymentData = preparePayment(invId, outSum, description);
-
-        Context context = new Context();
-        context.setVariable("payment", paymentData);
-
-        return templateEngine.process("robokassa/payment-init", context);
+        return generatePaymentHtml(paymentData);
     }
 
     public String generatePaymentHtml(RobokassaService.PaymentData paymentData) {
-        Context context = new Context();
-        context.setVariable("payment", paymentData);
-        return templateEngine.process("robokassa/payment-init", context);
+        if(paymentData == null) return null;
+
+        StringBuilder urlBuilder = new StringBuilder("/pay.html?");
+
+        appendQueryParam(urlBuilder, "MerchantLogin", paymentData.merchantLogin(), false);
+        appendQueryParam(urlBuilder, "OutSum", paymentData.outSum(), true);
+        appendQueryParam(urlBuilder, "InvoiceID", paymentData.invId(), true);
+        appendQueryParam(urlBuilder, "Description", paymentData.description(), true);
+        appendQueryParam(urlBuilder, "SignatureValue", paymentData.signatureValue(), true);
+        appendQueryParam(urlBuilder, "IsTest", String.valueOf(paymentData.isTest()), true);
+
+        return urlBuilder.toString();
+    }
+
+    private void appendQueryParam(StringBuilder builder, String key, String value, boolean prependAmpersand) {
+        if (prependAmpersand) {
+            builder.append('&');
+        }
+        builder.append(urlEncode(key));
+        builder.append('=');
+        builder.append(urlEncode(value != null ? value : ""));
+    }
+
+    private String urlEncode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
     private RobokassaService.PaymentData preparePayment(String invId, String outSum, String description) throws Exception {
