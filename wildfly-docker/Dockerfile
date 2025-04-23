@@ -9,7 +9,7 @@ FROM quay.io/wildfly/wildfly:27.0.1.Final-jdk17
 WORKDIR /opt/jboss/wildfly/standalone/deployments
 
 # Копируем артефакты
-COPY ./artifacts/random-number-ra-*.rar ./random-number-ra.rar
+# COPY ./artifacts/random-number-ra-*.jar ./random-number-ra.jar
 COPY ./artifacts/jca-random-service*.war ./jca-random-service.war
 
 # --- Копируем кастомную конфигурацию ---

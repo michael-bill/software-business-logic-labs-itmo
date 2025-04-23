@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-set -e # Останавливать скрипт при ошибке
+#set -e # Останавливать скрипт при ошибке
 
 ADMIN_APP_DIR_NAME="aviasales-admin-app"
 PROCESSOR_APP_DIR_NAME="advertisement-processor-service"
@@ -53,7 +53,7 @@ cd "${PROJECT_ROOT_DIR}/${RA_MODULE_DIR_NAME}"
 # --- Используем install, чтобы JAR попал в локальный репозиторий ---
 mvn clean install -DskipTests=true
 # --- Конец изменений ---
-RA_RAR_FILE=$(ls target/${RA_MODULE_DIR_NAME}-*.rar 2>/dev/null | head -n 1)
+RA_RAR_FILE=$(ls target/${RA_MODULE_DIR_NAME}-*.jar 2>/dev/null | head -n 1)
 # Проверяем наличие и RAR
 if [ -z "$RA_RAR_FILE" ]; then
   echo "ERROR: Resource Adapter RAR file not found after install in ${PROJECT_ROOT_DIR}/${RA_MODULE_DIR_NAME}/target/"

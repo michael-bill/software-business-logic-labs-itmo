@@ -454,48 +454,26 @@
         <subsystem xmlns="urn:jboss:domain:request-controller:1.0"/>
         <subsystem xmlns="urn:jboss:domain:resource-adapters:6.1">
             <resource-adapters>
-                <!-- Описание нашего ресурсного адаптера -->
-                <resource-adapter id="random-number-ra-1.0.0.rar"> <!-- Имя должно совпадать с именем файла RAR -->
-                    <archive>
-                        random-number-ra-1.0.0.rar <!-- Имя файла RAR -->
-                    </archive>
-                    <transaction-support>NoTransaction</transaction-support>
-
-                    <!-- Явное определение Connection Factory -->
-                    <connection-definitions>
-                        <connection-definition
-                                class-name="ru.aviasales.jca.impl.RandomNumberManagedConnectionFactory"
-                                jndi-name="java:/eis/RandomNumberCF"> <!-- Явно задаем нужное нам JNDI имя -->
-
-                            <!-- Можно добавить параметры пула, если нужно -->
-                            <pool>
-                                <min-pool-size>2</min-pool-size>
-                                <max-pool-size>10</max-pool-size>
-                                <prefill>false</prefill>
-                                <use-strict-min>false</use-strict-min>
-                                <flush-strategy>FailingConnectionOnly</flush-strategy>
-                            </pool>
-                            <!-- Параметры безопасности (если бы они были) -->
-                            <!-- <security>
-                                <application/>
-                            </security> -->
-                            <!-- Валидация соединений (если нужна) -->
-                            <!-- <validation>
-                                <validate-on-match>false</validate-on-match>
-                                <background-validation>false</background-validation>
-                            </validation> -->
-                            <!-- Можно добавить config-property если бы они были в MCF -->
-                            <!-- <config-property name="someProperty">someValue</config-property> -->
-
-                        </connection-definition>
-                    </connection-definitions>
-
-                    <!-- Admin Objects (если бы были) -->
-                    <!-- <admin-objects>
-                       <admin-object class-name="..." jndi-name="..."/>
-                    </admin-objects> -->
-
-                </resource-adapter>
+                <!-- Используем имя архива, которое будет в deployments -->
+<!--                <resource-adapter id="random-number-ra.jar">-->
+<!--                    <archive>-->
+<!--                        random-number-ra.jar &lt;!&ndash; Указываем фактическое имя файла в deployments &ndash;&gt;-->
+<!--                    </archive>-->
+<!--                    <transaction-support>NoTransaction</transaction-support>-->
+<!--                    <connection-definitions>-->
+<!--                        <connection-definition-->
+<!--                                class-name="ru.aviasales.jca.impl.RandomNumberManagedConnectionFactory"-->
+<!--                                jndi-name="java:/eis/RandomNumberCF"> &lt;!&ndash; Имя JNDI остается тем же &ndash;&gt;-->
+<!--                            <pool>-->
+<!--                                <min-pool-size>2</min-pool-size>-->
+<!--                                <max-pool-size>10</max-pool-size>-->
+<!--                                <prefill>false</prefill>-->
+<!--                                <use-strict-min>false</use-strict-min>-->
+<!--                                <flush-strategy>FailingConnectionOnly</flush-strategy>-->
+<!--                            </pool>-->
+<!--                        </connection-definition>-->
+<!--                    </connection-definitions>-->
+<!--                </resource-adapter>-->
             </resource-adapters>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:sar:1.0"/>

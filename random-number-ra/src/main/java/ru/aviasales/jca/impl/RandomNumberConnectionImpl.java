@@ -24,7 +24,7 @@ public class RandomNumberConnectionImpl implements RandomNumberConnection {
 
     @Override
     public void close() throws ResourceException {
-        managedConnection.closeHandle(this); // Сообщаем управляемому соединению, что этот хэндл закрыт
+//        managedConnection.closeHandle(this); // Сообщаем управляемому соединению, что этот хэндл закрыт
     }
 
     // --- Методы Interaction, LocalTransaction, ResultSetInfo опущены для простоты ---

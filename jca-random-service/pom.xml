@@ -22,24 +22,26 @@
     </properties>
 
     <dependencies>
-
-        <!-- Зависимость на API нашего Resource Adapter (JAR с классификатором) -->
+        <!-- !!! ИЗМЕНЕНИЕ ЗАВИСИМОСТИ !!! -->
         <dependency>
             <groupId>ru.aviasales.jca</groupId>
-            <artifactId>random-number-ra</artifactId>
+            <artifactId>random-number-ra</artifactId> <!-- Имя артефакта то же -->
             <version>${random-number-ra.version}</version>
-            <type>jar</type> <!-- Тип JAR, а не RAR -->
-            <classifier>classes</classifier> <!-- Указываем классификатор -->
-            <scope>provided</scope> <!-- Классы будут доступны из развернутого RA -->
+            <type>jar</type> <!-- Тип теперь просто JAR -->
+            <!-- <classifier>classes</classifier> --> <!-- Классификатор больше не нужен -->
+            <!-- <scope>provided</scope> --> <!-- Scope меняем на compile, чтобы JAR попал в WAR -->
+            <scope>compile</scope>
         </dependency>
+        <!-- ============================= -->
 
-        <!-- Убедись, что используется полная Jakarta EE API, а не только Web -->
+        <!-- Jakarta EE API для WAR -->
         <dependency>
             <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId> <!-- Был jakarta.jakartaee-web-api -->
+            <artifactId>jakarta.jakartaee-api</artifactId>
             <version>${jakarta.jakartaee-api.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Убедитесь, что зависимость web-api тоже есть, если она нужна -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-web-api</artifactId>

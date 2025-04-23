@@ -25,10 +25,10 @@
                 <connection-interface>ru.aviasales.jca.RandomNumberConnection</connection-interface>
                 <connection-impl-class>ru.aviasales.jca.impl.RandomNumberConnectionImpl</connection-impl-class>
                 <!-- Здесь НЕ должно быть managedconnectionfactory-class и transaction-support -->
+                <managedconnectionfactory-class>ru.aviasales.jca.impl.RandomNumberManagedConnectionFactory</managedconnectionfactory-class>
             </connection-definition>
 
             <!-- 2. Класс Managed Connection Factory - НА ЭТОМ УРОВНЕ -->
-            <managedconnectionfactory-class>ru.aviasales.jca.impl.RandomNumberManagedConnectionFactory</managedconnectionfactory-class>
 
             <!-- 3. Поддержка транзакций - НА ЭТОМ УРОВНЕ -->
             <transaction-support>NoTransaction</transaction-support>
