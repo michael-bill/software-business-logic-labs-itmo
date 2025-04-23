@@ -31,7 +31,7 @@ rm -rf ./wildfly-docker/artifacts/*
 
 # 3. Останавливаем и удаляем контейнеры Docker Compose (на всякий случай)
 echo "Stopping and removing Docker containers..."
-docker-compose down --volumes --remove-orphans # --volumes удалит и тома (если есть)
+docker compose down --volumes --remove-orphans # --volumes удалит и тома (если есть)
 
 # 4. Очищаем кэш сборки Docker (как в скрипте, но можно и вручную)
 echo "Pruning Docker build cache..."
@@ -40,8 +40,8 @@ docker builder prune -a -f
 git pull origin main
 
 echo "Stopping existing Docker containers..."
-# Используем docker-compose
-docker-compose down --remove-orphans # Удаляем и старые контейнеры
+# Используем docker compose
+docker compose down --remove-orphans # Удаляем и старые контейнеры
 
 # --- Сборка Maven модулей ---
 echo "Building common module..."
@@ -115,7 +115,7 @@ echo "Artifacts copied to ${WILDFLY_ARTIFACTS_DIR}"
 # --- Запуск Docker Compose ---
 echo "Starting Docker containers (Zookeeper, Kafka, WildFly)..."
 cd "${PROJECT_ROOT_DIR}"
-docker-compose up --build -d
+docker compose up --build -d
 echo "Docker containers started. Waiting for WildFly health check..."
 
 # --- Улучшенное ожидание healthcheck Wildfly ---
@@ -140,8 +140,8 @@ echo "Docker containers started. Waiting for WildFly health check..."
  if [ $RETRIES -eq $MAX_RETRIES ]; then
      echo "ERROR: JCA service did not become available with status 200 after ${MAX_RETRIES} retries."
      echo "Check WildFly logs:"
-     # Используем docker-compose logs
-     docker-compose logs jca-service | tail -100
+     # Используем docker compose logs
+     docker compose logs jca-service | tail -100
      exit 1
  fi
 # --- Конец улучшенного ожидания ---
@@ -206,12 +206,12 @@ echo "Processor Service started with PID: ${PROCESSOR_PID}. Log file: ${PROJECT_
 
 echo "Application startup complete."
 echo "Running Docker containers:"
-# Используем docker-compose ps
-docker-compose ps
+# Используем docker compose ps
+docker compose ps
 echo "Admin App logs: tail -f ${PROJECT_ROOT_DIR}/${ADMIN_APP_DIR_NAME}/${ADMIN_LOG_FILE}"
 echo "Processor Service logs: tail -f ${PROJECT_ROOT_DIR}/${PROCESSOR_APP_DIR_NAME}/${PROCESSOR_LOG_FILE}"
-# Используем docker-compose logs
-echo "WildFly logs: docker-compose logs -f jca-service"
+# Используем docker compose logs
+echo "WildFly logs: docker compose logs -f jca-service"
 
 # Вернуться в директорию админки для удобства
 cd "${PROJECT_ROOT_DIR}/${ADMIN_APP_DIR_NAME}"
