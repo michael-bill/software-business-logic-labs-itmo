@@ -18,8 +18,7 @@ public class RandomNumberConnectionImpl implements RandomNumberConnection {
 
     @Override
     public String generateInvoiceId() throws ResourceException {
-        String invoiceId = String.valueOf(random.nextInt(1000000, 10000000)); // Как было у вас
-        return invoiceId;
+        return String.valueOf(random.nextInt(1000000, 10000000));
     }
 
     @Override

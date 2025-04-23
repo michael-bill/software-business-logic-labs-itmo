@@ -9,13 +9,11 @@ import jakarta.ws.rs.core.Response;
 
 import ru.aviasales.jca.RandomNumberConnection;
 import jakarta.resource.ResourceException;
+import ru.aviasales.jca.impl.RandomNumberConnectionImpl;
 
 @Path("/random")
 @RequestScoped
 public class RandomNumberResource {
-    private RandomNumberConnection getConnectionDirectly() throws ResourceException {
-        return new ru.aviasales.jca.impl.RandomNumberConnectionImpl(null);
-    }
 
     @GET
     @Path("/invoice-id")
@@ -51,5 +49,9 @@ public class RandomNumberResource {
                 } catch (ResourceException ignored) {}
             }
         }
+    }
+
+    private RandomNumberConnection getConnectionDirectly() throws ResourceException {
+        return new RandomNumberConnectionImpl(null);
     }
 }
