@@ -97,17 +97,9 @@ public class AdvertisementController {
             @Parameter(description = "ID рекламного объявления для оплаты")
             @PathVariable("id") Long advertisementId
     ) {
-        try {
-            String htmlContent = advertisementService.initiatePaymentForAdvertisement(advertisementId);
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.TEXT_HTML)
-                    .body(htmlContent);
-        } catch (Exception e) {
-            log.error("Failed to initiate payment HTML for ad {}: {}", advertisementId, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .contentType(MediaType.TEXT_HTML)
-                    .body("<html><body><h1>Ошибка инициации платежа</h1><p>" + e.getMessage() + "</p></body></html>");
-        }
+        String htmlContent = advertisementService.initiatePaymentForAdvertisement(advertisementId);
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .body(htmlContent);
     }
 }
