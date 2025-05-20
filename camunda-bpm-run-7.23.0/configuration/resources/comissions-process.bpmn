@@ -96,7 +96,7 @@
     <sequenceFlow id="Flow_08uxd8e" sourceRef="Gateway_0st0jww" targetRef="Event_19djxi3" />
     <sequenceFlow id="Flow_040ktn0" sourceRef="Activity_0km06to" targetRef="Activity_0lbkmfv" />
     <dataStoreReference id="DataStoreReference_07cb0pb" name="База данных" />
-    <serviceTask id="Activity_0lbkmfv" name="Получение списка категорий продаж" camunda:type="external" camunda:topic="category-get">
+    <serviceTask id="Activity_0lbkmfv" name="Получение списка категорий продаж" camunda:type="external" camunda:topic="category-get-list">
       <incoming>Flow_040ktn0</incoming>
       <incoming>Flow_0ts01rt</incoming>
       <outgoing>Flow_1k1rs2d</outgoing>

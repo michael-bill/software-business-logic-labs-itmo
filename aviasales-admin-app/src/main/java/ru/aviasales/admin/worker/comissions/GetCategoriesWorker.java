@@ -26,10 +26,10 @@ public class GetCategoriesWorker {
 
     @PostConstruct
     public void subscribe() {
-        client.subscribe("category-get")
+        client.subscribe("category-get-list")
                 .lockDuration(10000)
                 .handler((externalTask, externalTaskService) -> {
-                    log.info("Worker 'category-get': processing request to get all sales categories");
+                    log.info("Worker 'category-get-list': processing request to get all sales categories");
 
                     try {
                         List<SalesCategoryResp> categories = salesCategoryService.getAllCategories(PageRequest.of(0, Integer.MAX_VALUE))
@@ -49,10 +49,10 @@ public class GetCategoriesWorker {
                         externalTaskService.complete(externalTask,
                             Map.of("categoryList", objectMapper.writeValueAsString(categoryMaps)));
 
-                        log.info("Worker 'category-get': successfully retrieved {} categories", categories.size());
+                        log.info("Worker 'category-get-list': successfully retrieved {} categories", categories.size());
 
                     } catch (Exception e) {
-                        log.error("Worker 'category-get': error while retrieving categories", e);
+                        log.error("Worker 'category-get-list': error while retrieving categories", e);
                         externalTaskService.handleBpmnError(
                                 externalTask,
                                 "DATABASE_ERROR",
