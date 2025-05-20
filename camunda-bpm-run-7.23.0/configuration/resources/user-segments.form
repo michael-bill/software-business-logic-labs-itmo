@@ -1,0 +1,24 @@
+{
+  "components": [
+    {
+      "label": "Выберите сегменты пользователей для рекламы",
+      "type": "taglist",
+      "layout": {
+        "row": "Row_16eif4l",
+        "columns": null
+      },
+      "id": "Field_1jg5sba",
+      "key": "taglist_segments",
+      "valuesExpression": "=userSegments"
+    }
+  ],
+  "type": "default",
+  "id": "Form_UserSegments",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.35.0"
+  },
+  "schemaVersion": 18
+}

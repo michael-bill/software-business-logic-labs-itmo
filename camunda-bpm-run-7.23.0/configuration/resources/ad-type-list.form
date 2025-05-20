@@ -1,0 +1,42 @@
+{
+  "components": [
+    {
+      "type": "table",
+      "layout": {
+        "row": "Row_1e857r9",
+        "columns": null
+      },
+      "label": "Table",
+      "rowCount": 10,
+      "columns": [
+        {
+          "label": "ID",
+          "key": "id"
+        },
+        {
+          "label": "Название",
+          "key": "name"
+        },
+        {
+          "label": "Поддержка сегментации",
+          "key": "segmentation"
+        },
+        {
+          "label": "Активен",
+          "key": "active"
+        }
+      ],
+      "id": "Field_0dafoo0",
+      "dataSource": "=showList"
+    }
+  ],
+  "type": "default",
+  "id": "Form_AdTypeList",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.35.0"
+  },
+  "schemaVersion": 18
+}

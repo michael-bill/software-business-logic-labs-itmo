@@ -11,7 +11,7 @@
     <association id="Association_1xifbag" associationDirection="None" sourceRef="Activity_0in0ffm" targetRef="TextAnnotation_03bhxyn" />
     <association id="Association_06x0ov6" associationDirection="None" sourceRef="Activity_0wh6flo" targetRef="TextAnnotation_0webkyi" />
   </collaboration>
-  <process id="Process_Advertisement" isExecutable="true">
+  <process id="Process_Advertisement" isExecutable="true" camunda:historyTimeToLive="1">
     <laneSet id="LaneSet_1o7mu1g">
       <lane id="Lane_135q4v0" name="Управляющий рекламой">
         <flowNodeRef>Event_0bzwoir</flowNodeRef>
@@ -19,10 +19,11 @@
         <flowNodeRef>Gateway_11th7kx</flowNodeRef>
         <flowNodeRef>Event_125yp0u</flowNodeRef>
         <flowNodeRef>Activity_0lzfwds</flowNodeRef>
-        <flowNodeRef>Activity_0jbor2h</flowNodeRef>
         <flowNodeRef>Activity_104ncro</flowNodeRef>
         <flowNodeRef>Event_0ummyet</flowNodeRef>
         <flowNodeRef>Activity_0q1tegs</flowNodeRef>
+        <flowNodeRef>Activity_0oyuqg1</flowNodeRef>
+        <flowNodeRef>Activity_0jbor2h</flowNodeRef>
       </lane>
       <lane id="Lane_14qwmat" name="Сервер">
         <flowNodeRef>Activity_1qx1u5y</flowNodeRef>
@@ -33,14 +34,14 @@
         <flowNodeRef>Activity_0nmvaew</flowNodeRef>
         <flowNodeRef>Event_0hnh6uv</flowNodeRef>
         <flowNodeRef>Event_06gwved</flowNodeRef>
-        <flowNodeRef>Event_1l340sp</flowNodeRef>
+        <flowNodeRef>Event_1j535oj</flowNodeRef>
       </lane>
     </laneSet>
     <dataStoreReference id="DataStoreReference_1dqzfiu" name="База данных" />
     <startEvent id="Event_0bzwoir" name="Конфигурация рекламы">
       <outgoing>Flow_1ez9sf6</outgoing>
     </startEvent>
-    <userTask id="Activity_1n6ke1y" name="Вывод сообщения о необходимости авторизации">
+    <userTask id="Activity_1n6ke1y" name="Необходима аутентификация">
       <extensionElements>
         <camunda:formData>
           <camunda:formField id="authErrorMessage" label="Ошибка" type="string" defaultValue="У вас нет прав на использование данного функционала.">
@@ -65,14 +66,10 @@
       <incoming>Flow_1ez9sf6</incoming>
       <outgoing>Flow_18yrxey</outgoing>
     </serviceTask>
-    <serviceTask id="Activity_0in0ffm" name="Получение типов рекламы" camunda:type="external" camunda:topic="category-get-list">
-      <extensionElements>
-        <camunda:inputOutput>
-          <camunda:inputParameter name="Input_GetAdvertisementsJWT">${jwt}</camunda:inputParameter>
-        </camunda:inputOutput>
-      </extensionElements>
+    <serviceTask id="Activity_0in0ffm" name="Получение типов рекламы" camunda:type="external" camunda:topic="advertisement-types-get-list">
+      <extensionElements />
       <incoming>Flow_18yrxey</incoming>
-      <outgoing>Flow_1f7o0sn</outgoing>
+      <outgoing>Flow_1n2ou86</outgoing>
       <property id="Property_1p14d7k" name="__targetRef_placeholder" />
       <dataInputAssociation id="DataInputAssociation_0cnzvz6">
         <sourceRef>DataStoreReference_1dqzfiu</sourceRef>
@@ -87,7 +84,7 @@
     <endEvent id="Event_125yp0u">
       <incoming>Flow_0loutev</incoming>
     </endEvent>
-    <userTask id="Activity_0lzfwds" name="Вывод сообщения об ошибке">
+    <userTask id="Activity_0lzfwds" name="Ошибка">
       <extensionElements>
         <camunda:formData>
           <camunda:formField id="errorMessage" label="Ошибка" type="string" defaultValue="Произошла ошибка при обращении к БД">
@@ -101,10 +98,11 @@
         </camunda:inputOutput>
       </extensionElements>
       <incoming>Flow_0xqpflz</incoming>
+      <incoming>Flow_08aylhf</incoming>
       <outgoing>Flow_0mx9lay</outgoing>
     </userTask>
-    <serviceTask id="Activity_0wh6flo" name="Проверка доступности сегментации рекламы">
-      <incoming>Flow_076xfvl</incoming>
+    <serviceTask id="Activity_0wh6flo" name="Проверка доступности сегментации рекламы" camunda:type="external" camunda:topic="advertisement-check-segmentation">
+      <incoming>Flow_0lvz12n</incoming>
       <outgoing>Flow_1wehtry</outgoing>
       <property id="Property_0v18r0r" name="__targetRef_placeholder" />
       <dataInputAssociation id="DataInputAssociation_1xck660">
@@ -112,34 +110,36 @@
         <targetRef>Property_0v18r0r</targetRef>
       </dataInputAssociation>
     </serviceTask>
-    <exclusiveGateway id="Gateway_03g32fx" name="Сегментация доступна?">
+    <exclusiveGateway id="Gateway_03g32fx" name="Сегментация доступна?" default="Flow_0men6uy">
       <incoming>Flow_1wehtry</incoming>
-      <outgoing>Flow_1x14qod</outgoing>
       <outgoing>Flow_0men6uy</outgoing>
+      <outgoing>Flow_1mjbn9n</outgoing>
     </exclusiveGateway>
-    <userTask id="Activity_0jbor2h" name="Выбор сегментов">
-      <incoming>Flow_1x14qod</incoming>
-      <outgoing>Flow_1hby2nt</outgoing>
-    </userTask>
-    <exclusiveGateway id="Gateway_1vdoq4x">
+    <exclusiveGateway id="Gateway_1vdoq4x" default="Flow_11d5hic">
       <incoming>Flow_0men6uy</incoming>
       <incoming>Flow_1hby2nt</incoming>
       <outgoing>Flow_11d5hic</outgoing>
     </exclusiveGateway>
-    <sendTask id="Activity_0nmvaew" name="Создание рекламы в Kafka">
+    <sendTask id="Activity_0nmvaew" name="Создание рекламы в Kafka" camunda:type="external" camunda:topic="advertisement-create">
       <incoming>Flow_11d5hic</incoming>
       <outgoing>Flow_1gkzt3w</outgoing>
     </sendTask>
     <userTask id="Activity_104ncro" name="Запрос принят в обработку">
+      <extensionElements>
+        <camunda:formData>
+          <camunda:formField id="successMessage" label="Успешно" type="string" defaultValue="Запрос принят в обработку">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </extensionElements>
       <incoming>Flow_1gkzt3w</incoming>
       <outgoing>Flow_07gig3m</outgoing>
     </userTask>
     <endEvent id="Event_0ummyet" name="Запрос отправлен в обработку">
       <incoming>Flow_07gig3m</incoming>
     </endEvent>
-    <boundaryEvent id="Event_1l340sp" attachedToRef="Activity_0nmvaew">
-      <errorEventDefinition id="ErrorEventDefinition_0z70cm2" />
-    </boundaryEvent>
     <boundaryEvent id="Event_06gwved" attachedToRef="Activity_0in0ffm">
       <outgoing>Flow_0xqpflz</outgoing>
       <errorEventDefinition id="ErrorEventDefinition_03toc6g" />
@@ -152,22 +152,62 @@
     <sequenceFlow id="Flow_1f3toz9" sourceRef="Event_0hnh6uv" targetRef="Activity_1n6ke1y" />
     <sequenceFlow id="Flow_1dp1ego" sourceRef="Activity_1n6ke1y" targetRef="Gateway_11th7kx" />
     <sequenceFlow id="Flow_18yrxey" sourceRef="Activity_1qx1u5y" targetRef="Activity_0in0ffm" />
-    <sequenceFlow id="Flow_1f7o0sn" sourceRef="Activity_0in0ffm" targetRef="Activity_0q1tegs" />
     <sequenceFlow id="Flow_0mx9lay" sourceRef="Activity_0lzfwds" targetRef="Gateway_11th7kx" />
     <sequenceFlow id="Flow_0loutev" sourceRef="Gateway_11th7kx" targetRef="Event_125yp0u" />
-    <sequenceFlow id="Flow_076xfvl" sourceRef="Activity_0q1tegs" targetRef="Activity_0wh6flo" />
     <sequenceFlow id="Flow_0xqpflz" sourceRef="Event_06gwved" targetRef="Activity_0lzfwds" />
     <sequenceFlow id="Flow_1wehtry" sourceRef="Activity_0wh6flo" targetRef="Gateway_03g32fx" />
-    <sequenceFlow id="Flow_1x14qod" sourceRef="Gateway_03g32fx" targetRef="Activity_0jbor2h" />
     <sequenceFlow id="Flow_0men6uy" sourceRef="Gateway_03g32fx" targetRef="Gateway_1vdoq4x" />
     <sequenceFlow id="Flow_1hby2nt" sourceRef="Activity_0jbor2h" targetRef="Gateway_1vdoq4x" />
     <sequenceFlow id="Flow_11d5hic" sourceRef="Gateway_1vdoq4x" targetRef="Activity_0nmvaew" />
     <sequenceFlow id="Flow_1gkzt3w" sourceRef="Activity_0nmvaew" targetRef="Activity_104ncro" />
     <sequenceFlow id="Flow_07gig3m" sourceRef="Activity_104ncro" targetRef="Event_0ummyet" />
     <userTask id="Activity_0q1tegs" name="Заполнить информацию о рекламе">
-      <incoming>Flow_1f7o0sn</incoming>
-      <outgoing>Flow_076xfvl</outgoing>
+      <extensionElements>
+        <camunda:formData>
+          <camunda:formField id="ad_title" label="Название объявления" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="ad_company_name" label="Название компании" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="ad_description" label="Описание" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="ad_type_id" label="ID типа рекламы" type="long" defaultValue="1">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </extensionElements>
+      <incoming>Flow_1enxl1k</incoming>
+      <outgoing>Flow_0lvz12n</outgoing>
     </userTask>
+    <sequenceFlow id="Flow_0lvz12n" sourceRef="Activity_0q1tegs" targetRef="Activity_0wh6flo" />
+    <sequenceFlow id="Flow_1n2ou86" sourceRef="Activity_0in0ffm" targetRef="Activity_0oyuqg1" />
+    <sequenceFlow id="Flow_1enxl1k" sourceRef="Activity_0oyuqg1" targetRef="Activity_0q1tegs" />
+    <userTask id="Activity_0oyuqg1" name="Просмотр типов рекламы" camunda:formRef="Form_AdTypeList" camunda:formRefBinding="latest">
+      <incoming>Flow_1n2ou86</incoming>
+      <outgoing>Flow_1enxl1k</outgoing>
+    </userTask>
+    <sequenceFlow id="Flow_1mjbn9n" sourceRef="Gateway_03g32fx" targetRef="Activity_0jbor2h">
+      <conditionExpression xsi:type="tFormalExpression">${ad_supports_segmentation}</conditionExpression>
+    </sequenceFlow>
+    <userTask id="Activity_0jbor2h" name="Выбор сегментов" camunda:formRef="Form_UserSegments" camunda:formRefBinding="latest">
+      <incoming>Flow_1mjbn9n</incoming>
+      <outgoing>Flow_1hby2nt</outgoing>
+    </userTask>
+    <boundaryEvent id="Event_1j535oj" attachedToRef="Activity_0nmvaew">
+      <outgoing>Flow_08aylhf</outgoing>
+      <errorEventDefinition id="ErrorEventDefinition_0ambf3p" />
+    </boundaryEvent>
+    <sequenceFlow id="Flow_08aylhf" sourceRef="Event_1j535oj" targetRef="Activity_0lzfwds" />
   </process>
   <error id="Error_06j4it2" name="Error_0luaem1" />
   <bpmndi:BPMNDiagram id="BpmnDiagram_1">
@@ -213,12 +253,9 @@
       <bpmndi:BPMNShape id="Event_125yp0u_di" bpmnElement="Event_125yp0u">
         <omgdc:Bounds x="522" y="262" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0ae5i2z_di" bpmnElement="Activity_0q1tegs">
-        <omgdc:Bounds x="770" y="160" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_037344v_di" bpmnElement="Activity_0lzfwds">
         <omgdc:Bounds x="620" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0v0hvnf_di" bpmnElement="Activity_0wh6flo">
         <omgdc:Bounds x="880" y="490" width="100" height="80" />
@@ -228,9 +265,6 @@
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="1016" y="562" width="68" height="27" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0zuu0q8_di" bpmnElement="Activity_0jbor2h">
-        <omgdc:Bounds x="1000" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1vdoq4x_di" bpmnElement="Gateway_1vdoq4x" isMarkerVisible="true">
         <omgdc:Bounds x="1145" y="375" width="50" height="50" />
@@ -248,13 +282,24 @@
           <omgdc:Bounds x="1389" y="225" width="63" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ae5i2z_di" bpmnElement="Activity_0q1tegs">
+        <omgdc:Bounds x="880" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0oyuqg1_di" bpmnElement="Activity_0oyuqg1">
+        <omgdc:Bounds x="750" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zuu0q8_di" bpmnElement="Activity_0jbor2h">
+        <omgdc:Bounds x="1000" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0hnh6uv_di" bpmnElement="Event_0hnh6uv">
         <omgdc:Bounds x="312" y="362" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_06gwved_di" bpmnElement="Event_06gwved">
         <omgdc:Bounds x="702" y="362" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1l340sp_di" bpmnElement="Event_1l340sp">
+      <bpmndi:BPMNShape id="Event_1j535oj_di" bpmnElement="Event_1j535oj">
         <omgdc:Bounds x="1202" y="472" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1ez9sf6_di" bpmnElement="Flow_1ez9sf6">
@@ -274,11 +319,6 @@
         <omgdi:waypoint x="330" y="420" />
         <omgdi:waypoint x="620" y="420" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1f7o0sn_di" bpmnElement="Flow_1f7o0sn">
-        <omgdi:waypoint x="720" y="420" />
-        <omgdi:waypoint x="820" y="420" />
-        <omgdi:waypoint x="820" y="240" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0mx9lay_di" bpmnElement="Flow_0mx9lay">
         <omgdi:waypoint x="620" y="200" />
         <omgdi:waypoint x="565" y="200" />
@@ -286,11 +326,6 @@
       <bpmndi:BPMNEdge id="Flow_0loutev_di" bpmnElement="Flow_0loutev">
         <omgdi:waypoint x="540" y="225" />
         <omgdi:waypoint x="540" y="262" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_076xfvl_di" bpmnElement="Flow_076xfvl">
-        <omgdi:waypoint x="870" y="200" />
-        <omgdi:waypoint x="930" y="200" />
-        <omgdi:waypoint x="930" y="490" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0xqpflz_di" bpmnElement="Flow_0xqpflz">
         <omgdi:waypoint x="703" y="373" />
@@ -301,13 +336,10 @@
         <omgdi:waypoint x="980" y="530" />
         <omgdi:waypoint x="1025" y="530" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1x14qod_di" bpmnElement="Flow_1x14qod">
-        <omgdi:waypoint x="1050" y="505" />
-        <omgdi:waypoint x="1050" y="240" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0men6uy_di" bpmnElement="Flow_0men6uy">
-        <omgdi:waypoint x="1050" y="505" />
-        <omgdi:waypoint x="1050" y="400" />
+        <omgdi:waypoint x="1075" y="530" />
+        <omgdi:waypoint x="1100" y="530" />
+        <omgdi:waypoint x="1100" y="400" />
         <omgdi:waypoint x="1145" y="400" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1hby2nt_di" bpmnElement="Flow_1hby2nt">
@@ -327,6 +359,29 @@
       <bpmndi:BPMNEdge id="Flow_07gig3m_di" bpmnElement="Flow_07gig3m">
         <omgdi:waypoint x="1350" y="200" />
         <omgdi:waypoint x="1402" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lvz12n_di" bpmnElement="Flow_0lvz12n">
+        <omgdi:waypoint x="930" y="240" />
+        <omgdi:waypoint x="930" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1n2ou86_di" bpmnElement="Flow_1n2ou86">
+        <omgdi:waypoint x="720" y="420" />
+        <omgdi:waypoint x="800" y="420" />
+        <omgdi:waypoint x="800" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1enxl1k_di" bpmnElement="Flow_1enxl1k">
+        <omgdi:waypoint x="850" y="200" />
+        <omgdi:waypoint x="880" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mjbn9n_di" bpmnElement="Flow_1mjbn9n">
+        <omgdi:waypoint x="1050" y="505" />
+        <omgdi:waypoint x="1050" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08aylhf_di" bpmnElement="Flow_08aylhf">
+        <omgdi:waypoint x="1220" y="472" />
+        <omgdi:waypoint x="1220" y="110" />
+        <omgdi:waypoint x="670" y="110" />
+        <omgdi:waypoint x="670" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="TextAnnotation_03bhxyn_di" bpmnElement="TextAnnotation_03bhxyn">
         <omgdc:Bounds x="352" y="480" width="258" height="70" />
