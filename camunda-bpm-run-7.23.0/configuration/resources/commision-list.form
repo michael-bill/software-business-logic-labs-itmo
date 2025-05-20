@@ -6,7 +6,7 @@
         "row": "Row_1s3tmeg",
         "columns": null
       },
-      "label": "Table",
+      "label": "Список комиссий",
       "dataSource": "=showList",
       "rowCount": 10,
       "id": "Field_0n5ccmy",
