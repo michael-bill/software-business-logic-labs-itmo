@@ -27,7 +27,7 @@ public class JwtCheckerWorker {
         client.subscribe("check-token")
                 .lockDuration(10000)
                 .handler((externalTask, externalTaskService) -> {
-                    String token = externalTask.getVariable("jwtToken");
+                    String token = externalTask.getVariable("jwt");
                     String requiredRole = externalTask.getVariable("requiredRole");
 
                     log.info("Worker 'check-token': processing token validation for role '{}'", requiredRole);
@@ -66,7 +66,7 @@ public class JwtCheckerWorker {
                         externalTaskService.complete(externalTask);
 
                     } catch (Exception e) {
-                        log.error("Worker 'check-token': error during token validation", e);
+                        log.error("Worker 'check-token': error during token validation");
                         externalTaskService.handleBpmnError(
                                 externalTask,
                                 "AUTH_ERROR",

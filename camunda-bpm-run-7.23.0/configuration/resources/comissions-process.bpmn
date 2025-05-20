@@ -11,7 +11,7 @@
     <association id="Association_0xj9pjn" associationDirection="None" sourceRef="Activity_1as89gs" targetRef="TextAnnotation_07w7wmh" />
     <association id="Association_02km4la" associationDirection="None" sourceRef="Activity_0vipsag" targetRef="TextAnnotation_01gpfok" />
   </collaboration>
-  <process id="Process_Comissions" isExecutable="false">
+  <process id="Process_Comissions" isExecutable="true" camunda:historyTimeToLive="1">
     <laneSet id="LaneSet_0he8dx9">
       <lane id="Lane_1bzw6b3" name="Сервер">
         <flowNodeRef>Activity_0km06to</flowNodeRef>
@@ -69,11 +69,20 @@
     </boundaryEvent>
     <sequenceFlow id="Flow_1059y8v" sourceRef="Event_1bthg92" targetRef="Activity_0km06to" />
     <userTask id="Activity_0yykc1x" name="Вывод сообщения о необходимости авторизации">
+      <extensionElements>
+        <camunda:formData>
+          <camunda:formField id="authErrorMessage" label="Ошибка" type="string" defaultValue="У вас нет прав на использование данного функционала.">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </extensionElements>
       <incoming>Flow_0vrcqul</incoming>
       <outgoing>Flow_15uv456</outgoing>
     </userTask>
     <sequenceFlow id="Flow_0vrcqul" sourceRef="Event_0eo8oet" targetRef="Activity_0yykc1x" />
-    <exclusiveGateway id="Gateway_0st0jww">
+    <exclusiveGateway id="Gateway_0st0jww" default="Flow_08uxd8e">
       <incoming>Flow_15uv456</incoming>
       <incoming>Flow_0qws30f</incoming>
       <outgoing>Flow_08uxd8e</outgoing>
@@ -90,7 +99,7 @@
       <outgoing>Flow_1kyuyci</outgoing>
     </exclusiveGateway>
     <dataStoreReference id="DataStoreReference_07cb0pb" name="База данных" />
-    <serviceTask id="Activity_0lbkmfv" name="Получение списка категорий продаж">
+    <serviceTask id="Activity_0lbkmfv" name="Получение списка категорий продаж" camunda:type="external" camunda:topic="">
       <incoming>Flow_040ktn0</incoming>
       <incoming>Flow_0ts01rt</incoming>
       <outgoing>Flow_1k1rs2d</outgoing>
@@ -109,7 +118,7 @@
       <incoming>Flow_1kyuyci</incoming>
       <outgoing>Flow_01sfnk0</outgoing>
     </userTask>
-    <serviceTask id="Activity_16pkva6" name="Сохранение новой категории продаж">
+    <serviceTask id="Activity_16pkva6" name="Сохранение новой категории продаж" camunda:type="external" camunda:topic="">
       <incoming>Flow_01sfnk0</incoming>
       <outgoing>Flow_0ts01rt</outgoing>
       <dataOutputAssociation id="DataOutputAssociation_01f5075">
@@ -118,7 +127,7 @@
     </serviceTask>
     <boundaryEvent id="Event_0ii9qhl" attachedToRef="Activity_0km06to">
       <outgoing>Flow_1lx0ilb</outgoing>
-      <errorEventDefinition id="ErrorEventDefinition_1talvst" camunda:errorCodeVariable="INSUFFICIENT_PERMISSIONS" />
+      <errorEventDefinition id="ErrorEventDefinition_1talvst" />
     </boundaryEvent>
     <boundaryEvent id="Event_1omifyb" attachedToRef="Activity_16pkva6">
       <outgoing>Flow_1nwed4f</outgoing>
@@ -130,14 +139,16 @@
     </userTask>
     <sequenceFlow id="Flow_0o91314" sourceRef="Activity_1as89gs" targetRef="Gateway_0d77f5c" />
     <sequenceFlow id="Flow_0a2tkh4" name="Да" sourceRef="Gateway_0d77f5c" targetRef="Activity_0bi04i8" />
-    <sequenceFlow id="Flow_1kyuyci" name="Нет" sourceRef="Gateway_0d77f5c" targetRef="Activity_1bizxu0" />
+    <sequenceFlow id="Flow_1kyuyci" name="Нет" sourceRef="Gateway_0d77f5c" targetRef="Activity_1bizxu0">
+      <conditionExpression xsi:type="tFormalExpression">false</conditionExpression>
+    </sequenceFlow>
     <sequenceFlow id="Flow_1sh6hl1" sourceRef="Activity_0bi04i8" targetRef="Activity_05ey2yb" />
     <sequenceFlow id="Flow_1k1rs2d" sourceRef="Activity_0lbkmfv" targetRef="Activity_1as89gs" />
     <sequenceFlow id="Flow_01sfnk0" sourceRef="Activity_1bizxu0" targetRef="Activity_16pkva6" />
     <sequenceFlow id="Flow_0ts01rt" sourceRef="Activity_16pkva6" targetRef="Activity_0lbkmfv" />
     <sequenceFlow id="Flow_0qws30f" sourceRef="Activity_0m4lqqq" targetRef="Gateway_0st0jww" />
     <sequenceFlow id="Flow_1lx0ilb" sourceRef="Event_0ii9qhl" targetRef="Gateway_0xscyfs" />
-    <exclusiveGateway id="Gateway_0xscyfs">
+    <exclusiveGateway id="Gateway_0xscyfs" default="Flow_0n80zds">
       <incoming>Flow_1lx0ilb</incoming>
       <incoming>Flow_1nwed4f</incoming>
       <incoming>Flow_0lkumdu</incoming>
@@ -171,7 +182,7 @@
       <sequenceFlow id="Flow_0pdgqzv" sourceRef="Event_1ya86tk" targetRef="Activity_0loi9m1" />
       <sequenceFlow id="Flow_151aoq0" sourceRef="Activity_0loi9m1" targetRef="Activity_1l6038f" />
       <dataStoreReference id="DataStoreReference_19b8vlb" name="База данных" />
-      <exclusiveGateway id="Gateway_1et3obi" name="Пользователь установил новую комиссию?">
+      <exclusiveGateway id="Gateway_1et3obi" name="Пользователь установил новую комиссию?" default="Flow_0rdlyu5">
         <incoming>Flow_0me0t85</incoming>
         <outgoing>Flow_0rdlyu5</outgoing>
         <outgoing>Flow_1vvbcke</outgoing>
@@ -181,12 +192,14 @@
         <incoming>Flow_0rdlyu5</incoming>
       </endEvent>
       <sequenceFlow id="Flow_0rdlyu5" name="Нет" sourceRef="Gateway_1et3obi" targetRef="Event_0oz3bhs" />
-      <exclusiveGateway id="Gateway_148ukoc">
+      <exclusiveGateway id="Gateway_148ukoc" default="Flow_1nr014l">
         <incoming>Flow_1jrv3t8</incoming>
         <outgoing>Flow_1nr014l</outgoing>
         <outgoing>Flow_002tj2x</outgoing>
       </exclusiveGateway>
-      <sequenceFlow id="Flow_1vvbcke" name="Да" sourceRef="Gateway_1et3obi" targetRef="Activity_11pocab" />
+      <sequenceFlow id="Flow_1vvbcke" name="Да" sourceRef="Gateway_1et3obi" targetRef="Activity_11pocab">
+        <conditionExpression xsi:type="tFormalExpression">true</conditionExpression>
+      </sequenceFlow>
       <sequenceFlow id="Flow_1nr014l" name="Нет" sourceRef="Gateway_148ukoc" targetRef="Activity_1whqjxf" />
       <sequenceFlow id="Flow_1jrv3t8" name="Были ли изменены данные с момента получения информации?" sourceRef="Activity_11pocab" targetRef="Gateway_148ukoc" />
       <dataStoreReference id="DataStoreReference_00rhy0c" name="База данных" />
@@ -198,16 +211,18 @@
         <incoming>Flow_002tj2x</incoming>
         <cancelEventDefinition id="CancelEventDefinition_0anvh7u" />
       </endEvent>
-      <sequenceFlow id="Flow_002tj2x" name="Да" sourceRef="Gateway_148ukoc" targetRef="Event_07ejjvy" />
+      <sequenceFlow id="Flow_002tj2x" name="Да" sourceRef="Gateway_148ukoc" targetRef="Event_07ejjvy">
+        <conditionExpression xsi:type="tFormalExpression">false</conditionExpression>
+      </sequenceFlow>
       <boundaryEvent id="Event_1st0yi1" attachedToRef="Activity_0w0nvqu">
         <outgoing>Flow_1b1h201</outgoing>
         <errorEventDefinition id="ErrorEventDefinition_0s9mi6s" />
       </boundaryEvent>
       <endEvent id="Event_02ggofb">
         <incoming>Flow_1b1h201</incoming>
-        <errorEventDefinition id="ErrorEventDefinition_0takcjb" />
+        <errorEventDefinition id="ErrorEventDefinition_0takcjb" errorRef="Error_04ry4w7" />
       </endEvent>
-      <serviceTask id="Activity_0loi9m1" name="Получение информации по категории продаж">
+      <serviceTask id="Activity_0loi9m1" name="Получение информации по категории продаж" camunda:type="external" camunda:topic="">
         <incoming>Flow_0pdgqzv</incoming>
         <outgoing>Flow_151aoq0</outgoing>
         <property id="Property_064hld8" name="__targetRef_placeholder" />
@@ -221,7 +236,7 @@
         <incoming>Flow_0eteqr5</incoming>
         <outgoing>Flow_0me0t85</outgoing>
       </userTask>
-      <serviceTask id="Activity_11pocab" name="Получение последнего изменения данных">
+      <serviceTask id="Activity_11pocab" name="Получение последнего изменения данных" camunda:type="external" camunda:topic="">
         <incoming>Flow_1vvbcke</incoming>
         <outgoing>Flow_1jrv3t8</outgoing>
         <property id="Property_1a7pmes" name="__targetRef_placeholder" />
@@ -230,7 +245,7 @@
           <targetRef>Property_1a7pmes</targetRef>
         </dataInputAssociation>
       </serviceTask>
-      <serviceTask id="Activity_0w0nvqu" name="Установка комиссии на всю категорию продаж">
+      <serviceTask id="Activity_0w0nvqu" name="Установка комиссии на всю категорию продаж" camunda:type="external" camunda:topic="">
         <incoming>Flow_0ag7lb3</incoming>
         <outgoing>Flow_0rzukqh</outgoing>
         <dataOutputAssociation id="DataOutputAssociation_1payyzk">
@@ -246,7 +261,7 @@
         <outgoing>Flow_16r3ve4</outgoing>
         <errorEventDefinition id="ErrorEventDefinition_0lzsnzi" />
       </boundaryEvent>
-      <exclusiveGateway id="Gateway_1hldm2h">
+      <exclusiveGateway id="Gateway_1hldm2h" default="Flow_1av7i3b">
         <incoming>Flow_1vv3xu4</incoming>
         <incoming>Flow_16r3ve4</incoming>
         <outgoing>Flow_1av7i3b</outgoing>
@@ -255,12 +270,13 @@
       <sequenceFlow id="Flow_16r3ve4" sourceRef="Event_0vo2znj" targetRef="Gateway_1hldm2h" />
       <endEvent id="Event_0g0olhy">
         <incoming>Flow_1av7i3b</incoming>
-        <errorEventDefinition id="ErrorEventDefinition_1tk9ebr" />
+        <errorEventDefinition id="ErrorEventDefinition_1tk9ebr" errorRef="Error_04ry4w7" />
       </endEvent>
       <sequenceFlow id="Flow_1av7i3b" sourceRef="Gateway_1hldm2h" targetRef="Event_0g0olhy" />
       <scriptTask id="Activity_1whqjxf" name="Валидация значения комиссии">
         <incoming>Flow_1nr014l</incoming>
         <outgoing>Flow_0ag7lb3</outgoing>
+        <script></script>
       </scriptTask>
       <boundaryEvent id="Event_05qasv2" attachedToRef="Activity_1whqjxf">
         <outgoing>Flow_0y64zbn</outgoing>
@@ -290,7 +306,7 @@
       <sequenceFlow id="Flow_173827w" sourceRef="Event_1vg9li2" targetRef="Activity_1ej6ety" />
       <dataStoreReference id="DataStoreReference_1ffnxrn" name="База данных" />
       <sequenceFlow id="Flow_057w72m" sourceRef="Activity_1ej6ety" targetRef="Activity_0sw3hyi" />
-      <exclusiveGateway id="Gateway_05cay4d">
+      <exclusiveGateway id="Gateway_05cay4d" default="Flow_1l9seh4">
         <incoming>Flow_1n9j8es</incoming>
         <outgoing>Flow_1l9seh4</outgoing>
         <outgoing>Flow_15eetco</outgoing>
@@ -300,8 +316,10 @@
         <incoming>Flow_1l9seh4</incoming>
       </endEvent>
       <sequenceFlow id="Flow_1l9seh4" name="Нет" sourceRef="Gateway_05cay4d" targetRef="Event_1xcavud" />
-      <sequenceFlow id="Flow_15eetco" name="Да" sourceRef="Gateway_05cay4d" targetRef="Activity_0x7a2sc" />
-      <exclusiveGateway id="Gateway_1hz18q7" name="Были ли изменены данные с момента получения информации?">
+      <sequenceFlow id="Flow_15eetco" name="Да" sourceRef="Gateway_05cay4d" targetRef="Activity_0x7a2sc">
+        <conditionExpression xsi:type="tFormalExpression">true</conditionExpression>
+      </sequenceFlow>
+      <exclusiveGateway id="Gateway_1hz18q7" name="Были ли изменены данные с момента получения информации?" default="Flow_0wfbqvx">
         <incoming>Flow_14y3d3c</incoming>
         <outgoing>Flow_057ws6x</outgoing>
         <outgoing>Flow_0wfbqvx</outgoing>
@@ -311,7 +329,9 @@
         <incoming>Flow_057ws6x</incoming>
         <cancelEventDefinition id="CancelEventDefinition_1v5ujvx" />
       </endEvent>
-      <sequenceFlow id="Flow_057ws6x" name="Да" sourceRef="Gateway_1hz18q7" targetRef="Event_1wwawvh" />
+      <sequenceFlow id="Flow_057ws6x" name="Да" sourceRef="Gateway_1hz18q7" targetRef="Event_1wwawvh">
+        <conditionExpression xsi:type="tFormalExpression">false</conditionExpression>
+      </sequenceFlow>
       <sequenceFlow id="Flow_0wfbqvx" name="Нет" sourceRef="Gateway_1hz18q7" targetRef="Activity_15dkkve" />
       <dataStoreReference id="DataStoreReference_01uwwhi" name="База данных" />
       <boundaryEvent id="Event_0nxqebb" attachedToRef="Activity_0q9za4e">
@@ -320,14 +340,14 @@
       </boundaryEvent>
       <endEvent id="Event_0u25k4p">
         <incoming>Flow_1whn5xo</incoming>
-        <errorEventDefinition id="ErrorEventDefinition_1iuojja" />
+        <errorEventDefinition id="ErrorEventDefinition_1iuojja" errorRef="Error_04ry4w7" />
       </endEvent>
       <sequenceFlow id="Flow_1whn5xo" sourceRef="Event_0nxqebb" targetRef="Event_0u25k4p" />
       <endEvent id="Event_14rw5r8">
         <incoming>Flow_1ofdgep</incoming>
       </endEvent>
       <sequenceFlow id="Flow_1ofdgep" sourceRef="Activity_0q9za4e" targetRef="Event_14rw5r8" />
-      <serviceTask id="Activity_1ej6ety" name="Получение информации по единице продажи">
+      <serviceTask id="Activity_1ej6ety" name="Получение информации по единице продажи" camunda:type="external" camunda:topic="">
         <incoming>Flow_173827w</incoming>
         <outgoing>Flow_057w72m</outgoing>
         <property id="Property_0un2gov" name="__targetRef_placeholder" />
@@ -344,7 +364,7 @@
         <outgoing>Flow_0bdus1w</outgoing>
         <errorEventDefinition id="ErrorEventDefinition_0sdsmqk" />
       </boundaryEvent>
-      <exclusiveGateway id="Gateway_15z7zks">
+      <exclusiveGateway id="Gateway_15z7zks" default="Flow_1tpjwmd">
         <incoming>Flow_0bdus1w</incoming>
         <incoming>Flow_1ti6004</incoming>
         <outgoing>Flow_1tpjwmd</outgoing>
@@ -353,7 +373,7 @@
       <sequenceFlow id="Flow_1ti6004" sourceRef="Event_1lam0p2" targetRef="Gateway_15z7zks" />
       <endEvent id="Event_1wzdr24">
         <incoming>Flow_1tpjwmd</incoming>
-        <errorEventDefinition id="ErrorEventDefinition_11u0ydw" />
+        <errorEventDefinition id="ErrorEventDefinition_11u0ydw" errorRef="Error_04ry4w7" />
       </endEvent>
       <sequenceFlow id="Flow_1tpjwmd" sourceRef="Gateway_15z7zks" targetRef="Event_1wzdr24" />
       <userTask id="Activity_0sw3hyi" name="Просмотр статистики и настройка единицы">
@@ -361,7 +381,7 @@
         <incoming>Flow_0wqs7mz</incoming>
         <outgoing>Flow_1n9j8es</outgoing>
       </userTask>
-      <serviceTask id="Activity_0x7a2sc" name="Получение последнего изменения данных">
+      <serviceTask id="Activity_0x7a2sc" name="Получение последнего изменения данных" camunda:type="external" camunda:topic="">
         <incoming>Flow_15eetco</incoming>
         <outgoing>Flow_14y3d3c</outgoing>
         <property id="Property_1p98iwn" name="__targetRef_placeholder" />
@@ -370,7 +390,7 @@
           <targetRef>Property_1p98iwn</targetRef>
         </dataInputAssociation>
       </serviceTask>
-      <serviceTask id="Activity_0q9za4e" name="Установка комиссии на единицу продажи">
+      <serviceTask id="Activity_0q9za4e" name="Установка комиссии на единицу продажи" camunda:type="external" camunda:topic="">
         <incoming>Flow_0eibzhx</incoming>
         <outgoing>Flow_1ofdgep</outgoing>
         <dataOutputAssociation id="DataOutputAssociation_0uzeafv">
@@ -380,6 +400,7 @@
       <scriptTask id="Activity_15dkkve" name="Валидация значения комиссии">
         <incoming>Flow_0wfbqvx</incoming>
         <outgoing>Flow_0eibzhx</outgoing>
+        <script></script>
       </scriptTask>
       <sequenceFlow id="Flow_0eibzhx" sourceRef="Activity_15dkkve" targetRef="Activity_0q9za4e" />
       <boundaryEvent id="Event_0tyf31g" attachedToRef="Activity_15dkkve">
@@ -409,7 +430,7 @@
       <incoming>Flow_1crfqzw</incoming>
       <outgoing>Flow_0i6ehy8</outgoing>
     </userTask>
-    <serviceTask id="Activity_0ijh082" name="Получение единиц продаж категории">
+    <serviceTask id="Activity_0ijh082" name="Получение единиц продаж категории" camunda:type="external" camunda:topic="">
       <incoming>Flow_1ee93iu</incoming>
       <incoming>Flow_0ssxkqm</incoming>
       <outgoing>Flow_1fxxkls</outgoing>
@@ -435,7 +456,7 @@
       <incoming>Flow_0e2mnnq</incoming>
       <outgoing>Flow_100gvpb</outgoing>
     </userTask>
-    <serviceTask id="Activity_1h30k9w" name="Сохранение новой единицы продаж">
+    <serviceTask id="Activity_1h30k9w" name="Сохранение новой единицы продаж" camunda:type="external" camunda:topic="">
       <incoming>Flow_188kd7l</incoming>
       <outgoing>Flow_0ssxkqm</outgoing>
       <dataOutputAssociation id="DataOutputAssociation_0b7ealy">
@@ -448,7 +469,9 @@
     </userTask>
     <sequenceFlow id="Flow_0i6ehy8" sourceRef="Activity_0vipsag" targetRef="Gateway_0t2iiwk" />
     <sequenceFlow id="Flow_0e2mnnq" name="Да" sourceRef="Gateway_0t2iiwk" targetRef="Activity_0y09kg7" />
-    <sequenceFlow id="Flow_1d694wd" name="Нет" sourceRef="Gateway_0t2iiwk" targetRef="Activity_03qhvt9" />
+    <sequenceFlow id="Flow_1d694wd" name="Нет" sourceRef="Gateway_0t2iiwk" targetRef="Activity_03qhvt9">
+      <conditionExpression xsi:type="tFormalExpression">false</conditionExpression>
+    </sequenceFlow>
     <sequenceFlow id="Flow_100gvpb" sourceRef="Activity_0y09kg7" targetRef="Activity_0rf2gj3" />
     <sequenceFlow id="Flow_0gzri27" sourceRef="Activity_0rf2gj3" targetRef="Event_1jkp3ru" />
     <sequenceFlow id="Flow_1h4l7z5" sourceRef="Event_1kwdc21" targetRef="Activity_08z4ywl" />
@@ -465,6 +488,7 @@
       <cancelEventDefinition id="CancelEventDefinition_1pkkqoe" />
     </boundaryEvent>
   </process>
+  <error id="Error_04ry4w7" name="Error_Database" errorCode="DATABASE_ERROR" />
   <bpmndi:BPMNDiagram id="BpmnDiagram_1">
     <bpmndi:BPMNPlane id="BpmnPlane_1" bpmnElement="Collaboration_0h53egq">
       <bpmndi:BPMNShape id="BPMNShape_1a5gx5e" bpmnElement="Participant_0jw6etc" isHorizontal="true">
