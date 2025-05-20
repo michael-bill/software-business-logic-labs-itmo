@@ -35,7 +35,7 @@ public class AuthenticationWorker {
                         UserResp userResp = authService.signIn(authReq);
 
                         Map<String, Object> variablesToSet = Map.of(
-                                "jwtToken", userResp.getToken(),
+                                "jwt", userResp.getToken(),
                                 "authenticationSuccessful", true
                         );
                         externalTaskService.complete(externalTask, variablesToSet);
