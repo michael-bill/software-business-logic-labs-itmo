@@ -33,10 +33,6 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
-  quartz:
-    job-store-type: memory
-    jdbc:
-      initialize-schema: never
 
 token:
   signing:
