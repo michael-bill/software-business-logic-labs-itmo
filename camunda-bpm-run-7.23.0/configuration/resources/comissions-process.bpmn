@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.6.1">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0">
   <collaboration id="Collaboration_0h53egq">
     <participant id="Participant_0jw6etc" name="Конфигурация комиссий" processRef="Process_05nxuvq" />
     <textAnnotation id="TextAnnotation_07w7wmh">
@@ -11,7 +11,7 @@
     <association id="Association_0xj9pjn" associationDirection="None" sourceRef="Activity_1as89gs" targetRef="TextAnnotation_07w7wmh" />
     <association id="Association_02km4la" associationDirection="None" sourceRef="Activity_0vipsag" targetRef="TextAnnotation_01gpfok" />
   </collaboration>
-  <process id="Process_05nxuvq">
+  <process id="Process_05nxuvq" isExecutable="false">
     <laneSet id="LaneSet_0he8dx9">
       <lane id="Lane_1bzw6b3" name="Сервер">
         <flowNodeRef>Activity_0km06to</flowNodeRef>
@@ -54,7 +54,12 @@
     <startEvent id="Event_1bthg92" name="Конфигурация комиссий">
       <outgoing>Flow_1059y8v</outgoing>
     </startEvent>
-    <serviceTask id="Activity_0km06to" name="Проверка токена и прав пользователя">
+    <serviceTask id="Activity_0km06to" name="Проверка токена и прав пользователя" camunda:type="external" camunda:topic="check-token">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="requiredRole">ROLE_COMMISSIONS</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
       <incoming>Flow_1059y8v</incoming>
       <outgoing>Flow_040ktn0</outgoing>
     </serviceTask>
@@ -111,9 +116,9 @@
         <targetRef>DataStoreReference_07cb0pb</targetRef>
       </dataOutputAssociation>
     </serviceTask>
-    <boundaryEvent id="Event_0ii9qhl" attachedToRef="Activity_0lbkmfv">
+    <boundaryEvent id="Event_0ii9qhl" attachedToRef="Activity_0km06to">
       <outgoing>Flow_1lx0ilb</outgoing>
-      <errorEventDefinition id="ErrorEventDefinition_1talvst" />
+      <errorEventDefinition id="ErrorEventDefinition_1talvst" camunda:errorCodeVariable="INSUFFICIENT_PERMISSIONS" />
     </boundaryEvent>
     <boundaryEvent id="Event_1omifyb" attachedToRef="Activity_16pkva6">
       <outgoing>Flow_1nwed4f</outgoing>
