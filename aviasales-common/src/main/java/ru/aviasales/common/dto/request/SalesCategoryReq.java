@@ -24,6 +24,6 @@ public class SalesCategoryReq {
 
     @NotNull(message = "Процент комиссии по умолчанию не может быть пустым")
     @Schema(description = "Процент комиссии по умолчанию")
-    private Double defaultCommissionPercent;
+    private Long defaultCommissionPercent;
 
 }

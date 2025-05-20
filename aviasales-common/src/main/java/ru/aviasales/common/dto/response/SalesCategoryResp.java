@@ -23,7 +23,7 @@ public class SalesCategoryResp {
     @Schema(description = "Описание категории")
     private String description;
     @Schema(description = "Процент комиссии по умолчанию")
-    private Double defaultCommissionPercent;
+    private Long defaultCommissionPercent;
     @Schema(description = "Время создания категории")
     private LocalDateTime createdAt;
     @Schema(description = "Время последнего изменения категории")

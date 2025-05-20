@@ -38,9 +38,9 @@ public class CreateCategoryWorker {
                         if (commissionObj == null) {
                             throw new IllegalArgumentException("Значение комиссии не указано");
                         }
-                        double commission;
+                        long commission;
                         try {
-                            commission = Double.parseDouble(commissionObj.toString());
+                            commission = Long.parseLong(commissionObj.toString());
                         } catch (NumberFormatException e) {
                             throw new IllegalArgumentException("Комиссия должна быть числом");
                         }

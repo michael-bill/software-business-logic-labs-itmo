@@ -26,7 +26,7 @@ public class SalesCategoryService {
 
     @Transactional
     public SalesCategoryResp createCategory(SalesCategoryReq req) {
-        validateCommission(req.getDefaultCommissionPercent());
+        validateCommission(Double.valueOf(req.getDefaultCommissionPercent()));
 
         if (salesCategoryRepository.existsByName(req.getName())) {
             throw new UniqueValueExistsException("Категория с таким именем уже существует");
@@ -35,7 +35,7 @@ public class SalesCategoryService {
         SalesCategory category = SalesCategory.builder()
                 .name(req.getName())
                 .description(req.getDescription())
-                .defaultCommissionPercent(req.getDefaultCommissionPercent())
+                .defaultCommissionPercent(Double.valueOf(req.getDefaultCommissionPercent()))
                 .build();
 
         return modelMapper.map(salesCategoryRepository.save(category), SalesCategoryResp.class);
@@ -43,7 +43,7 @@ public class SalesCategoryService {
 
     @Transactional
     public SalesCategoryResp updateCategory(Long categoryId, Long version, SalesCategoryReq req) {
-        validateCommission(req.getDefaultCommissionPercent());
+        validateCommission(Double.valueOf(req.getDefaultCommissionPercent()));
 
         SalesCategory category = salesCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("Категория с таким id не была найдена"));
@@ -56,7 +56,7 @@ public class SalesCategoryService {
 
         category.setName(req.getName());
         category.setDescription(req.getDescription());
-        category.setDefaultCommissionPercent(req.getDefaultCommissionPercent());
+        category.setDefaultCommissionPercent(Double.valueOf(req.getDefaultCommissionPercent()));
 
         return modelMapper.map(category, SalesCategoryResp.class);
     }
