@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0">
   <collaboration id="Collaboration_0h53egq">
-    <participant id="Participant_1m5amf1" name="Авторизация" processRef="Process_Auth" />
+    <participant id="Participant_1m5amf1" name="Аутентификация" processRef="Process_Auth" />
   </collaboration>
   <process id="Process_Auth" isExecutable="true" camunda:historyTimeToLive="1">
     <laneSet id="LaneSet_152qj4w">
@@ -58,7 +58,7 @@
     </boundaryEvent>
     <sequenceFlow id="Flow_1bn1rkh" sourceRef="Activity_1olsd7d" targetRef="Activity_0bxqaeo" />
     <sequenceFlow id="Flow_0yr4krz" sourceRef="Event_0rbiqkj" targetRef="Activity_0kixa0f" />
-    <userTask id="Activity_0kixa0f" name="Показать ошибку аутентификации">
+    <userTask id="Activity_0kixa0f" name="Ошибка аутентификации">
       <extensionElements>
         <camunda:formData>
           <camunda:formField id="authErrorMessage" label="Ошибка" type="string" defaultValue="Не удалось войти в аккаунт, проверьте логин и пароль">
