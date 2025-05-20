@@ -1277,9 +1277,11 @@
         <omgdi:waypoint x="1360" y="320" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_00gnmal_di" bpmnElement="Flow_00gnmal">
-        <omgdi:waypoint x="1400" y="352" />
-        <omgdi:waypoint x="1400" y="335" />
-        <omgdi:waypoint x="785" y="335" />
+        <omgdi:waypoint x="1413" y="357" />
+        <omgdi:waypoint x="1430" y="340" />
+        <omgdi:waypoint x="1430" y="220" />
+        <omgdi:waypoint x="760" y="220" />
+        <omgdi:waypoint x="760" y="310" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_14wi766_di" bpmnElement="Flow_14wi766">
         <omgdi:waypoint x="2735" y="373" />
