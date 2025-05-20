@@ -61,7 +61,7 @@
     <userTask id="Activity_0kixa0f" name="Показать ошибку аутентификации">
       <extensionElements>
         <camunda:formData>
-          <camunda:formField id="authErrorMessage" label="Ошибка" type="string">
+          <camunda:formField id="authErrorMessage" label="Ошибка" type="string" defaultValue="Не удалось войти в аккаунт, проверьте логин и пароль">
             <camunda:properties />
             <camunda:validation>
               <camunda:constraint name="readonly" />
