@@ -1,11 +1,10 @@
-package ru.aviasales.admin.worker.comissions;
+package ru.aviasales.admin.worker.commissions.category;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.client.ExternalTaskClient;
 import org.springframework.stereotype.Component;
 import ru.aviasales.admin.exception.OptimisticLockException;
-import ru.aviasales.admin.exception.UniqueValueExistsException;
 import ru.aviasales.admin.service.core.commissions.SalesCategoryService;
 import ru.aviasales.common.dto.request.SalesCategoryReq;
 

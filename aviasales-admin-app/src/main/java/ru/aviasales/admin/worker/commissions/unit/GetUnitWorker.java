@@ -1,4 +1,4 @@
-package ru.aviasales.admin.worker.comissions;
+package ru.aviasales.admin.worker.commissions.unit;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,20 +13,20 @@ import java.util.Map;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class GetUnitVersionWorker {
+public class GetUnitWorker {
 
     private final ExternalTaskClient client;
     private final SalesUnitService salesUnitService;
 
     @PostConstruct
     public void subscribe() {
-        client.subscribe("unit-get-version")
+        client.subscribe("unit-get")
                 .lockDuration(10000)
                 .handler((externalTask, externalTaskService) -> {
-                    log.info("Worker 'unit-get-version': processing request to get unit version");
+                    log.info("Worker 'unit-get': processing request to get unit information");
 
                     try {
-                        Long unitId = externalTask.getVariable("unit_id");
+                        Long unitId = externalTask.getVariable("unitId");
                         if (unitId == null) {
                             throw new IllegalArgumentException("Unit ID is required");
                         }
@@ -36,21 +36,25 @@ public class GetUnitVersionWorker {
                             throw new IllegalArgumentException("Unit not found with ID: " + unitId);
                         }
 
-                        Long originalVersion = externalTask.getVariable("unit_version");
-                        boolean versionChanged = !unit.getVersion().equals(originalVersion);
-
                         externalTaskService.complete(externalTask, Map.of(
-                            "unit_version_changed", versionChanged
+                            "unit_id", unit.getId(),
+                            "unit_name", unit.getName(),
+                            "unit_description", unit.getDescription() != null ? unit.getDescription() : "",
+                            "unit_category_id", unit.getCategory().getId(),
+                            "unit_category_name", unit.getCategory().getName(),
+                            "unit_commission", unit.getActualCommission(),
+                            "unit_original_commission", unit.getActualCommission(),
+                            "unit_version", unit.getVersion()
                         ));
 
-                        log.info("Worker 'unit-get-version': successfully checked version for unit ID {}", unitId);
+                        log.info("Worker 'unit-get': successfully retrieved unit with ID {}", unitId);
 
                     } catch (Exception e) {
-                        log.error("Worker 'unit-get-version': error while checking unit version", e);
+                        log.error("Worker 'unit-get': error while retrieving unit");
                         externalTaskService.handleBpmnError(
                                 externalTask,
                                 "DATABASE_ERROR",
-                                "Произошла ошибка при проверке версии единицы продаж: " + e.getMessage(),
+                                "Произошла ошибка при получении информации о единице продаж: " + e.getMessage(),
                                 null
                         );
                     }

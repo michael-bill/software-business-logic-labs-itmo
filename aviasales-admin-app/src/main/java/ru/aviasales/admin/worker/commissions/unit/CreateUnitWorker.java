@@ -1,12 +1,12 @@
-package ru.aviasales.admin.worker.comissions;
+package ru.aviasales.admin.worker.commissions.unit;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.client.ExternalTaskClient;
 import org.springframework.stereotype.Component;
-import ru.aviasales.admin.service.core.commissions.SalesCategoryService;
-import ru.aviasales.common.dto.request.SalesCategoryReq;
-import ru.aviasales.common.dto.response.SalesCategoryResp;
+import ru.aviasales.admin.service.core.commissions.SalesUnitService;
+import ru.aviasales.common.dto.request.SalesUnitReq;
+import ru.aviasales.common.dto.response.SalesUnitResp;
 import ru.aviasales.admin.exception.UniqueValueExistsException;
 
 import jakarta.annotation.PostConstruct;
@@ -15,29 +15,32 @@ import java.util.Map;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class CreateCategoryWorker {
+public class CreateUnitWorker {
 
     private final ExternalTaskClient client;
-    private final SalesCategoryService salesCategoryService;
+    private final SalesUnitService salesUnitService;
 
     @PostConstruct
     public void subscribe() {
-        client.subscribe("category-create")
+        client.subscribe("unit-create")
                 .lockDuration(10000)
                 .handler((externalTask, externalTaskService) -> {
-                    String name = externalTask.getVariable("category_name");
-                    String description = externalTask.getVariable("category_description");
-                    Object commissionObj = externalTask.getVariable("category_comission");
+                    String name = externalTask.getVariable("unit_name");
+                    String description = externalTask.getVariable("unit_description");
+                    Long categoryId = externalTask.getVariable("category_id");
+                    Object commissionObj = externalTask.getVariable("unit_commission");
 
-                    log.info("Worker 'category-create': creating category '{}', commission: {}", name, commissionObj);
+                    log.info("Worker 'unit-create': creating unit '{}', category: {}, commission: {}", 
+                            name, categoryId, commissionObj);
 
                     try {
                         if (name == null || name.trim().isEmpty()) {
-                            throw new IllegalArgumentException("Название категории не заполнено");
+                            throw new IllegalArgumentException("Название единицы продаж не заполнено");
                         }
                         if (commissionObj == null) {
                             throw new IllegalArgumentException("Значение комиссии не указано");
                         }
+
                         long commission;
                         try {
                             commission = Long.parseLong(commissionObj.toString());
@@ -48,32 +51,33 @@ public class CreateCategoryWorker {
                             throw new IllegalArgumentException("Комиссия должна быть от 0 до 100");
                         }
 
-                        SalesCategoryReq req = SalesCategoryReq.builder()
+                        SalesUnitReq req = SalesUnitReq.builder()
                                 .name(name)
                                 .description(description)
-                                .defaultCommissionPercent(commission)
+                                .categoryId(categoryId)
+                                .commissionPercent(commission)
                                 .build();
-                        SalesCategoryResp resp = salesCategoryService.createCategory(req);
+                        SalesUnitResp resp = salesUnitService.createSalesUnit(req);
                         externalTaskService.complete(externalTask, Map.of(
-                                "newCategoryCreated", true,
-                                "newCategoryId", resp.getId()
+                                "newUnitCreated", true,
+                                "newUnitId", resp.getId()
                         ));
-                        log.info("Worker 'category-create': category '{}' created successfully", name);
+                        log.info("Worker 'unit-create': unit '{}' created successfully", name);
                     } catch (UniqueValueExistsException | IllegalArgumentException e) {
-                        log.warn("Worker 'category-create': error: {}", e.getMessage());
+                        log.warn("Worker 'unit-create': error: {}", e.getMessage());
                         externalTaskService.handleBpmnError(
                                 externalTask,
-                                "CATEGORY_CREATE_ERROR",
+                                "UNIT_CREATE_ERROR",
                                 e.getMessage(),
-                                Map.of("errorNewCategoryMessage", e.getMessage())
+                                Map.of("errorNewUnitMessage", e.getMessage())
                         );
                     } catch (Exception e) {
-                        log.error("Worker 'category-create': unexpected error");
+                        log.error("Worker 'unit-create': unexpected error");
                         externalTaskService.handleBpmnError(
                                 externalTask,
                                 "UNEXPECTED_ERROR",
-                                "Техническая ошибка при создании категории: " + e.getMessage(),
-                                Map.of("errorNewCategoryMessage", "Техническая ошибка при создании категории: " + e.getMessage())
+                                "Техническая ошибка при создании единицы продаж: " + e.getMessage(),
+                                Map.of("errorNewUnitMessage", "Техническая ошибка при создании единицы продаж: " + e.getMessage())
                         );
                     }
                 })
