@@ -40,7 +40,7 @@ public class GetUnitVersionWorker {
                         boolean versionChanged = !unit.getVersion().equals(originalVersion);
 
                         externalTaskService.complete(externalTask, Map.of(
-                            "version_changed", versionChanged
+                            "unit_version_changed", versionChanged
                         ));
 
                         log.info("Worker 'unit-get-version': successfully checked version for unit ID {}", unitId);

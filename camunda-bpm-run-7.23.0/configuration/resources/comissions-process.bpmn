@@ -659,6 +659,15 @@
       <outgoing>Flow_0i6ehy8</outgoing>
     </userTask>
     <userTask id="Activity_0y09kg7" name="Выбор единицы продажи">
+      <extensionElements>
+        <camunda:formData>
+          <camunda:formField id="unitId" label="Введите ID интересующей вас единицы продажи" type="long">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </extensionElements>
       <incoming>Flow_0e2mnnq</incoming>
       <outgoing>Flow_100gvpb</outgoing>
     </userTask>
@@ -676,7 +685,7 @@
       <outgoing>Flow_1crfqzw</outgoing>
     </userTask>
     <sequenceFlow id="Flow_1d694wd" name="Нет" sourceRef="Gateway_0t2iiwk" targetRef="Activity_03qhvt9">
-      <conditionExpression xsi:type="tFormalExpression">false</conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression">${createUnit}</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="Flow_0i6ehy8" sourceRef="Activity_0vipsag" targetRef="Gateway_0t2iiwk" />
     <sequenceFlow id="Flow_0e2mnnq" name="Да" sourceRef="Gateway_0t2iiwk" targetRef="Activity_0y09kg7" />

@@ -120,6 +120,7 @@ public class SalesUnitService {
         return salesUnitRepository.findAll(pageable).map(x -> modelMapper.map(x, SalesUnitResp.class));
     }
 
+    @Transactional(readOnly = true)
     public Page<SalesUnitResp> getAllUnitsByCategory(SalesCategory category, Pageable pageable) {
         return salesUnitRepository.findAllByCategory(category, pageable).map(x -> modelMapper.map(x, SalesUnitResp.class));
     }
