@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0">
   <collaboration id="Collaboration_0h53egq">
-    <participant id="Participant_0ac01yv" name="Реклама" processRef="Process_1o4wst9" />
+    <participant id="Participant_0ac01yv" name="Реклама" processRef="Process_Advertisement" />
     <textAnnotation id="TextAnnotation_03bhxyn">
       <text>Ависасейлс поддерживает разные типы рекламы, это может быть как пост в телеграмме, так и баннер или совместный проект</text>
     </textAnnotation>
@@ -11,7 +11,7 @@
     <association id="Association_1xifbag" associationDirection="None" sourceRef="Activity_0in0ffm" targetRef="TextAnnotation_03bhxyn" />
     <association id="Association_06x0ov6" associationDirection="None" sourceRef="Activity_0wh6flo" targetRef="TextAnnotation_0webkyi" />
   </collaboration>
-  <process id="Process_1o4wst9" isExecutable="false">
+  <process id="Process_Advertisement" isExecutable="false">
     <laneSet id="LaneSet_1o7mu1g">
       <lane id="Lane_135q4v0" name="Управляющий рекламой">
         <flowNodeRef>Event_0bzwoir</flowNodeRef>

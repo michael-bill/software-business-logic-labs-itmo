@@ -166,4 +166,3 @@ ECHO   --production - Applies the production.yaml configuration file
 ECHO   --detached   - Starts Camunda Run as a detached process
 
 :End
-pause
