@@ -29,6 +29,7 @@ public class CreateUnitWorker {
                     String description = externalTask.getVariable("unit_description");
                     Long categoryId = externalTask.getVariable("category_id");
                     Object commissionObj = externalTask.getVariable("unit_commission");
+                    boolean isDefaultCommission = externalTask.getVariable("unit_is_default_commission");
 
                     log.info("Worker 'unit-create': creating unit '{}', category: {}, commission: {}", 
                             name, categoryId, commissionObj);
@@ -58,9 +59,13 @@ public class CreateUnitWorker {
                                 .commissionPercent(commission)
                                 .build();
                         SalesUnitResp resp = salesUnitService.createSalesUnit(req);
+                        if(isDefaultCommission) {
+                            salesUnitService.resetToDefaultCommission(resp.getId(), resp.getVersion());
+                        }
                         externalTaskService.complete(externalTask, Map.of(
                                 "newUnitCreated", true,
-                                "newUnitId", resp.getId()
+                                "newUnitId", resp.getId(),
+                                "createUnit", false
                         ));
                         log.info("Worker 'unit-create': unit '{}' created successfully", name);
                     } catch (UniqueValueExistsException | IllegalArgumentException e) {

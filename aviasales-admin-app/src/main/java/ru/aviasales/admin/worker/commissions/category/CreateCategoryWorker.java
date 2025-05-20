@@ -56,7 +56,8 @@ public class CreateCategoryWorker {
                         SalesCategoryResp resp = salesCategoryService.createCategory(req);
                         externalTaskService.complete(externalTask, Map.of(
                                 "newCategoryCreated", true,
-                                "newCategoryId", resp.getId()
+                                "newCategoryId", resp.getId(),
+                                "createCategory", false
                         ));
                         log.info("Worker 'category-create': category '{}' created successfully", name);
                     } catch (UniqueValueExistsException | IllegalArgumentException e) {

@@ -30,6 +30,7 @@ public class SetUnitCommissionWorker {
                         Long unitId = externalTask.getVariable("unit_id");
                         Long version = externalTask.getVariable("unit_version");
                         Object commissionObj = externalTask.getVariable("unit_commission");
+                        boolean isDefaultCommission = externalTask.getVariable("unit_is_default_commission");
 
                         if (unitId == null) {
                             throw new IllegalArgumentException("Unit ID is required");
@@ -63,7 +64,11 @@ public class SetUnitCommissionWorker {
                                 .commissionPercent(commission)
                                 .build();
 
-                        salesUnitService.updateSalesUnit(unitId, version, req);
+                        if(isDefaultCommission) {
+                            salesUnitService.resetToDefaultCommission(unitId, version);
+                        } else {
+                            salesUnitService.updateSalesUnit(unitId, version, req);
+                        }
                         externalTaskService.complete(externalTask);
 
                         log.info("Worker 'unit-set-comission': successfully set commission for unit ID {}", unitId);
