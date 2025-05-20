@@ -182,7 +182,7 @@
         <outgoing>Flow_002tj2x</outgoing>
       </exclusiveGateway>
       <sequenceFlow id="Flow_1vvbcke" name="Да" sourceRef="Gateway_1et3obi" targetRef="Activity_11pocab">
-        <conditionExpression xsi:type="tFormalExpression">${newCommission != category_original_commission}</conditionExpression>
+        <conditionExpression xsi:type="tFormalExpression">${category_commission != category_original_commission}</conditionExpression>
       </sequenceFlow>
       <sequenceFlow id="Flow_1nr014l" name="Нет" sourceRef="Gateway_148ukoc" targetRef="Activity_0w0nvqu" />
       <sequenceFlow id="Flow_1jrv3t8" name="Были ли изменены данные с момента получения информации?" sourceRef="Activity_11pocab" targetRef="Gateway_148ukoc" />
@@ -193,10 +193,11 @@
       <sequenceFlow id="Flow_0rzukqh" sourceRef="Activity_0w0nvqu" targetRef="Event_06hadsn" />
       <endEvent id="Event_07ejjvy">
         <incoming>Flow_002tj2x</incoming>
+        <incoming>Flow_1q9cygo</incoming>
         <cancelEventDefinition id="CancelEventDefinition_0anvh7u" />
       </endEvent>
       <sequenceFlow id="Flow_002tj2x" name="Да" sourceRef="Gateway_148ukoc" targetRef="Event_07ejjvy">
-        <conditionExpression xsi:type="tFormalExpression">false</conditionExpression>
+        <conditionExpression xsi:type="tFormalExpression">${version_changed}</conditionExpression>
       </sequenceFlow>
       <boundaryEvent id="Event_1st0yi1" attachedToRef="Activity_0w0nvqu">
         <outgoing>Flow_1b1h201</outgoing>
@@ -244,7 +245,7 @@
         <incoming>Flow_0eteqr5</incoming>
         <outgoing>Flow_0me0t85</outgoing>
       </userTask>
-      <serviceTask id="Activity_11pocab" name="Получение последнего изменения данных" camunda:type="external" camunda:topic="">
+      <serviceTask id="Activity_11pocab" name="Получение последнего изменения данных" camunda:type="external" camunda:topic="category-get-version">
         <incoming>Flow_1vvbcke</incoming>
         <outgoing>Flow_1jrv3t8</outgoing>
         <property id="Property_1a7pmes" name="__targetRef_placeholder" />
@@ -253,7 +254,7 @@
           <targetRef>Property_1a7pmes</targetRef>
         </dataInputAssociation>
       </serviceTask>
-      <serviceTask id="Activity_0w0nvqu" name="Установка комиссии на всю категорию продаж" camunda:type="external" camunda:topic="">
+      <serviceTask id="Activity_0w0nvqu" name="Установка комиссии на всю категорию продаж" camunda:type="external" camunda:topic="category-set-comission">
         <incoming>Flow_1nr014l</incoming>
         <outgoing>Flow_0rzukqh</outgoing>
         <dataOutputAssociation id="DataOutputAssociation_1payyzk">
@@ -274,6 +275,15 @@
         <errorEventDefinition id="ErrorEventDefinition_1tk9ebr" errorRef="Error_04ry4w7" />
       </endEvent>
       <userTask id="Activity_1ph3pad" name="Отображение сообщения о некорректной комиссии">
+        <extensionElements>
+          <camunda:formData>
+            <camunda:formField id="errorCategoryComission" type="string" defaultValue="Значение комиссии должно быть в диапазоне от 0 до 100">
+              <camunda:validation>
+                <camunda:constraint name="readonly" />
+              </camunda:validation>
+            </camunda:formField>
+          </camunda:formData>
+        </extensionElements>
         <incoming>Flow_1shlakv</incoming>
         <outgoing>Flow_0eteqr5</outgoing>
       </userTask>
@@ -286,9 +296,14 @@
       <sequenceFlow id="Flow_11zaymb" sourceRef="Event_1u7whk2" targetRef="Event_08iu67t" />
       <boundaryEvent id="Event_0htanii" attachedToRef="Activity_0w0nvqu">
         <outgoing>Flow_1shlakv</outgoing>
-        <errorEventDefinition id="ErrorEventDefinition_1cnpcrj" />
+        <errorEventDefinition id="ErrorEventDefinition_1cnpcrj" errorRef="Error_1f24ibq" />
       </boundaryEvent>
       <sequenceFlow id="Flow_1shlakv" sourceRef="Event_0htanii" targetRef="Activity_1ph3pad" />
+      <boundaryEvent id="Event_001luls" attachedToRef="Activity_0w0nvqu">
+        <outgoing>Flow_1q9cygo</outgoing>
+        <errorEventDefinition id="ErrorEventDefinition_0ujzi45" errorRef="Error_0wbqzn2" />
+      </boundaryEvent>
+      <sequenceFlow id="Flow_1q9cygo" sourceRef="Event_001luls" targetRef="Event_07ejjvy" />
     </transaction>
     <sequenceFlow id="Flow_14wi766" sourceRef="Event_1pcsd2e" targetRef="Gateway_0xscyfs" />
     <exclusiveGateway id="Gateway_0t2iiwk" name="Интересующая единица продажи существует?" default="Flow_0e2mnnq">
@@ -580,6 +595,8 @@
   </process>
   <error id="Error_04ry4w7" name="Error_Database" errorCode="DATABASE_ERROR" />
   <error id="Error_0pdon1o" name="Error_CategoryCreate" errorCode="CATEGORY_CREATE_ERROR" />
+  <error id="Error_1f24ibq" name="Error_CategoryComission" errorCode="CATEGORY_COMISSION_ERROR" />
+  <error id="Error_0wbqzn2" name="Error_CategoryLock" errorCode="CATEGORY_COMISSION_LOCK" />
   <bpmndi:BPMNDiagram id="BpmnDiagram_1">
     <bpmndi:BPMNPlane id="BpmnPlane_1" bpmnElement="Collaboration_0h53egq">
       <bpmndi:BPMNShape id="BPMNShape_1a5gx5e" bpmnElement="Participant_0jw6etc" isHorizontal="true">
@@ -709,6 +726,9 @@
       <bpmndi:BPMNShape id="Event_1st0yi1_di" bpmnElement="Event_1st0yi1">
         <omgdc:Bounds x="1922" y="602" width="36" height="36" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_001luls_di" bpmnElement="Event_001luls">
+        <omgdc:Bounds x="1822" y="682" width="36" height="36" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0pdgqzv_di" bpmnElement="Flow_0pdgqzv">
         <omgdi:waypoint x="1388" y="660" />
         <omgdi:waypoint x="1420" y="660" />
@@ -780,6 +800,12 @@
       <bpmndi:BPMNEdge id="Flow_1shlakv_di" bpmnElement="Flow_1shlakv">
         <omgdi:waypoint x="1840" y="602" />
         <omgdi:waypoint x="1840" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1q9cygo_di" bpmnElement="Flow_1q9cygo">
+        <omgdi:waypoint x="1822" y="700" />
+        <omgdi:waypoint x="1780" y="700" />
+        <omgdi:waypoint x="1780" y="770" />
+        <omgdi:waypoint x="1738" y="770" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="BPMNShape_0rvrfwq" bpmnElement="Gateway_0t2iiwk" isMarkerVisible="true">
         <omgdc:Bounds x="2295" y="345" width="50" height="50" />

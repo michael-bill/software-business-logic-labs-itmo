@@ -13,20 +13,20 @@ import java.util.Map;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class GetCategoryWorker {
+public class GetCategoryVersionWorker {
 
     private final ExternalTaskClient client;
     private final SalesCategoryService salesCategoryService;
 
     @PostConstruct
     public void subscribe() {
-        client.subscribe("category-get")
+        client.subscribe("category-get-version")
                 .lockDuration(10000)
                 .handler((externalTask, externalTaskService) -> {
-                    log.info("Worker 'category-get': processing request to get category information");
+                    log.info("Worker 'category-get-version': processing request to get category version");
 
                     try {
-                        Long categoryId = externalTask.getVariable("categoryId");
+                        Long categoryId = externalTask.getVariable("category_id");
                         if (categoryId == null) {
                             throw new IllegalArgumentException("Category ID is required");
                         }
@@ -36,23 +36,21 @@ public class GetCategoryWorker {
                             throw new IllegalArgumentException("Category not found with ID: " + categoryId);
                         }
 
+                        Long originalVersion = externalTask.getVariable("category_version");
+                        boolean versionChanged = !category.getVersion().equals(originalVersion);
+
                         externalTaskService.complete(externalTask, Map.of(
-                            "category_id", category.getId(),
-                            "category_name", category.getName(),
-                            "category_description", category.getDescription() != null ? category.getDescription() : "",
-                            "category_commission", category.getDefaultCommissionPercent(),
-                            "category_original_commission", category.getDefaultCommissionPercent(),
-                            "category_version", category.getVersion()
+                            "version_changed", versionChanged
                         ));
 
-                        log.info("Worker 'category-get': successfully retrieved category with ID {}", categoryId);
+                        log.info("Worker 'category-get-version': successfully checked version for category ID {}", categoryId);
 
                     } catch (Exception e) {
-                        log.error("Worker 'category-get': error while retrieving category");
+                        log.error("Worker 'category-get-version': error while checking category version", e);
                         externalTaskService.handleBpmnError(
                                 externalTask,
                                 "DATABASE_ERROR",
-                                "Произошла ошибка при получении информации о категории: " + e.getMessage(),
+                                "Произошла ошибка при проверке версии категории: " + e.getMessage(),
                                 null
                         );
                     }
