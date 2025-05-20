@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.6.1">
+  <collaboration id="Collaboration_0h53egq">
+    <participant id="Participant_1yqkze4" name="Обновление сегментов пользователей" processRef="Process_0vxgv6g" />
+  </collaboration>
+  <process id="Process_0vxgv6g">
+    <startEvent id="Event_1y438jz">
+      <outgoing>Flow_1kn6wj4</outgoing>
+      <timerEventDefinition id="TimerEventDefinition_1tlrjmv" />
+    </startEvent>
+    <dataStoreReference id="DataStoreReference_10d60ap" name="База данных" />
+    <serviceTask id="Activity_0pmg496" name="Обновление оценочного количества пользователей">
+      <incoming>Flow_1kn6wj4</incoming>
+      <outgoing>Flow_0cw6yli</outgoing>
+      <dataOutputAssociation id="DataOutputAssociation_0fuh84x">
+        <targetRef>DataStoreReference_10d60ap</targetRef>
+      </dataOutputAssociation>
+    </serviceTask>
+    <endEvent id="Event_05tliz0">
+      <incoming>Flow_0cw6yli</incoming>
+    </endEvent>
+    <sequenceFlow id="Flow_1kn6wj4" sourceRef="Event_1y438jz" targetRef="Activity_0pmg496" />
+    <sequenceFlow id="Flow_0cw6yli" sourceRef="Activity_0pmg496" targetRef="Event_05tliz0" />
+  </process>
+  <bpmndi:BPMNDiagram id="BpmnDiagram_1">
+    <bpmndi:BPMNPlane id="BpmnPlane_1" bpmnElement="Collaboration_0h53egq">
+      <bpmndi:BPMNShape id="Participant_1yqkze4_di" bpmnElement="Participant_1yqkze4" isHorizontal="true">
+        <omgdc:Bounds x="160" y="85" width="370" height="270" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1y438jz_di" bpmnElement="Event_1y438jz">
+        <omgdc:Bounds x="232" y="167" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="912" y="1065" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_10d60ap_di" bpmnElement="DataStoreReference_10d60ap">
+        <omgdc:Bounds x="335" y="270" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="327" y="327" width="67" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0llp9nv_di" bpmnElement="Activity_0pmg496">
+        <omgdc:Bounds x="310" y="145" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_05tliz0_di" bpmnElement="Event_05tliz0">
+        <omgdc:Bounds x="452" y="167" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1kn6wj4_di" bpmnElement="Flow_1kn6wj4">
+        <omgdi:waypoint x="268" y="185" />
+        <omgdi:waypoint x="310" y="185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cw6yli_di" bpmnElement="Flow_0cw6yli">
+        <omgdi:waypoint x="410" y="185" />
+        <omgdi:waypoint x="452" y="185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0fuh84x_di" bpmnElement="DataOutputAssociation_0fuh84x">
+        <omgdi:waypoint x="360" y="225" />
+        <omgdi:waypoint x="360" y="270" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
