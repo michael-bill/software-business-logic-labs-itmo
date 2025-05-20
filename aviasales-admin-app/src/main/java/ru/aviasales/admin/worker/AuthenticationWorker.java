@@ -28,7 +28,7 @@ public class AuthenticationWorker {
                     String username = externalTask.getVariable("username");
                     String password = externalTask.getVariable("password");
 
-                    log.info("Worker 'authenticate-user': обрабатывается задача для пользователя '{}'", username);
+                    log.info("Worker 'authenticate-user': processing task for user '{}'", username);
 
                     try {
                         AuthReq authReq = AuthReq.builder().username(username).password(password).build();
@@ -39,10 +39,10 @@ public class AuthenticationWorker {
                                 "authenticationSuccessful", true
                         );
                         externalTaskService.complete(externalTask, variablesToSet);
-                        log.info("Worker 'authenticate-user': аутентификация успешна для '{}', токен выдан.", username);
+                        log.info("Worker 'authenticate-user': authentication successful for '{}', token issued", username);
 
                     } catch (BadCredentialsException e) {
-                        log.warn("Worker 'authenticate-user': неверные учетные данные для '{}'", username);
+                        log.warn("Worker 'authenticate-user': invalid credentials for user '{}'", username);
                         externalTaskService.handleBpmnError(
                                 externalTask,
                                 "AUTH_FAILED",
@@ -50,7 +50,7 @@ public class AuthenticationWorker {
                                 Map.of("authenticationSuccessful", false)
                         );
                     } catch (Exception e) {
-                        log.error("Worker 'authenticate-user': неожиданная ошибка при аутентификации '{}'", username, e);
+                        log.error("Worker 'authenticate-user': unexpected error during authentication for '{}'", username, e);
                         externalTaskService.handleFailure(
                                 externalTask,
                                 "Техническая ошибка",

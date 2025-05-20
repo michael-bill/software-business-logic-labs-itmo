@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.6.1">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0">
   <collaboration id="Collaboration_0h53egq">
     <participant id="Participant_1yqkze4" name="Обновление сегментов пользователей" processRef="Process_0vxgv6g" />
   </collaboration>
-  <process id="Process_0vxgv6g">
+  <process id="Process_0vxgv6g" isExecutable="false">
     <startEvent id="Event_1y438jz">
       <outgoing>Flow_1kn6wj4</outgoing>
-      <timerEventDefinition id="TimerEventDefinition_1tlrjmv" />
+      <timerEventDefinition id="TimerEventDefinition_1tlrjmv">
+        <timeCycle xsi:type="tFormalExpression">R/PT10S</timeCycle>
+      </timerEventDefinition>
     </startEvent>
     <dataStoreReference id="DataStoreReference_10d60ap" name="База данных" />
-    <serviceTask id="Activity_0pmg496" name="Обновление оценочного количества пользователей">
+    <serviceTask id="Activity_0pmg496" name="Обновление оценочного количества пользователей" camunda:type="external" camunda:topic="update-user-segments">
       <incoming>Flow_1kn6wj4</incoming>
       <outgoing>Flow_0cw6yli</outgoing>
       <dataOutputAssociation id="DataOutputAssociation_0fuh84x">
