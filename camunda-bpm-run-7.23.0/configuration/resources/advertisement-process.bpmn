@@ -11,18 +11,18 @@
     <association id="Association_1xifbag" associationDirection="None" sourceRef="Activity_0in0ffm" targetRef="TextAnnotation_03bhxyn" />
     <association id="Association_06x0ov6" associationDirection="None" sourceRef="Activity_0wh6flo" targetRef="TextAnnotation_0webkyi" />
   </collaboration>
-  <process id="Process_Advertisement" isExecutable="false">
+  <process id="Process_Advertisement" isExecutable="true">
     <laneSet id="LaneSet_1o7mu1g">
       <lane id="Lane_135q4v0" name="Управляющий рекламой">
         <flowNodeRef>Event_0bzwoir</flowNodeRef>
         <flowNodeRef>Activity_1n6ke1y</flowNodeRef>
         <flowNodeRef>Gateway_11th7kx</flowNodeRef>
         <flowNodeRef>Event_125yp0u</flowNodeRef>
-        <flowNodeRef>Activity_0q1tegs</flowNodeRef>
         <flowNodeRef>Activity_0lzfwds</flowNodeRef>
         <flowNodeRef>Activity_0jbor2h</flowNodeRef>
         <flowNodeRef>Activity_104ncro</flowNodeRef>
         <flowNodeRef>Event_0ummyet</flowNodeRef>
+        <flowNodeRef>Activity_0q1tegs</flowNodeRef>
       </lane>
       <lane id="Lane_14qwmat" name="Сервер">
         <flowNodeRef>Activity_1qx1u5y</flowNodeRef>
@@ -31,9 +31,9 @@
         <flowNodeRef>Gateway_03g32fx</flowNodeRef>
         <flowNodeRef>Gateway_1vdoq4x</flowNodeRef>
         <flowNodeRef>Activity_0nmvaew</flowNodeRef>
-        <flowNodeRef>Event_1l340sp</flowNodeRef>
-        <flowNodeRef>Event_06gwved</flowNodeRef>
         <flowNodeRef>Event_0hnh6uv</flowNodeRef>
+        <flowNodeRef>Event_06gwved</flowNodeRef>
+        <flowNodeRef>Event_1l340sp</flowNodeRef>
       </lane>
     </laneSet>
     <dataStoreReference id="DataStoreReference_1dqzfiu" name="База данных" />
@@ -43,7 +43,7 @@
     <userTask id="Activity_1n6ke1y" name="Вывод сообщения о необходимости авторизации">
       <extensionElements>
         <camunda:formData>
-          <camunda:formField id="auth_error" label="У вас нет прав на использование данного функционала" type="string" defaultValue="У вас нет прав на использование данного функционала">
+          <camunda:formField id="authErrorMessage" label="Ошибка" type="string" defaultValue="У вас нет прав на использование данного функционала.">
             <camunda:validation>
               <camunda:constraint name="readonly" />
             </camunda:validation>
@@ -56,16 +56,16 @@
       <incoming>Flow_1f3toz9</incoming>
       <outgoing>Flow_1dp1ego</outgoing>
     </userTask>
-    <serviceTask id="Activity_1qx1u5y" name="Проверка токена и прав пользователя" camunda:type="external" camunda:topic="token_validation">
+    <serviceTask id="Activity_1qx1u5y" name="Проверка токена и прав пользователя" camunda:type="external" camunda:topic="check-token">
       <extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="Input_JWT">${jwt}</camunda:inputParameter>
+          <camunda:inputParameter name="requiredRole">ROLE_ADVERTISEMENTS</camunda:inputParameter>
         </camunda:inputOutput>
       </extensionElements>
       <incoming>Flow_1ez9sf6</incoming>
       <outgoing>Flow_18yrxey</outgoing>
     </serviceTask>
-    <serviceTask id="Activity_0in0ffm" name="Получение типов рекламы" camunda:type="external" camunda:topic="get_advertisements">
+    <serviceTask id="Activity_0in0ffm" name="Получение типов рекламы" camunda:type="external" camunda:topic="category-get-list">
       <extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="Input_GetAdvertisementsJWT">${jwt}</camunda:inputParameter>
@@ -79,7 +79,7 @@
         <targetRef>Property_1p14d7k</targetRef>
       </dataInputAssociation>
     </serviceTask>
-    <exclusiveGateway id="Gateway_11th7kx">
+    <exclusiveGateway id="Gateway_11th7kx" default="Flow_0loutev">
       <incoming>Flow_1dp1ego</incoming>
       <incoming>Flow_0mx9lay</incoming>
       <outgoing>Flow_0loutev</outgoing>
@@ -87,14 +87,10 @@
     <endEvent id="Event_125yp0u">
       <incoming>Flow_0loutev</incoming>
     </endEvent>
-    <userTask id="Activity_0q1tegs" name="Заполнить информацию о рекламе">
-      <incoming>Flow_1f7o0sn</incoming>
-      <outgoing>Flow_076xfvl</outgoing>
-    </userTask>
     <userTask id="Activity_0lzfwds" name="Вывод сообщения об ошибке">
       <extensionElements>
         <camunda:formData>
-          <camunda:formField id="error" label="Произошла ошибка во время выполнения запроса" type="string" defaultValue="Произошла ошибка во время выполнения запроса">
+          <camunda:formField id="errorMessage" label="Ошибка" type="string" defaultValue="Произошла ошибка при обращении к БД">
             <camunda:validation>
               <camunda:constraint name="readonly" />
             </camunda:validation>
@@ -168,6 +164,10 @@
     <sequenceFlow id="Flow_11d5hic" sourceRef="Gateway_1vdoq4x" targetRef="Activity_0nmvaew" />
     <sequenceFlow id="Flow_1gkzt3w" sourceRef="Activity_0nmvaew" targetRef="Activity_104ncro" />
     <sequenceFlow id="Flow_07gig3m" sourceRef="Activity_104ncro" targetRef="Event_0ummyet" />
+    <userTask id="Activity_0q1tegs" name="Заполнить информацию о рекламе">
+      <incoming>Flow_1f7o0sn</incoming>
+      <outgoing>Flow_076xfvl</outgoing>
+    </userTask>
   </process>
   <error id="Error_06j4it2" name="Error_0luaem1" />
   <bpmndi:BPMNDiagram id="BpmnDiagram_1">
