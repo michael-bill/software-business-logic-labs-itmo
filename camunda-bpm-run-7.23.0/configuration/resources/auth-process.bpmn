@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0">
+  <collaboration id="Collaboration_0h53egq">
+    <participant id="Participant_1m5amf1" name="Авторизация" processRef="AuthProcess" />
+  </collaboration>
+  <process id="AuthProcess" isExecutable="true" camunda:historyTimeToLive="1">
+    <laneSet id="LaneSet_152qj4w">
+      <lane id="Lane_0drahcd" name="Пользователь">
+        <flowNodeRef>Event_12atkon</flowNodeRef>
+        <flowNodeRef>Activity_01wq4b8</flowNodeRef>
+        <flowNodeRef>Event_01gts5f</flowNodeRef>
+        <flowNodeRef>Activity_0kixa0f</flowNodeRef>
+        <flowNodeRef>Activity_0bxqaeo</flowNodeRef>
+      </lane>
+      <lane id="Lane_0572n8a" name="Сервер">
+        <flowNodeRef>Activity_1olsd7d</flowNodeRef>
+        <flowNodeRef>Event_0rbiqkj</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="Event_12atkon" name="Начало авторизации">
+      <outgoing>Flow_14cbc5t</outgoing>
+    </startEvent>
+    <userTask id="Activity_01wq4b8" name="Ввести логин и пароль">
+      <extensionElements>
+        <camunda:formData>
+          <camunda:formField id="username" label="Имя пользователя" type="string" defaultValue="admin">
+            <camunda:properties />
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="password" label="Пароль" type="string" defaultValue="admin">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </extensionElements>
+      <incoming>Flow_14cbc5t</incoming>
+      <incoming>Flow_0gfnyth</incoming>
+      <outgoing>Flow_02cr6jb</outgoing>
+    </userTask>
+    <sequenceFlow id="Flow_14cbc5t" sourceRef="Event_12atkon" targetRef="Activity_01wq4b8" />
+    <sequenceFlow id="Flow_1xdzl7y" sourceRef="Activity_0bxqaeo" targetRef="Event_01gts5f" />
+    <serviceTask id="Activity_1olsd7d" name="Проверить учетные данные и выдать токен" camunda:type="external" camunda:topic="authenticate-user">
+      <extensionElements />
+      <incoming>Flow_02cr6jb</incoming>
+      <outgoing>Flow_1bn1rkh</outgoing>
+    </serviceTask>
+    <sequenceFlow id="Flow_02cr6jb" sourceRef="Activity_01wq4b8" targetRef="Activity_1olsd7d" />
+    <endEvent id="Event_01gts5f" name="Авторизация завершена">
+      <incoming>Flow_1xdzl7y</incoming>
+    </endEvent>
+    <sequenceFlow id="Flow_0gfnyth" sourceRef="Activity_0kixa0f" targetRef="Activity_01wq4b8" />
+    <boundaryEvent id="Event_0rbiqkj" attachedToRef="Activity_1olsd7d">
+      <outgoing>Flow_0yr4krz</outgoing>
+      <errorEventDefinition id="ErrorEventDefinition_1ym7c4e" camunda:errorCodeVariable="AUTH_FAILED" camunda:errorMessageVariable="Не удалось авторизоваться, проверьте логин или пароль" />
+    </boundaryEvent>
+    <sequenceFlow id="Flow_1bn1rkh" sourceRef="Activity_1olsd7d" targetRef="Activity_0bxqaeo" />
+    <sequenceFlow id="Flow_0yr4krz" sourceRef="Event_0rbiqkj" targetRef="Activity_0kixa0f" />
+    <userTask id="Activity_0kixa0f" name="Показать ошибку аутентификации">
+      <extensionElements>
+        <camunda:formData>
+          <camunda:formField id="authErrorMessage" label="Ошибка" type="string">
+            <camunda:properties />
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </extensionElements>
+      <incoming>Flow_0yr4krz</incoming>
+      <outgoing>Flow_0gfnyth</outgoing>
+    </userTask>
+    <userTask id="Activity_0bxqaeo" name="Показать JWT токен">
+      <extensionElements>
+        <camunda:formData>
+          <camunda:formField id="jwtToken" label="Ваш JWT токен" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </extensionElements>
+      <incoming>Flow_1bn1rkh</incoming>
+      <outgoing>Flow_1xdzl7y</outgoing>
+    </userTask>
+  </process>
+  <error id="Error_10d5o55" name="Error_3hiipqu" />
+  <bpmndi:BPMNDiagram id="BpmnDiagram_1">
+    <bpmndi:BPMNPlane id="BpmnPlane_1" bpmnElement="Collaboration_0h53egq">
+      <bpmndi:BPMNShape id="Participant_1m5amf1_di" bpmnElement="Participant_1m5amf1" isHorizontal="true">
+        <omgdc:Bounds x="160" y="60" width="690" height="320" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0572n8a_di" bpmnElement="Lane_0572n8a" isHorizontal="true">
+        <omgdc:Bounds x="190" y="260" width="660" height="120" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0drahcd_di" bpmnElement="Lane_0drahcd" isHorizontal="true">
+        <omgdc:Bounds x="190" y="60" width="660" height="200" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_12atkon_di" bpmnElement="Event_12atkon">
+        <omgdc:Bounds x="262" y="152" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="248" y="195" width="66" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0gls8mq_di" bpmnElement="Activity_01wq4b8">
+        <omgdc:Bounds x="360" y="130" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1olsd7d_di" bpmnElement="Activity_1olsd7d">
+        <omgdc:Bounds x="470" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_01gts5f_di" bpmnElement="Event_01gts5f">
+        <omgdc:Bounds x="762" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="748" y="185" width="66" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0t6ctu5" bpmnElement="Activity_0kixa0f">
+        <omgdc:Bounds x="610" y="70" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0xr3lap" bpmnElement="Activity_0bxqaeo">
+        <omgdc:Bounds x="610" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0rbiqkj_di" bpmnElement="Event_0rbiqkj">
+        <omgdc:Bounds x="552" y="262" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_14cbc5t_di" bpmnElement="Flow_14cbc5t">
+        <omgdi:waypoint x="298" y="170" />
+        <omgdi:waypoint x="360" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xdzl7y_di" bpmnElement="Flow_1xdzl7y">
+        <omgdi:waypoint x="710" y="210" />
+        <omgdi:waypoint x="736" y="210" />
+        <omgdi:waypoint x="736" y="160" />
+        <omgdi:waypoint x="762" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02cr6jb_di" bpmnElement="Flow_02cr6jb">
+        <omgdi:waypoint x="410" y="210" />
+        <omgdi:waypoint x="410" y="245" />
+        <omgdi:waypoint x="490" y="245" />
+        <omgdi:waypoint x="490" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0gfnyth_di" bpmnElement="Flow_0gfnyth">
+        <omgdi:waypoint x="610" y="80" />
+        <omgdi:waypoint x="410" y="80" />
+        <omgdi:waypoint x="410" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1bn1rkh_di" bpmnElement="Flow_1bn1rkh">
+        <omgdi:waypoint x="570" y="320" />
+        <omgdi:waypoint x="660" y="320" />
+        <omgdi:waypoint x="660" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yr4krz_di" bpmnElement="Flow_0yr4krz">
+        <omgdi:waypoint x="570" y="262" />
+        <omgdi:waypoint x="570" y="110" />
+        <omgdi:waypoint x="610" y="110" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
