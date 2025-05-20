@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e # Останавливать скрипт при ошибке
+#set -e # Останавливать скрипт при ошибке
 
 DOCKER_COMMAND="docker compose" # По умолчанию
 if [ "$1" == "legacy" ] || [ "$1" == "--legacy-compose" ]; then
@@ -33,53 +33,78 @@ CAMUNDA_INTERNAL_SCRIPT_DIR="${CAMUNDA_BASE_DIR}/internal"
 CAMUNDA_RUN_SCRIPT="${CAMUNDA_INTERNAL_SCRIPT_DIR}/run.sh"
 CAMUNDA_LOG_FILE="${PROJECT_ROOT_DIR}/camunda-run.log"
 CAMUNDA_PORT=8090
-CAMUNDA_HEALTH_CHECK_URL="http://localhost:${CAMUNDA_PORT}/camunda-welcome/index.html"
+CAMUNDA_HEALTH_CHECK_URL="http://localhost:${CAMUNDA_PORT}/"
+
+
+is_port_listening() {
+  local port_to_check=$1
+  # 1. Попробовать ss
+  if command -v ss &>/dev/null; then
+    if ss -tln 2>/dev/null | grep -q ":${port_to_check}\b" ; then return 0; fi
+  fi
+  # 2. Попробовать lsof
+  if command -v lsof &>/dev/null; then
+    if lsof -nP -iTCP:${port_to_check} -sTCP:LISTEN 2>/dev/null | grep -q "[Ll][Ii][Ss][Tt][Ee][Nn]"; then return 0; fi
+  fi
+  # 3. Попробовать netstat
+  if command -v netstat &>/dev/null; then
+    if netstat -an 2>/dev/null | grep -i "LISTEN" | grep -q "[.:]${port_to_check}\b" ; then return 0; fi
+  fi
+  return 1 # Порт не слушается, или утилиты не найдены/не сработали
+}
 
 # --- Функция остановки Camunda ---
 stop_camunda() {
   echo "Attempting to stop Camunda BPM Run..."
-  if [ -f "${CAMUNDA_RUN_SCRIPT}" ]; then
-    CAMUNDA_RUNNING=false
-    if command -v ss > /dev/null; then
-        if ss -tulnp | grep -q ":${CAMUNDA_PORT}" ; then CAMUNDA_RUNNING=true; fi
-    elif command -v netstat > /dev/null; then
-        if netstat -tulnp | grep -q ":${CAMUNDA_PORT}" ; then CAMUNDA_RUNNING=true; fi
-    else
-        echo "WARNING: Neither 'ss' nor 'netstat' found. Cannot reliably check if Camunda is running by port."
-        if [ -f "${CAMUNDA_INTERNAL_SCRIPT_DIR}/pid" ]; then
-            echo "PID file exists, attempting stop."
-            CAMUNDA_RUNNING=true
-        fi
-    fi
-
-    if [ "$CAMUNDA_RUNNING" = true ] ; then
-      echo "Camunda BPM Run seems to be running or was running. Executing stop script..."
-      # Добавляем || true, чтобы скрипт не падал, если stop возвращает ошибку (например, уже остановлен)
-      (cd "${CAMUNDA_BASE_DIR}" && sh ./internal/run.sh stop) || true
-      echo "Waiting for Camunda to stop..."
-      for i in {1..15}; do
-        RECHECK_RUNNING=false
-        if command -v ss > /dev/null; then
-            if ss -tulnp | grep -q ":${CAMUNDA_PORT}" ; then RECHECK_RUNNING=true; fi
-        elif command -v netstat > /dev/null; then
-            if netstat -tulnp | grep -q ":${CAMUNDA_PORT}" ; then RECHECK_RUNNING=true; fi
-        fi
-        if [ "$RECHECK_RUNNING" = false ]; then
-          echo "Camunda BPM Run stopped."
-          rm -f "${CAMUNDA_INTERNAL_SCRIPT_DIR}/pid"
-          return 0
-        fi
-        echo -n "."
-        sleep 1
-      done
-      echo
-      echo "WARNING: Camunda BPM Run might not have stopped completely after 15 seconds (port ${CAMUNDA_PORT} might still be in use)."
-    else
-      echo "Camunda BPM Run does not seem to be running (port ${CAMUNDA_PORT} appears free or status unknown)."
-      rm -f "${CAMUNDA_INTERNAL_SCRIPT_DIR}/pid"
-    fi
-  else
+  if [ ! -f "${CAMUNDA_RUN_SCRIPT}" ]; then
     echo "WARNING: Camunda run script not found at ${CAMUNDA_RUN_SCRIPT}. Cannot stop Camunda."
+    return 1
+  fi
+
+  CAMUNDA_NEEDS_STOP_ATTEMPT=false
+  if is_port_listening "${CAMUNDA_PORT}"; then
+    echo "Camunda BPM Run is currently listening on port ${CAMUNDA_PORT}."
+    CAMUNDA_NEEDS_STOP_ATTEMPT=true
+  else
+    # Порт не слушается. Проверим PID файл. Если он есть, возможно, Camunda упала
+    # или была некорректно остановлена, и стоит попытаться выполнить stop для очистки.
+    if [ -f "${CAMUNDA_INTERNAL_SCRIPT_DIR}/pid" ]; then
+        echo "Port ${CAMUNDA_PORT} is not listening, but Camunda PID file found. Attempting stop for cleanup."
+        CAMUNDA_NEEDS_STOP_ATTEMPT=true
+    else
+        echo "Camunda BPM Run does not seem to be running (port ${CAMUNDA_PORT} is free and no PID file found)."
+    fi
+  fi
+
+  # Предупреждение, если ни одна из утилит проверки портов не найдена
+  if ! (command -v ss &>/dev/null || command -v lsof &>/dev/null || command -v netstat &>/dev/null); then
+      echo "WARNING: None of 'ss', 'lsof', or 'netstat' found. Camunda running status check might be unreliable."
+  fi
+
+  if [ "$CAMUNDA_NEEDS_STOP_ATTEMPT" = true ] ; then
+    echo "Executing Camunda stop script..."
+    (cd "${CAMUNDA_BASE_DIR}" && sh ./shutdown.sh) || true # || true чтобы не падать, если stop вернет ошибку
+    echo "Waiting for Camunda to stop..."
+    for i in {1..15}; do # Ждем до 15 секунд
+      if ! is_port_listening "${CAMUNDA_PORT}"; then
+        echo "Camunda BPM Run stopped (port ${CAMUNDA_PORT} is free)."
+        rm -f "${CAMUNDA_INTERNAL_SCRIPT_DIR}/pid" # Чистим PID файл
+        return 0
+      fi
+      echo -n "."
+      sleep 1
+    done
+    echo # Newline after dots
+    echo "WARNING: Camunda BPM Run might not have stopped completely after 15 seconds (port ${CAMUNDA_PORT} might still be in use)."
+    # Если не остановилась, все равно удалим PID, т.к. stop скрипт был вызван.
+    # Это предотвратит ложное срабатывание при следующем запуске, если процесс завис.
+    rm -f "${CAMUNDA_INTERNAL_SCRIPT_DIR}/pid"
+  else
+    # Если не было необходимости останавливать, на всякий случай проверим и удалим PID, если он есть
+    if [ -f "${CAMUNDA_INTERNAL_SCRIPT_DIR}/pid" ]; then
+        echo "Cleaning up orphaned Camunda PID file."
+        rm -f "${CAMUNDA_INTERNAL_SCRIPT_DIR}/pid"
+    fi
   fi
 }
 
@@ -91,7 +116,7 @@ start_camunda() {
     exit 1
   fi
 
-  stop_camunda # Убедимся, что предыдущий экземпляр точно остановлен
+  stop_camunda
 
   echo "Executing Camunda start script in detached mode..."
   (cd "${CAMUNDA_BASE_DIR}" && nohup sh ./internal/run.sh start --detached > "${CAMUNDA_LOG_FILE}" 2>&1 &)
@@ -103,7 +128,7 @@ start_camunda() {
   RETRY_CAMUNDA_INTERVAL=5
   CAMUNDA_RETRIES=0
   while [ $CAMUNDA_RETRIES -lt $MAX_CAMUNDA_RETRIES ]; do
-    HTTP_CODE_CAMUNDA=$(curl --output /dev/null --silent --head --fail -w "%{http_code}" "${CAMUNDA_HEALTH_CHECK_URL}" || echo "000")
+    HTTP_CODE_CAMUNDA=$(curl --output /dev/null --silent --head --fail --max-time 5 -w "%{http_code}" "${CAMUNDA_HEALTH_CHECK_URL}" || echo "000")
     if [ "$HTTP_CODE_CAMUNDA" -eq 200 ] || [ "$HTTP_CODE_CAMUNDA" -eq 302 ]; then
         echo "Camunda BPM Run is up! (HTTP ${HTTP_CODE_CAMUNDA} at ${CAMUNDA_HEALTH_CHECK_URL})"
         return 0
@@ -151,10 +176,6 @@ mvn clean install -DskipTests=true
 echo "Building and installing Resource Adapter module..."
 cd "${PROJECT_ROOT_DIR}/${RA_MODULE_DIR_NAME}"
 mvn clean install -DskipTests=true
-# ВАЖНО: RA_ARTIFACT_FOR_WILDFLY ищет .jar. Ваш предыдущий скрипт называл переменную RA_RAR_FILE, но искал .jar.
-# Если для WildFly Resource Adapter действительно нужен .rar файл, вам нужно:
-# 1. Изменить pom.xml для модуля random-number-ra, чтобы он собирал .rar (например, с помощью maven-rar-plugin).
-# 2. Изменить строку ниже для поиска *.rar файла.
 RA_ARTIFACT_FOR_WILDFLY=$(ls target/${RA_MODULE_DIR_NAME}-*.jar 2>/dev/null | head -n 1)
 if [ -z "$RA_ARTIFACT_FOR_WILDFLY" ]; then
   echo "ERROR: Resource Adapter artifact (expected .jar based on current search pattern) not found in ${PROJECT_ROOT_DIR}/${RA_MODULE_DIR_NAME}/target/"
@@ -200,8 +221,8 @@ echo "Preparing artifacts for WildFly Docker image..."
 WILDFLY_ARTIFACTS_DIR="${PROJECT_ROOT_DIR}/${WILDFLY_DOCKER_CONTEXT_DIR}/artifacts"
 mkdir -p "${WILDFLY_ARTIFACTS_DIR}"
 
-cp "${PROJECT_ROOT_DIR}/${RA_MODULE_DIR_NAME}/target/$(basename ${RA_ARTIFACT_FOR_WILDFLY})" "${WILDFLY_ARTIFACTS_DIR}/" # Используем basename на случай, если RA_ARTIFACT_FOR_WILDFLY содержал target/
-cp "${PROJECT_ROOT_DIR}/${JCA_SERVICE_DIR_NAME}/target/$(basename ${JCA_WAR_FILE})" "${WILDFLY_ARTIFACTS_DIR}/" # Используем basename
+cp "${PROJECT_ROOT_DIR}/${RA_MODULE_DIR_NAME}/target/$(basename ${RA_ARTIFACT_FOR_WILDFLY})" "${WILDFLY_ARTIFACTS_DIR}/"
+cp "${PROJECT_ROOT_DIR}/${JCA_SERVICE_DIR_NAME}/target/$(basename ${JCA_WAR_FILE})" "${WILDFLY_ARTIFACTS_DIR}/"
 echo "Artifacts copied to ${WILDFLY_ARTIFACTS_DIR}"
 
 echo "Starting Docker containers (Zookeeper, Kafka, WildFly) using '$DOCKER_COMMAND'..."
@@ -215,7 +236,7 @@ MAX_WILDFLY_RETRIES=24
 RETRY_WILDFLY_INTERVAL=5
 WILDFLY_RETRIES=0
 while [ $WILDFLY_RETRIES -lt $MAX_WILDFLY_RETRIES ]; do
-    HTTP_CODE_WILDFLY=$(curl --output /dev/null --silent --head --fail -w "%{http_code}" "$JCA_SERVICE_CHECK_URL" || echo "000")
+    HTTP_CODE_WILDFLY=$(curl --output /dev/null --silent --head --fail --max-time 5 -w "%{http_code}" "$JCA_SERVICE_CHECK_URL" || echo "000")
     if [ "$HTTP_CODE_WILDFLY" -eq 200 ]; then
         echo "JCA service (WildFly) is up! (HTTP 200 OK)"
         break
@@ -230,7 +251,7 @@ if [ $WILDFLY_RETRIES -eq $MAX_WILDFLY_RETRIES ]; then
     echo "Check WildFly logs:"
     $DOCKER_COMMAND logs jca-service | tail -100
     echo "Stopping Docker containers due to WildFly startup failure..."
-    $DOCKER_COMMAND down --remove-orphans || true # Попытка остановить, даже если были ошибки
+    $DOCKER_COMMAND down --remove-orphans || true
     exit 1
 fi
 
@@ -243,10 +264,8 @@ kill_spring_boot_process() {
   PID=$(pgrep -f "java -jar .*${jar_name_pattern}")
   if [ -n "$PID" ]; then
     echo "Found running ${app_name} with PID(s): $PID (matched by '${jar_name_pattern}'). Terminating..."
-    # Добавляем || true, чтобы скрипт не падал, если процесс уже убит или kill вернул ошибку
     kill $PID || true
     sleep 3
-    # Повторно проверяем с pgrep, так как kill может вернуть 0, даже если процесс не завершился немедленно
     if pgrep -f "java -jar .*${jar_name_pattern}" > /dev/null; then
       echo "Process(es) for ${app_name} (PID $PID) did not terminate gracefully. Forcing termination (kill -9)."
       kill -9 $PID || true
