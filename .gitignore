@@ -36,4 +36,4 @@ build/
 *.lck
 *.log
 
-wildfly-docker/artifacts/**
+wildfly-docker/artifacts/
