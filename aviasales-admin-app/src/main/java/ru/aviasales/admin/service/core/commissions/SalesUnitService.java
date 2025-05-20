@@ -30,7 +30,7 @@ public class SalesUnitService {
     @Transactional
     public SalesUnitResp createSalesUnit(SalesUnitReq req) {
         if (req.getCommissionPercent() != null) {
-            validateCommission(req.getCommissionPercent());
+            validateCommission(Double.valueOf(req.getCommissionPercent()));
         }
 
         SalesCategory category = salesCategoryRepository.findById(req.getCategoryId())
@@ -46,7 +46,7 @@ public class SalesUnitService {
                 .name(req.getName())
                 .description(req.getDescription())
                 .category(category)
-                .customCommissionPercent(req.getCommissionPercent())
+                .customCommissionPercent(Double.valueOf(req.getCommissionPercent()))
                 .isCustomCommission(req.getCommissionPercent() != null)
                 .build();
 
@@ -56,7 +56,7 @@ public class SalesUnitService {
     @Transactional
     public SalesUnitResp updateSalesUnit(Long unitId, Long version, SalesUnitReq req) {
         if (req.getCommissionPercent() != null) {
-            validateCommission(req.getCommissionPercent());
+            validateCommission(Double.valueOf(req.getCommissionPercent()));
         }
 
         SalesUnit unit = salesUnitRepository.findById(unitId)
@@ -78,7 +78,7 @@ public class SalesUnitService {
         unit.setName(req.getName());
         unit.setDescription(req.getDescription());
         unit.setCategory(category);
-        unit.setCustomCommissionPercent(req.getCommissionPercent());
+        unit.setCustomCommissionPercent(Double.valueOf(req.getCommissionPercent()));
         unit.setIsCustomCommission(req.getCommissionPercent() != null);
 
         return modelMapper.map(unit, SalesUnitResp.class);
@@ -118,6 +118,10 @@ public class SalesUnitService {
     @Transactional(readOnly = true)
     public Page<SalesUnitResp> getAllUnits(Pageable pageable) {
         return salesUnitRepository.findAll(pageable).map(x -> modelMapper.map(x, SalesUnitResp.class));
+    }
+
+    public Page<SalesUnitResp> getAllUnitsByCategory(SalesCategory category, Pageable pageable) {
+        return salesUnitRepository.findAllByCategory(category, pageable).map(x -> modelMapper.map(x, SalesUnitResp.class));
     }
 
     private void validateCommission(Double commission) {

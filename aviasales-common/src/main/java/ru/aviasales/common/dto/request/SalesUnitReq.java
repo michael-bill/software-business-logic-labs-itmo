@@ -26,6 +26,6 @@ public class SalesUnitReq {
     private Long categoryId;
 
     @Schema(description = "Процент комиссии")
-    private Double commissionPercent;
+    private Long commissionPercent;
 
 }

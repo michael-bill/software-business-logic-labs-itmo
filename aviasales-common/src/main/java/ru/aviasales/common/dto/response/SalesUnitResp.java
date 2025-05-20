@@ -25,7 +25,7 @@ public class SalesUnitResp {
     @Schema(description = "Категория единицы")
     private SalesCategoryResp category;
     @Schema(description = "Процент комиссии")
-    private Double actualCommission;
+    private Long actualCommission;
     @Schema(description = "Время создания единицы")
     private LocalDateTime createdAt;
     @Schema(description = "Время последнего изменения единицы")
