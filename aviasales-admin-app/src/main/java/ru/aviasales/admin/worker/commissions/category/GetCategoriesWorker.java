@@ -35,6 +35,10 @@ public class GetCategoriesWorker {
                         List<SalesCategoryResp> categories = salesCategoryService.getAllCategories(PageRequest.of(0, Integer.MAX_VALUE))
                                 .getContent();
 
+                        categories = categories.stream()
+                                .sorted((a, b) -> Long.compare(b.getId(), a.getId()))
+                                .toList();
+
                         List<Map<String, Object>> categoryMaps = categories.stream()
                                 .map(category -> {
                                     Map<String, Object> map = new HashMap<>();
@@ -46,8 +50,9 @@ public class GetCategoriesWorker {
                                 })
                                 .collect(Collectors.toList());
 
-                        externalTaskService.complete(externalTask,
-                            Map.of("categoryList", objectMapper.writeValueAsString(categoryMaps)));
+                        Map<String, Object> variables = new HashMap<>();
+                        variables.put("showList", categoryMaps);
+                        externalTaskService.complete(externalTask, variables);
 
                         log.info("Worker 'category-get-list': successfully retrieved {} categories", categories.size());
 

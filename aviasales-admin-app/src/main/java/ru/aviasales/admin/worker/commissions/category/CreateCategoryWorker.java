@@ -57,7 +57,7 @@ public class CreateCategoryWorker {
                         externalTaskService.complete(externalTask, Map.of(
                                 "newCategoryCreated", true,
                                 "newCategoryId", resp.getId(),
-                                "createCategory", false
+                                "createElement", false
                         ));
                         log.info("Worker 'category-create': category '{}' created successfully", name);
                     } catch (UniqueValueExistsException | IllegalArgumentException e) {

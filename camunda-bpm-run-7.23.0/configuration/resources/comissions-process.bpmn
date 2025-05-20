@@ -121,7 +121,7 @@
     <sequenceFlow id="Flow_0o91314" sourceRef="Activity_1as89gs" targetRef="Gateway_0d77f5c" />
     <sequenceFlow id="Flow_0a2tkh4" name="Нет" sourceRef="Gateway_0d77f5c" targetRef="Activity_0bi04i8" />
     <sequenceFlow id="Flow_1kyuyci" name="Да" sourceRef="Gateway_0d77f5c" targetRef="Activity_1bizxu0">
-      <conditionExpression xsi:type="tFormalExpression">${createCategory}</conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression">${createElement}</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="Flow_1sh6hl1" sourceRef="Activity_0bi04i8" targetRef="Activity_05ey2yb" />
     <sequenceFlow id="Flow_1k1rs2d" sourceRef="Activity_0lbkmfv" targetRef="Activity_1as89gs" />
@@ -334,23 +334,8 @@
       <incoming>Flow_1nmsfpo</incoming>
       <outgoing>Flow_1ir38x6</outgoing>
     </userTask>
-    <userTask id="Activity_1as89gs" name="Список категорий продаж">
-      <extensionElements>
-        <camunda:formData>
-          <camunda:formField id="categoryList" label="Список категорий" type="string">
-            <camunda:properties>
-              <camunda:property id="widget" value="table" />
-              <camunda:property id="columns" value="id,name,description,commission" />
-              <camunda:property id="headers" value="ID,Название,Описание,Комиссия" />
-              <camunda:property id="readonly" value="true" />
-            </camunda:properties>
-            <camunda:validation>
-              <camunda:constraint name="readonly" />
-            </camunda:validation>
-          </camunda:formField>
-          <camunda:formField id="createCategory" label="Создать новую категорию?" type="boolean" defaultValue="false" />
-        </camunda:formData>
-      </extensionElements>
+    <userTask id="Activity_1as89gs" name="Список категорий продаж" camunda:formRef="Form_ComissionList" camunda:formRefBinding="latest">
+      <extensionElements />
       <incoming>Flow_1k1rs2d</incoming>
       <incoming>Flow_1ir38x6</incoming>
       <outgoing>Flow_0o91314</outgoing>
@@ -616,23 +601,8 @@
       <outgoing>Flow_0e2mnnq</outgoing>
       <outgoing>Flow_1d694wd</outgoing>
     </exclusiveGateway>
-    <userTask id="Activity_0vipsag" name="Список единиц продаж категории">
-      <extensionElements>
-        <camunda:formData>
-          <camunda:formField id="unitList" label="Список единиц продаж" type="string">
-            <camunda:properties>
-              <camunda:property id="widget" value="table" />
-              <camunda:property id="columns" value="id,name,description,commission" />
-              <camunda:property id="headers" value="ID,Название,Описание,Комиссия" />
-              <camunda:property id="readonly" value="true" />
-            </camunda:properties>
-            <camunda:validation>
-              <camunda:constraint name="readonly" />
-            </camunda:validation>
-          </camunda:formField>
-          <camunda:formField id="createUnit" label="Создать новую единицу продаж?" type="boolean" defaultValue="false" />
-        </camunda:formData>
-      </extensionElements>
+    <userTask id="Activity_0vipsag" name="Список единиц продаж категории" camunda:formRef="Form_ComissionList" camunda:formRefBinding="latest">
+      <extensionElements />
       <incoming>Flow_1fxxkls</incoming>
       <incoming>Flow_1crfqzw</incoming>
       <outgoing>Flow_0i6ehy8</outgoing>
@@ -665,7 +635,7 @@
     </userTask>
     <sequenceFlow id="Flow_0i6ehy8" sourceRef="Activity_0vipsag" targetRef="Gateway_0t2iiwk" />
     <sequenceFlow id="Flow_1d694wd" name="Нет" sourceRef="Gateway_0t2iiwk" targetRef="Activity_03qhvt9">
-      <conditionExpression xsi:type="tFormalExpression">${createUnit}</conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression">${createElement}</conditionExpression>
     </sequenceFlow>
     <serviceTask id="Activity_1h30k9w" name="Сохранение новой единицы продаж" camunda:type="external" camunda:topic="unit-create">
       <incoming>Flow_188kd7l</incoming>

@@ -65,7 +65,7 @@ public class CreateUnitWorker {
                         externalTaskService.complete(externalTask, Map.of(
                                 "newUnitCreated", true,
                                 "newUnitId", resp.getId(),
-                                "createUnit", false
+                                "createElement", false
                         ));
                         log.info("Worker 'unit-create': unit '{}' created successfully", name);
                     } catch (UniqueValueExistsException | IllegalArgumentException e) {

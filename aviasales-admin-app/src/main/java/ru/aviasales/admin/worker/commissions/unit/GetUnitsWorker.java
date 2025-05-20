@@ -47,6 +47,10 @@ public class GetUnitsWorker {
                                     .getContent();
                         }
 
+                        units = units.stream()
+                                .sorted((a, b) -> Long.compare(b.getId(), a.getId()))
+                                .toList();
+
                         List<Map<String, Object>> unitMaps = units.stream()
                                 .map(unit -> {
                                     Map<String, Object> map = new HashMap<>();
@@ -58,8 +62,9 @@ public class GetUnitsWorker {
                                 })
                                 .collect(Collectors.toList());
 
-                        externalTaskService.complete(externalTask,
-                            Map.of("unitList", objectMapper.writeValueAsString(unitMaps)));
+                        Map<String, Object> variables = new HashMap<>();
+                        variables.put("showList", unitMaps);
+                        externalTaskService.complete(externalTask, variables);
 
                         log.info("Worker 'unit-get-list': successfully retrieved {} units", units.size());
 
