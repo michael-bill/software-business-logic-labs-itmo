@@ -26,8 +26,6 @@
       </lane>
       <lane id="Lane_135q4v0" name="Управляющий рекламой">
         <flowNodeRef>Event_0bzwoir</flowNodeRef>
-        <flowNodeRef>Gateway_11th7kx</flowNodeRef>
-        <flowNodeRef>Event_125yp0u</flowNodeRef>
         <flowNodeRef>Activity_0lzfwds</flowNodeRef>
         <flowNodeRef>Activity_104ncro</flowNodeRef>
         <flowNodeRef>Event_0ummyet</flowNodeRef>
@@ -36,6 +34,7 @@
         <flowNodeRef>Activity_0jbor2h</flowNodeRef>
         <flowNodeRef>Activity_1n6ke1y</flowNodeRef>
         <flowNodeRef>Activity_Auth</flowNodeRef>
+        <flowNodeRef>Event_125yp0u</flowNodeRef>
       </lane>
     </laneSet>
     <dataStoreReference id="DataStoreReference_1dqzfiu" name="База данных" />
@@ -62,13 +61,6 @@
         <targetRef>Property_1p14d7k</targetRef>
       </dataInputAssociation>
     </serviceTask>
-    <exclusiveGateway id="Gateway_11th7kx" default="Flow_0loutev">
-      <incoming>Flow_0mx9lay</incoming>
-      <outgoing>Flow_0loutev</outgoing>
-    </exclusiveGateway>
-    <endEvent id="Event_125yp0u">
-      <incoming>Flow_0loutev</incoming>
-    </endEvent>
     <userTask id="Activity_0lzfwds" name="Ошибка">
       <extensionElements>
         <camunda:formData>
@@ -177,8 +169,7 @@
     <sequenceFlow id="Flow_1f3toz9" sourceRef="Event_0hnh6uv" targetRef="Activity_1n6ke1y" />
     <sequenceFlow id="Flow_18yrxey" sourceRef="Activity_1qx1u5y" targetRef="Activity_0in0ffm" />
     <sequenceFlow id="Flow_1n2ou86" sourceRef="Activity_0in0ffm" targetRef="Activity_0oyuqg1" />
-    <sequenceFlow id="Flow_0mx9lay" sourceRef="Activity_0lzfwds" targetRef="Gateway_11th7kx" />
-    <sequenceFlow id="Flow_0loutev" sourceRef="Gateway_11th7kx" targetRef="Event_125yp0u" />
+    <sequenceFlow id="Flow_0mx9lay" sourceRef="Activity_0lzfwds" targetRef="Event_125yp0u" />
     <sequenceFlow id="Flow_0xqpflz" sourceRef="Event_06gwved" targetRef="Activity_0lzfwds" />
     <sequenceFlow id="Flow_08aylhf" sourceRef="Event_1j535oj" targetRef="Activity_0lzfwds" />
     <sequenceFlow id="Flow_0lvz12n" sourceRef="Activity_0q1tegs" targetRef="Activity_0wh6flo" />
@@ -218,6 +209,9 @@
       <incoming>Flow_1lrmgbl</incoming>
       <outgoing>Flow_0du7of6</outgoing>
     </callActivity>
+    <endEvent id="Event_125yp0u">
+      <incoming>Flow_0mx9lay</incoming>
+    </endEvent>
   </process>
   <error id="Error_06j4it2" name="Error_0luaem1" />
   <bpmndi:BPMNDiagram id="BpmnDiagram_1">
@@ -252,12 +246,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1knxy2z_di" bpmnElement="Activity_0in0ffm">
         <omgdc:Bounds x="620" y="440" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_11th7kx_di" bpmnElement="Gateway_11th7kx" isMarkerVisible="true">
-        <omgdc:Bounds x="515" y="235" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_125yp0u_di" bpmnElement="Event_125yp0u">
-        <omgdc:Bounds x="522" y="322" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_037344v_di" bpmnElement="Activity_0lzfwds">
         <omgdc:Bounds x="620" y="220" width="100" height="80" />
@@ -307,6 +295,9 @@
         <omgdc:Bounds x="360" y="290" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_125yp0u_di" bpmnElement="Event_125yp0u">
+        <omgdc:Bounds x="522" y="242" width="36" height="36" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1j535oj_di" bpmnElement="Event_1j535oj">
         <omgdc:Bounds x="1202" y="532" width="36" height="36" />
       </bpmndi:BPMNShape>
@@ -336,11 +327,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0mx9lay_di" bpmnElement="Flow_0mx9lay">
         <omgdi:waypoint x="620" y="260" />
-        <omgdi:waypoint x="565" y="260" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0loutev_di" bpmnElement="Flow_0loutev">
-        <omgdi:waypoint x="540" y="285" />
-        <omgdi:waypoint x="540" y="322" />
+        <omgdi:waypoint x="558" y="260" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0xqpflz_di" bpmnElement="Flow_0xqpflz">
         <omgdi:waypoint x="703" y="433" />
