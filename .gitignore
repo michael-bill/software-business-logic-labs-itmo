@@ -33,3 +33,5 @@ build/
 .idea/
 *~
 
+*.lck
+*.log
