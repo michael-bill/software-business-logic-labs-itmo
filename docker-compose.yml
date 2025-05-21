@@ -35,10 +35,10 @@ services:
       context: ./wildfly-docker
     container_name: jca-random-provider-service
     ports:
-      - "8080:8080"
-      - "9990:9990"
+      - "8070:8070"
+      - "9991:9991"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/jca-random-service/api/random/invoice-id"]
+      test: ["CMD", "curl", "-f", "http://localhost:8070/jca-random-service/api/random/invoice-id"]
       interval: 10s
       timeout: 5s
       retries: 10

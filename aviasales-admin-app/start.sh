@@ -32,7 +32,7 @@ CAMUNDA_BASE_DIR="${PROJECT_ROOT_DIR}/${CAMUNDA_DIR_NAME}"
 CAMUNDA_INTERNAL_SCRIPT_DIR="${CAMUNDA_BASE_DIR}/internal"
 CAMUNDA_RUN_SCRIPT="${CAMUNDA_INTERNAL_SCRIPT_DIR}/run.sh"
 CAMUNDA_LOG_FILE="${PROJECT_ROOT_DIR}/camunda-run.log"
-CAMUNDA_PORT=8090
+CAMUNDA_PORT=8080
 CAMUNDA_HEALTH_CHECK_URL="http://localhost:${CAMUNDA_PORT}/"
 
 
@@ -230,7 +230,7 @@ cd "${PROJECT_ROOT_DIR}"
 $DOCKER_COMMAND up --build -d
 echo "Docker containers started. Waiting for WildFly health check..."
 
-JCA_SERVICE_CHECK_URL="http://localhost:8080/jca-random-service/api/random/invoice-id"
+JCA_SERVICE_CHECK_URL="http://localhost:8070/jca-random-service/api/random/invoice-id"
 echo "Checking JCA service availability at ${JCA_SERVICE_CHECK_URL}..."
 MAX_WILDFLY_RETRIES=24
 RETRY_WILDFLY_INTERVAL=5
