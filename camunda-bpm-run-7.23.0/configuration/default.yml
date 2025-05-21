@@ -2,7 +2,7 @@
 # https://docs.camunda.org/manual/latest/user-guide/camunda-bpm-run/#configure-camunda-bpm-run
 # https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/configuration/#camunda-engine-properties
 server:
-  port: 8090 # Например, 8090, если 8080 занят
+  port: 8080
 
 camunda.bpm:
   admin-user:

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CamundaClientConfig {
 
-    @Value("${camunda.bpm.client.base-url:http://localhost:8090/engine-rest}")
+    @Value("${camunda.bpm.client.base-url:http://localhost:8080/engine-rest}")
     private String camundaBaseUrl;
 
     @Bean
